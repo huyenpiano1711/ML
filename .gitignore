@@ -21,3 +21,14 @@ data/
 # File tạm
 .ipynb_checkpoints/
 .DS_Store
+# Large image dataset
+assets/car_images/
+assets/car_images_unique/
+
+# Generated image reports
+reports/image_deduplication/contact_sheets/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
