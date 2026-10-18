@@ -1,0 +1,23 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.idea/
+.env
+
+# Hình ảnh xe
+assets/car_images/
+
+# File dữ liệu lớn
+data/
+*.zip
+*.rar
+*.7z
+*.pkl
+*.joblib
+*.h5
+
+# File tạm
+.ipynb_checkpoints/
+.DS_Store
