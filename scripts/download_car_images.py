@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-INPUT_CSV = BASE_DIR / "data" / "vehicles_clean.csv"
+INPUT_CSV = BASE_DIR / "data" / "processed" / "vehicles_clean.csv"
 OUTPUT_CSV = BASE_DIR / "data" / "vehicles_with_images.csv"
 MANIFEST_CSV = BASE_DIR / "data" / "image_manifest.csv"
 
@@ -518,11 +518,6 @@ def main():
 
         output.to_csv(
             OUTPUT_CSV,
-            index=False,
-            encoding="utf-8-sig"
-        )
-        output.to_csv(
-            INPUT_CSV,
             index=False,
             encoding="utf-8-sig"
         )

@@ -1,34 +1,30 @@
-# Python
+# Python / IDE
 .venv/
 venv/
 __pycache__/
 *.pyc
 .idea/
 .env
+.ipynb_checkpoints/
+.DS_Store
 
-# Hình ảnh xe
+# Dữ liệu và ảnh: không đưa lên git, tải từ GitHub Release (xem docs/data_handoff.md)
+data/raw/
+data/interim/
+data/processed/
+data/*.csv
 assets/car_images/
+assets/car_images_unique/
+release/
 
-# File dữ liệu lớn
-data/
+# File tạm của các script
+reports/image_audit/_parts/
+reports/image_deduplication/contact_sheets/
+reports/kiem_tra_ket_noi.txt
+
+# File nén / dữ liệu nhị phân lớn
 *.zip
 *.rar
 *.7z
 *.pkl
-*.joblib
 *.h5
-
-# File tạm
-.ipynb_checkpoints/
-.DS_Store
-# Large image dataset
-assets/car_images/
-assets/car_images_unique/
-
-# Generated image reports
-reports/image_deduplication/contact_sheets/
-
-# Python
-.venv/
-__pycache__/
-*.pyc

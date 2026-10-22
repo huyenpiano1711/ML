@@ -1,0 +1,49 @@
+﻿cot,kieu,pct_thieu,so_gia_tri,mo_ta
+id,int64,0.0,198514,Mã tin đăng (khóa chính)
+region,string,0.0,404,Khu vực Craigslist
+price,int64,0.0,14047,Giá niêm yết (USD) - BIẾN MỤC TIÊU
+year,float64,0.0,33,Năm sản xuất
+manufacturer,string,0.0,53,Hãng xe
+model,string,0.0,20584,Tên model gốc (viết tự do)
+condition,string,0.0,7,Tình trạng xe
+cylinders,string,0.0,9,Số xi-lanh (chuỗi)
+fuel,string,0.0,6,Nhiên liệu
+odometer,float64,0.0,92182,Số dặm đã đi
+title_status,string,0.0,7,Tình trạng giấy tờ
+transmission,string,0.0,4,Hộp số
+drive,string,0.0,4,Dẫn động
+type,string,0.0,13,Kiểu thân xe
+paint_color,string,0.0,13,Màu sơn
+state,string,0.0,51,Bang
+lat,float64,0.8,43755,Vĩ độ
+long,float64,0.8,44272,Kinh độ
+posting_date,"datetime64[ns, UTC]",0.0,176894,Thời điểm đăng tin
+seller_type,object,0.0,2,"dealer = đại lý, owner = chính chủ"
+manufacturer_inferred,int64,0.0,3,"0 = hãng có sẵn, 1 = suy ra từ tên hãng trong model, 2 = suy ra từ bảng dòng xe -> hãng"
+model_base,string,0.0,2050,Dòng xe đã chuẩn hóa
+car_age,float64,0.0,32,Tuổi xe = 2021 - year
+miles_per_year,float64,0.0,112338,Số dặm trung bình mỗi năm
+log_price,float64,0.0,14047,log(1+price) - mục tiêu đề xuất khi train
+log_odometer,float64,0.0,92182,log(1+odometer)
+cylinders_num,Int64,34.7,7,Số xi-lanh (số)
+condition_rank,float64,38.08,6,Tình trạng dạng thứ bậc 0-5
+brand_tier,object,0.0,3,Phân khúc hãng: mainstream / luxury / exotic
+has_vin,int8,0.0,2,1 = tin có VIN
+make_model,string,0.0,2348,Hãng + dòng xe
+posting_dow,int32,0.0,7,Thứ trong tuần đăng tin (0 = T2)
+n_unknown_specs,int8,0.0,6,Số thông số người bán bỏ trống (0-5)
+desc_missing,int64,0.0,2,1 = không có mô tả
+desc_len,int64,0.0,12918,Độ dài mô tả (ký tự)
+desc_words,int64,0.0,2640,Số từ trong mô tả
+kw_one_owner,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_clean_history,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_warranty,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_financing,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_needs_work,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_new_tires,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_leather,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_sunroof,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_navigation,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_backup_camera,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_lifted,int64,0.0,2,Cờ từ khóa trong mô tả
+kw_low_miles,int64,0.0,2,Cờ từ khóa trong mô tả

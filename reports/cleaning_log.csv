@@ -1,0 +1,17 @@
+﻿buoc,so_dong_truoc,so_dong_sau,bi_loai,pct_loai_so_voi_goc,ly_do
+D1_thieu_hang,426880,418278,8602,2.02,Thiếu hãng xe (sau khi đã thử suy ra từ model)
+D2_thieu_model,418278,412383,5895,1.38,Thiếu / không đọc được tên dòng xe
+D3_thieu_nam,412383,411894,489,0.11,Thiếu năm sản xuất
+D4_thieu_odo,411894,407717,4177,0.98,Thiếu số dặm đã đi
+D5_khong_phai_oto,407717,407628,89,0.02,Xe máy (harley-davidson) nằm ngoài phạm vi
+D6_xe_thuong_mai,407628,405986,1642,0.38,"Xe tải / xe buýt thương mại (freightliner, international, type = bus...)"
+E1_gia_ngoai_khoang,405986,364641,41345,9.69,"price ngoài [1,000; 150,000] (0 = liên hệ, giá trả góp, gõ sai)"
+E2_gia_gia_cho,364641,364561,80,0.02,Giá dạng 11111 / 12345 (giá trị giữ chỗ)
+E3_nam_ngoai_khoang,364561,355405,9156,2.14,year ngoài [1990; 2022] (xe cổ có quy luật giá khác)
+E4_odo_qua_lon,355405,354858,547,0.13,"odometer > 400,000 dặm (gõ sai)"
+E5_odo_gia_cho,354858,354676,182,0.04,odometer dạng 111111 / 123456
+E6_odo_vo_ly,354676,352510,2166,0.51,Xe >= 2 tuổi nhưng odometer < 100 dặm
+E7_gia_tra_gop,352510,352269,241,0.06,"Xe <= 3 tuổi nhưng giá < 3,000 (giá trả góp/đặt cọc)"
+F1_trung_VIN,352269,224209,128060,30.0,Cùng VIN đăng lại nhiều lần/nhiều khu vực -> giữ tin mới nhất
+F2_trung_noi_dung,224209,201434,22775,5.34,Tin không VIN trùng toàn bộ thông số + giá + bang với tin khác -> tin đăng lặp
+G1_ngoai_lai_nhom,201434,198514,2920,0.68,|robust z| > 3.5 so với xe cùng hãng+dòng+năm (nhóm >= 10)
