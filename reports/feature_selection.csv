@@ -1,0 +1,10 @@
+﻿cau_hinh,mo_ta,so_cot,mae_usd,medae_usd,rmse_usd,r2_log,mape_pct,giay
+M0,Mốc: luôn đoán giá trung vị,0,9440,6498,14073,-0.0009,88.35,0
+F0,Toàn bộ cột (cấu hình C của 09),36,2179,1246,4000,0.9138,17.45,6
+F1,"Chỉ cột trên form, điền đủ",17,2330,1336,4297,0.9029,18.96,3
+F2,"Chỉ cột trên form, bỏ trống 5 ô nâng cao",17,2789,1589,4950,0.8789,21.74,0
+F2_drive,"Chỉ cột trên form, bỏ trống riêng ô drive",17,2528,1413,4613,0.8948,19.49,0
+F2_cylinders,"Chỉ cột trên form, bỏ trống riêng ô cylinders",17,2449,1382,4503,0.898,19.17,0
+F2_paint_color,"Chỉ cột trên form, bỏ trống riêng ô paint_color",17,2346,1342,4347,0.9017,18.93,0
+F2_title_status,"Chỉ cột trên form, bỏ trống riêng ô title_status",17,2402,1381,4366,0.8986,19.7,0
+F2_state,"Chỉ cột trên form, bỏ trống riêng ô state",17,2514,1511,4423,0.8884,21.75,0

@@ -85,12 +85,16 @@ Chạy từ thư mục `scripts/` theo thứ tự số (PyCharm: chuột phải 
 | `09_fill_experiment.py` | So sánh mô hình trước và sau khi điền | `reports/fill_experiment.csv` |
 | `10_image_audit.py` | Kiểm toán bộ ảnh (SHA-256, pHash) | `reports/image_audit/` |
 | `11_report_tables.py` | Bảng số liệu bổ sung cho báo cáo | `reports/*.csv` |
+| `12_split_data.py` | A03: chia train/val/test 70/15/15, phân tầng theo `log_price` | `data/splits/*_ids.csv`, `reports/split_summary.csv` |
+| `13_build_feature_schema.py` | A04: thuộc tính đầu vào, khớp với form PyQt6 | `src/features/feature_schema.json` |
+| `14_feature_check.py` | A04: kiểm chứng bộ thuộc tính trên tập validation | `reports/feature_selection.csv` |
 
 `run_all.py` chạy 01–05. Hai file `.bat` là lối tắt chạy bước 07 và kiểm tra kết nối trên Windows.
 
 ## Quy ước cho giai đoạn huấn luyện
 
 - Biến mục tiêu: `log_price`; dự đoán xong đổi ngược bằng `np.expm1`.
-- Chia train/test **trước**, rồi mới fit `build_preprocessor()` và `GroupModeImputer` trên tập train (tránh rò rỉ dữ liệu).
-- Mốc cần vượt: Ridge MAE 3.055 USD; HistGradientBoosting MAE 2.094 USD (`reports/fill_experiment.csv`).
+- Dùng chung cách chia trong `data/splits/` (đọc `id` rồi lọc `vehicles_filled.pkl`), không tự chia lại. Fit `build_preprocessor()` và `GroupModeImputer` **chỉ trên train**; chọn mô hình trên **val**; **test** chỉ dùng một lần ở B04.
+- Cột đầu vào của mô hình giá: `price_model_columns` trong `src/features/feature_schema.json` (17 cột, chỉ gồm thông tin người dùng nhập trên form hoặc tính được). Chi tiết: [docs/A03_A04_split_and_features.md](docs/A03_A04_split_and_features.md).
+- Mốc cần vượt với bộ cột trên form (HistGradientBoosting, tập val): MAE 2.330 USD (`reports/feature_selection.csv`). Mốc cũ 2.094 USD trong `fill_experiment.csv` dùng cả cột mô tả, VIN, tọa độ và chia 80/20, nên không so trực tiếp được.
 - Không commit dữ liệu, ảnh hay file lớn hơn 100 MB; cập nhật dữ liệu bằng Release mới.
