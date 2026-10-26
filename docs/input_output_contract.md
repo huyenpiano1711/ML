@@ -3,7 +3,13 @@
 ## Đầu vào: `backend/schemas/vehicle_input.py`
 
 Frontend gửi dict, Backend gọi:
-    car = VehicleInput.from_dict(data).check()   # sai -> InputValidationError(.errors)
+
+```python
+car = VehicleInput.from_dict(data).check()
+```
+
+Nếu dữ liệu không hợp lệ, `check()` phát sinh `InputValidationError` với danh sách
+thông báo trong thuộc tính `errors`.
 
 | Tên trường | Kiểu | Bắt buộc | Ô trên form |
 |---|---|---|---|
@@ -19,23 +25,32 @@ Frontend gửi dict, Backend gọi:
 | drive, cylinders, paint_color, title_status, state | str hoặc None | Không | Tùy chọn nâng cao |
 | user_name | str | Không | Màn hình 1 |
 
-Giá trị hợp lệ của từng ô: `allowed_values` / `ui_options` trong `src/features/feature_schema.json`.
+Giá trị hợp lệ của từng trường được lấy từ `allowed_values` và `ui_options`
+trong `src/features/feature_schema.json`.
 
-- `car.to_model_row()` -> dict cho mô hình giá (D02). Cột tính thêm do predict.py tính.
-- `car.to_recommendation_query()` -> {"budget_max_usd", "preferences"} cho gợi ý (D03).
+- `car.to_model_row()` tạo dict đầu vào cho mô hình dự đoán giá.
+- `car.to_recommendation_query()` tạo truy vấn cho hệ thống gợi ý xe.
+- `budget_max_usd` chỉ dùng cho Recommendation, không truyền vào mô hình giá.
 
 ## Đầu ra: `backend/schemas/result_schema.py`
 
+```text
 AnalysisResult
 ├── success: bool
 ├── vehicle_title: str
-├── price: PriceResult (predicted_price, price_low, price_high, currency, model_name)
-├── top_matches: list[CarCard]   (tối đa 5)
-├── similar_price: list[CarCard] (tối đa 6)
-├── errors / warnings: list[str]
-└── elapsed_ms: float
+├── price: PriceResult
+├── top_matches: list[CarCard]
+├── similar_price: list[CarCard]
+├── errors: list[str]
+├── warnings: list[str]
+└── elapsed_ms: float | None
+```
 
-CarCard: id, manufacturer, model_base, year, price, odometer, type, condition,
-fuel, transmission, image_path, score. Tạo từ một dòng catalog: CarCard.from_row(row, score).
+`PriceResult` gồm giá dự đoán, khoảng giá tham khảo, đơn vị tiền tệ và tên mô hình.
 
-Lỗi: return AnalysisResult.failure(errors), giao diện chỉ hiển thị errors.
+`CarCard` gồm ID, hãng, dòng xe, năm, giá, số miles, kiểu xe, tình trạng,
+nhiên liệu, hộp số, đường dẫn ảnh và điểm phù hợp. Dữ liệu catalog được chuyển
+thành thẻ bằng `CarCard.from_row(row, score)`.
+
+Khi xử lý thất bại, Backend trả `AnalysisResult.failure(errors)` để Frontend
+hiển thị lỗi mà không phải tự suy luận hoặc tạo dữ liệu.
