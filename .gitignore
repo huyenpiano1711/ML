@@ -4,6 +4,8 @@ venv/
 __pycache__/
 *.pyc
 .idea/
+.vscode/
+.pytest_cache/
 .env
 .ipynb_checkpoints/
 .DS_Store
@@ -28,3 +30,6 @@ reports/kiem_tra_ket_noi.txt
 *.7z
 *.pkl
 *.h5
+
+# Local recovery copy; the canonical project lives at repository root.
+ML-main/
