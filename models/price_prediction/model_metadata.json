@@ -1,0 +1,90 @@
+{
+  "model_name": "HistGradientBoostingRegressor",
+  "pipeline_class": "TransformedTargetRegressor(HistGradientBoostingRegressor)",
+  "library": "scikit-learn",
+  "pipeline_file": "final_pipeline.joblib",
+  "created_at": "2026-10-26 21:35:02",
+  "best_configuration": "HGB_iter600_lr06",
+  "parameters": {
+    "learning_rate": 0.06,
+    "max_iter": 600,
+    "max_leaf_nodes": 80,
+    "min_samples_leaf": 25,
+    "l2_regularization": 0.5,
+    "random_state": 42,
+    "categorical_features": "native histogram binning (indices 0..10)"
+  },
+  "target": {
+    "name": "log_price",
+    "formula": "log(1 + price)",
+    "inverse": "np.expm1(prediction)",
+    "unit": "USD"
+  },
+  "features": {
+    "raw_input_columns": [
+      "manufacturer",
+      "model_base",
+      "year",
+      "type",
+      "odometer",
+      "condition",
+      "fuel",
+      "transmission",
+      "drive",
+      "cylinders",
+      "paint_color",
+      "title_status",
+      "state"
+    ],
+    "all_price_model_features": [
+      "car_age",
+      "odometer",
+      "log_odometer",
+      "miles_per_year",
+      "cylinders_num",
+      "condition_rank",
+      "manufacturer",
+      "type",
+      "condition",
+      "fuel",
+      "transmission",
+      "drive",
+      "paint_color",
+      "title_status",
+      "state",
+      "brand_tier",
+      "make_model"
+    ],
+    "group_impute_columns": [
+      "drive",
+      "cylinders",
+      "type",
+      "fuel",
+      "transmission"
+    ]
+  },
+  "training_data": {
+    "dataset": "data/processed/vehicles_filled.pkl",
+    "train_val_size": 168736,
+    "test_size": 29778,
+    "year_reference": 2021,
+    "year_range": [
+      1990,
+      2022
+    ],
+    "price_range_usd": [
+      1000,
+      150000
+    ],
+    "random_seed": 42
+  },
+  "performance": {
+    "test_mae_usd": 2259.49,
+    "test_rmse_usd": 3975.01,
+    "test_medae_usd": 1313.34,
+    "test_p90_usd": 5119.73,
+    "test_r2_usd": 0.9094,
+    "test_mape_pct": 18.11,
+    "latency_ms_per_car": 0.042
+  }
+}
