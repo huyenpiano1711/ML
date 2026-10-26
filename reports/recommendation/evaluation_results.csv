@@ -1,0 +1,9 @@
+﻿query_set,method,n_queries,hard_constraint_rate_pct,coverage_5_pct,avg_returned,precision_at_5_proxy_pct,mean_score_common,mean_distinct_models,latency_mean_ms,latency_p95_ms,excluded_id_leaks
+from_listing,knn,300,100.0,100.0,5.0,77.73,0.9163,1.113,14.85,21.84,0
+from_listing,cosine,300,100.0,100.0,5.0,77.2,0.9159,1.107,14.57,21.51,0
+from_listing,baseline_random,300,100.0,100.0,5.0,0.4,0.278,4.933,0.56,0.71,0
+from_listing,baseline_budget,300,100.0,100.0,5.0,0.67,0.2807,4.813,7.17,12.68,0
+random_form,knn,300,100.0,100.0,5.0,,0.5,3.057,14.06,21.09,0
+random_form,cosine,300,100.0,100.0,5.0,,0.4944,3.037,13.76,20.68,0
+random_form,baseline_random,300,100.0,100.0,5.0,,0.2718,4.923,0.32,0.42,0
+random_form,baseline_budget,300,100.0,100.0,5.0,,0.2605,4.757,6.69,12.17,0
