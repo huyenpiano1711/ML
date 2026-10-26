@@ -1,0 +1,22 @@
+{
+  "model_name": "HistGradientBoostingRegressor",
+  "pipeline_file": "final_pipeline.joblib",
+  "test_metrics": {
+    "mae_usd": 2259.49,
+    "rmse_usd": 3975.01,
+    "medae_usd": 1313.34,
+    "p90_usd": 5119.73,
+    "r2_usd": 0.9094,
+    "r2_log": 0.9073,
+    "mape_pct": 18.11,
+    "sample_size": 29778,
+    "pred_time_sec": 1.25,
+    "ms_per_car": 0.042
+  },
+  "evaluation_notes": {
+    "r2_calculation": "R² được tính trực tiếp trên giá USD thật theo công thức 1 - SS_res/SS_tot",
+    "log_target_inverse": "Target huấn luyện là log1p(price), khi suy luận tự động chuyển ngược bằng expm1",
+    "g1_outlier_impact": "Bước G1 loại bỏ 0.68% ngoại lai trước khi split nên kết quả test có thể lạc quan nhẹ nhưng phản ánh chính xác phân khúc xe phổ thông",
+    "evaluated_at": "2026-10-26 21:35:02"
+  }
+}
