@@ -1,0 +1,21 @@
+{
+  "rows_input": 198514,
+  "dropped_missing_core": 0,
+  "dropped_duplicate_listings": 7318,
+  "image_dir_found": false,
+  "image_match_counts": {
+    "none": 191196
+  },
+  "rows_output": 191196,
+  "unique_ids": 191196,
+  "n_manufacturers": 53,
+  "n_make_models": 2348,
+  "share_unknown_pct": {
+    "type": 10.39,
+    "condition": 37.49,
+    "fuel": 0.01,
+    "transmission": 0.09,
+    "drive": 9.48
+  },
+  "problems": []
+}
