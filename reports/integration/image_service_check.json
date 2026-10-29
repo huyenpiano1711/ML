@@ -1,0 +1,52 @@
+{
+  "thu_muc_anh": "assets/car_images_unique",
+  "anh_thay_the": "assets/placeholder_car.png",
+  "kiem_tra_anh": {
+    "so_file": 6842,
+    "ket_qua": {
+      "ok": 6842
+    },
+    "thoi_gian_s": 50.8
+  },
+  "do_phu": [
+    {
+      "truong_hop": "catalog có image_path",
+      "so_xe": 191196,
+      "pct_catalog": 99.0,
+      "pct_lookup_exact": 0.0,
+      "pct_lookup_nearest_year": 0.0,
+      "pct_placeholder": 1.0,
+      "pct_co_anh_minh_hoa": 99.0,
+      "ly_do_anh_catalog_khong_dung": {
+        "ok": 189292,
+        "missing_path": 1904
+      }
+    },
+    {
+      "truong_hop": "catalog không có image_path",
+      "so_xe": 191196,
+      "pct_catalog": 0.0,
+      "pct_lookup_exact": 85.02,
+      "pct_lookup_nearest_year": 13.99,
+      "pct_placeholder": 1.0,
+      "pct_co_anh_minh_hoa": 99.0,
+      "ly_do_anh_catalog_khong_dung": {
+        "missing_path": 191196
+      }
+    }
+  ],
+  "thoi_gian": {
+    "lan_dau_ms": {
+      "trung_binh": 5.423,
+      "p95": 10.018,
+      "max": 59.746
+    },
+    "lan_sau_ms": {
+      "trung_binh": 2.461,
+      "p95": 5.066,
+      "max": 46.268
+    },
+    "mot_trang_ket_qua_11_xe_ms": 17.283,
+    "so_the_do": 2000
+  }
+}
