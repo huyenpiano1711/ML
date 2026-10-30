@@ -1,0 +1,7 @@
+﻿model,target,configuration,mae_usd,rmse_usd,medae_usd,r2_usd,r2_log,mape_pct,fit_time_sec
+DummyRegressor,Direct USD,strategy='median',9439.62,14073.37,6498.0,-0.0924,-0.0009,88.35,0.15
+Ridge Regression,Direct USD,"alpha=10.0, OneHotEncoder",3856.02,6115.76,2616.82,0.7937,-0.3764,38.08,6.96
+Ridge Regression,Log-Price (log1p),"alpha=10.0, OneHotEncoder, expm1 inverse",3137.71,5685.42,1687.45,0.8217,0.8574,23.7,6.45
+HistGradientBoosting,Direct USD,"max_iter=300, lr=0.1, max_leaf_nodes=63, native categorical",2308.35,4043.5,1390.08,0.9098,0.8926,20.29,29.7
+HistGradientBoosting,Log-Price (log1p),"max_iter=300, lr=0.1, max_leaf_nodes=63, expm1 inverse",2330.03,4296.88,1336.4,0.8982,0.9029,18.96,34.3
+RandomForestRegressor,Log-Price (log1p),"n_estimators=100, max_depth=22, min_samples_leaf=4, expm1 inverse",2624.98,4624.97,1552.46,0.882,0.8746,21.73,53.71
