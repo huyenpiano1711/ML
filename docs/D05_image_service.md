@@ -30,7 +30,8 @@ r.reason          # lý do ảnh catalog không dùng được (ok nếu dùng �
 3. Ảnh thay thế.
 
 Ảnh chỉ được dùng khi: nằm trong `assets/car_images_unique` (chặn đường dẫn `../`), đuôi `.jpg/.jpeg/.png`,
-tồn tại, không rỗng, không quá 20 MB, và Pillow mở được. Kết quả kiểm tra lưu đệm theo
+tồn tại, không rỗng, không quá 20 MB, Pillow đọc được phần đầu file và file có đủ dấu kết thúc
+(JPEG `FF D9`, PNG `IEND`) - bắt được file tải dở mà không phải giải mã cả ảnh. Kết quả kiểm tra lưu đệm theo
 (đường dẫn, thời điểm sửa, kích thước): mỗi ảnh chỉ đọc một lần; file bị thay thì được kiểm lại.
 
 | `reason` | Trường hợp |
@@ -46,7 +47,7 @@ Nếu `assets/placeholder_car.png` bị xóa hoặc hỏng, service tự vẽ l�
 
 ## Kiểm thử và số liệu
 
-- `tests/test_d05_image_service.py`: 23 test (ảnh hợp lệ, 9 kiểu lỗi, tìm lại theo năm, thẻ xe, ảnh thay thế bị xóa/hỏng, bộ đệm).
+- `tests/test_d05_image_service.py`: 25 test (ảnh hợp lệ, 9 kiểu lỗi, file JPEG/PNG bị cắt ngang, tìm lại theo năm, thẻ xe, ảnh thay thế bị xóa/hỏng, bộ đệm).
 - `scripts/15_image_service_check.py` → `reports/integration/image_service_check.json`:
   - 6.842/6.842 ảnh trong `car_images_unique` đọc được.
   - 191.196 xe trong catalog: 99,0% có ảnh minh họa, 1,0% (1.904 xe, dòng xe không có ảnh nào) dùng ảnh thay thế.

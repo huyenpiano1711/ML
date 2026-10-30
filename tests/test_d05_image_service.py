@@ -78,6 +78,23 @@ def test_bad_paths_fall_back_to_placeholder(service, image_path, reason):
     assert r.label == ims.PLACEHOLDER_LABEL
 
 
+def test_truncated_jpeg_and_png_are_detected(service, repo):
+    img = repo / REL
+    good = (img / "ford_f150_2015.jpg").read_bytes()
+    (img / "kia_soul_2014.jpg").write_bytes(good[: len(good) // 2])          # JPEG tải dở
+    Image.new("RGB", (60, 40), (1, 2, 3)).save(img / "kia_rio_2015.png", format="PNG")
+    png = (img / "kia_rio_2015.png").read_bytes()
+    (img / "kia_rio_2015.png").write_bytes(png[:-20])                         # PNG mất chunk IEND
+    assert service.resolve(f"{REL}/kia_soul_2014.jpg").reason == ims.CORRUPT_IMAGE
+    assert service.resolve(f"{REL}/kia_rio_2015.png").reason == ims.CORRUPT_IMAGE
+
+
+def test_full_verify_mode_still_accepts_good_images(repo):
+    svc = ImageService(project_dir=repo, full_verify=True)
+    assert not svc.resolve(f"{REL}/ford_f150_2015.jpg").is_placeholder
+    assert svc.resolve(f"{REL}/honda_civic_2016.jpg").reason == ims.CORRUPT_IMAGE
+
+
 def test_absolute_path_outside_image_dir_is_rejected(service, repo):
     r = service.resolve(str(repo / "secret" / "outside.jpg"))
     assert r.is_placeholder and r.reason == ims.OUTSIDE_IMAGE_DIR
@@ -157,7 +174,7 @@ def test_repo_placeholder_is_a_valid_png():
 def test_each_file_is_verified_once_until_it_changes(service, repo, monkeypatch):
     calls = []
     real = ImageService._verify
-    monkeypatch.setattr(ImageService, "_verify", staticmethod(lambda p: calls.append(p) or real(p)))
+    monkeypatch.setattr(ImageService, "_verify", lambda self, p: calls.append(p) or real(self, p))
     path = f"{REL}/ford_f150_2015.jpg"
     for _ in range(5):
         assert not service.resolve(path).is_placeholder

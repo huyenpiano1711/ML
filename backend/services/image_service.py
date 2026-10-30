@@ -18,7 +18,7 @@ Một ảnh chỉ được coi là dùng được khi:
   - nằm trong thư mục ảnh của dự án (chặn đường dẫn kiểu "../../..."),
   - có đuôi .jpg / .jpeg / .png (định dạng QPixmap đọc được mà không cần plugin),
   - tồn tại, không rỗng, không quá MAX_FILE_MB,
-  - Pillow mở và kiểm tra được (không bị hỏng).
+  - Pillow đọc được phần đầu file và file có đủ dấu kết thúc của định dạng (không tải dở / cắt ngang).
 Kết quả kiểm tra được lưu đệm theo (đường dẫn, thời điểm sửa, kích thước), nên mỗi ảnh
 chỉ đọc từ đĩa một lần trong suốt phiên chạy ứng dụng.
 
@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import os
 import re
+import stat
 import threading
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -134,11 +135,12 @@ class ImageService:
 
     def __init__(self, project_dir: Path | str = PROJECT_DIR, image_dir: Path | str | None = None,
                  placeholder_path: Path | str | None = None, verify_images: bool = True,
-                 max_file_mb: float = MAX_FILE_MB):
+                 max_file_mb: float = MAX_FILE_MB, full_verify: bool = False):
         self.project_dir = Path(project_dir).resolve()
         self.image_dir = Path(image_dir).resolve() if image_dir else (self.project_dir / "assets" / "car_images_unique")
         self.placeholder = Path(placeholder_path) if placeholder_path else (self.project_dir / "assets" / "placeholder_car.png")
         self.verify_images = verify_images
+        self.full_verify = full_verify
         self.max_bytes = int(max_file_mb * 1024 * 1024)
         self._lock = threading.Lock()
         self._checked: dict[tuple[str, int, int], str] = {}   # (path, mtime_ns, size) -> reason
@@ -162,7 +164,7 @@ class ImageService:
             st = path.stat()
         except OSError:
             return NOT_FOUND
-        if not path.is_file():
+        if not stat.S_ISREG(st.st_mode):
             return NOT_FOUND
         if st.st_size == 0:
             return EMPTY_FILE
@@ -178,13 +180,28 @@ class ImageService:
             self._checked[key] = reason
         return reason
 
-    @staticmethod
-    def _verify(path: Path) -> str:
+    def _verify(self, path: Path) -> str:
+        """Kiểm tra nhanh: Pillow đọc được phần đầu file (định dạng, kích thước) và file kết thúc
+        đúng dấu kết thúc của định dạng (JPEG: FF D9, PNG: chunk IEND) - bắt được file tải dở hoặc
+        bị cắt ngang mà không phải giải mã cả ảnh. full_verify=True: Pillow kiểm tra toàn bộ file."""
         try:
-            with Image.open(path) as im:
-                if im.format not in ("JPEG", "PNG"):
-                    return UNSUPPORTED_FORMAT
-                im.verify()                # đọc toàn bộ cấu trúc file, phát hiện file cắt ngang/hỏng
+            with open(path, "rb") as f:                # mở file đúng một lần
+                with Image.open(f) as im:
+                    fmt = im.format
+                    if fmt not in ("JPEG", "PNG"):
+                        return UNSUPPORTED_FORMAT
+                    w, h = im.size
+                    if w <= 0 or h <= 0:
+                        return CORRUPT_IMAGE
+                    if self.full_verify:
+                        im.verify()
+                end = f.seek(0, os.SEEK_END)
+                f.seek(max(0, end - 32))
+                tail = f.read()
+            if fmt == "JPEG" and b"\xff\xd9" not in tail:
+                return CORRUPT_IMAGE
+            if fmt == "PNG" and b"IEND" not in tail:
+                return CORRUPT_IMAGE
             return OK
         except Exception:                  # noqa: BLE001 - mọi lỗi đọc ảnh đều coi là ảnh hỏng
             return CORRUPT_IMAGE

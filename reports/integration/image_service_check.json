@@ -6,7 +6,7 @@
     "ket_qua": {
       "ok": 6842
     },
-    "thoi_gian_s": 50.8
+    "thoi_gian_s": 61.6
   },
   "do_phu": [
     {
@@ -37,16 +37,16 @@
   ],
   "thoi_gian": {
     "lan_dau_ms": {
-      "trung_binh": 5.423,
-      "p95": 10.018,
-      "max": 59.746
+      "trung_binh": 6.635,
+      "p95": 13.21,
+      "max": 70.417
     },
     "lan_sau_ms": {
-      "trung_binh": 2.461,
-      "p95": 5.066,
-      "max": 46.268
+      "trung_binh": 3.608,
+      "p95": 6.251,
+      "max": 35.329
     },
-    "mot_trang_ket_qua_11_xe_ms": 17.283,
+    "mot_trang_ket_qua_11_xe_ms": 29.018,
     "so_the_do": 2000
   }
 }

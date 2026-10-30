@@ -8,7 +8,8 @@
      không có image_path (C01 build khi máy chưa có ảnh) để kiểm tra bước tìm lại.
   3. Thời gian xử lý một thẻ xe: lần đầu (phải đọc ảnh) và các lần sau (dùng bộ đệm).
 
-Chạy: python scripts/15_image_service_check.py
+Chạy: python scripts/15_image_service_check.py            (cả 3 phần)
+      python scripts/15_image_service_check.py scan coverage   (chỉ chạy một số phần; kết quả cũ được giữ)
 Kết quả: reports/integration/image_service_check.json, image_service_check.csv
 """
 import json
@@ -46,9 +47,9 @@ def coverage(svc: ImageService, cat: pd.DataFrame, label: str) -> dict:
     n = len(rows)
     src = rows["source"].value_counts()
     return {"truong_hop": label, "so_xe": n,
-            **{f"pct_{k}": round(src.get(k, 0) / n * 100, 2) for k in
+            **{f"pct_{k}": round(float(src.get(k, 0)) / n * 100, 2) for k in
                ["catalog", "lookup_exact", "lookup_nearest_year", "placeholder"]},
-            "pct_co_anh_minh_hoa": round((rows["source"] != "placeholder").mean() * 100, 2),
+            "pct_co_anh_minh_hoa": round(float((rows["source"] != "placeholder").mean()) * 100, 2),
             "ly_do_anh_catalog_khong_dung": {k: int(v) for k, v in rows["reason"].value_counts().items()}}
 
 
@@ -73,37 +74,40 @@ def latency(svc: ImageService, cat: pd.DataFrame) -> dict:
     return out
 
 
-def main():
+def main(parts):
     OUT.mkdir(parents=True, exist_ok=True)
     svc = ImageService()
-    report = {"thu_muc_anh": str(svc.image_dir.relative_to(svc.project_dir)),
-              "anh_thay_the": str(svc.placeholder.relative_to(svc.project_dir))}
+    path = OUT / "image_service_check.json"
+    report = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    report.update({"thu_muc_anh": svc.image_dir.relative_to(svc.project_dir).as_posix(),
+                   "anh_thay_the": svc.placeholder.relative_to(svc.project_dir).as_posix()})
 
-    # 1. Toàn bộ ảnh
-    files = sorted(p for p in svc.image_dir.iterdir() if p.is_file()) if svc.image_dir.is_dir() else []
-    t0 = time.perf_counter()
-    reasons = pd.Series([svc.check_file(p.resolve()) for p in files], dtype="object")
-    report["kiem_tra_anh"] = {"so_file": len(files), "ket_qua": {k: int(v) for k, v in reasons.value_counts().items()},
-                              "thoi_gian_s": round(time.perf_counter() - t0, 1)}
-    print("1.", report["kiem_tra_anh"])
+    if "scan" in parts:                     # 1. Toàn bộ ảnh
+        files = sorted(p for p in svc.image_dir.iterdir() if p.is_file()) if svc.image_dir.is_dir() else []
+        t0 = time.perf_counter()
+        reasons = pd.Series([svc.check_file(p) for p in files], dtype="object")
+        report["kiem_tra_anh"] = {"so_file": len(files), "ket_qua": {k: int(v) for k, v in reasons.value_counts().items()},
+                                  "thoi_gian_s": round(time.perf_counter() - t0, 1)}
+        print("1.", report["kiem_tra_anh"], flush=True)
 
-    # 2. Độ phủ
-    cat = pd.read_pickle(CATALOG_PKL)
-    rows = [coverage(svc, cat, "catalog có image_path"),
-            coverage(svc, cat.assign(image_path=None), "catalog không có image_path")]
-    report["do_phu"] = rows
-    for r in rows:
-        print("2.", r)
-    pd.DataFrame([{k: v for k, v in r.items() if not isinstance(v, dict)} for r in rows]) \
-        .to_csv(OUT / "image_service_check.csv", index=False, encoding="utf-8-sig")
+    if "coverage" in parts or "latency" in parts:
+        cat = pd.read_pickle(CATALOG_PKL)
+    if "coverage" in parts:                 # 2. Độ phủ
+        rows = [coverage(svc, cat, "catalog có image_path"),
+                coverage(svc, cat.assign(image_path=None), "catalog không có image_path")]
+        report["do_phu"] = rows
+        for r in rows:
+            print("2.", r, flush=True)
+        pd.DataFrame([{k: v for k, v in r.items() if not isinstance(v, dict)} for r in rows]) \
+            .to_csv(OUT / "image_service_check.csv", index=False, encoding="utf-8-sig")
 
-    # 3. Thời gian
-    report["thoi_gian"] = latency(svc, cat)
-    print("3.", report["thoi_gian"])
+    if "latency" in parts:                  # 3. Thời gian
+        report["thoi_gian"] = latency(svc, cat)
+        print("3.", report["thoi_gian"], flush=True)
 
-    (OUT / "image_service_check.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n==> Đã lưu {OUT / 'image_service_check.json'}")
+    path.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=float), encoding="utf-8")
+    print(f"\n==> Đã lưu {path}")
 
 
 if __name__ == "__main__":
-    main()
+    main(set(sys.argv[1:]) or {"scan", "coverage", "latency"})
