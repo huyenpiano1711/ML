@@ -1,0 +1,1422 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1240</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1080</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>AutoWise AI - Sign in</string>
+  </property>
+  <property name="styleSheet">
+   <string>
+* { font-family: "Inter", "Segoe UI", "Arial"; }
+QMainWindow, QWidget#centralwidget { background-color: #0B0B0D; }
+QWidget#pageLogin, QWidget#pageRegister, QWidget#pageWelcome, QWidget#pageVehicle, QWidget#pageResults,
+QWidget#scrollAreaVehicleContents, QWidget#scrollAreaResultsContents, QWidget#widgetAdvancedFields,
+QWidget#widgetTopMatches, QWidget#widgetSimilarPrice { background-color: #0B0B0D; }
+QWidget { color: #EDEDEF; font-size: 13px; }
+QToolTip { background-color: #1C1C21; color: #EDEDEF; border: 1px solid #2A2A30; padding: 6px; }
+
+/* ---------- Header ---------- */
+QFrame#frameHeader { background-color: #0B0B0D; border: none; border-bottom: 1px solid #1F1F23; }
+QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #FFFFFF; letter-spacing: 5px; background: transparent; }
+QLabel#labelTagline, QLabel#labelLoginTagline { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
+QLabel[step="true"] { color: #55555E; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+                      padding: 8px 2px; border-bottom: 2px solid transparent; }
+QLabel[step="true"][done="true"] { color: #A1A1AA; }
+QLabel[step="true"][active="true"] { color: #FFFFFF; border-bottom: 2px solid #D7263D; }
+QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #2E2E35; }
+
+/* ---------- Typography ---------- */
+QLabel[role="eyebrow"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
+QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #FFFFFF; background: transparent; }
+QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
+QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #FFFFFF; background: transparent; }
+QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #FFFFFF; background: transparent; }
+QLabel[role="lead"] { color: #B4B4BC; font-size: 15px; background: transparent; }
+QLabel[role="muted"] { color: #8B8B94; background: transparent; }
+QLabel[role="field"] { color: #9A9AA3; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
+QLabel[role="chip"] { background-color: rgba(255,255,255,0.04); border: 1px solid #2A2A30; border-radius: 13px;
+                      padding: 5px 12px; color: #C4C4CC; font-size: 11px; font-weight: 500; }
+QLabel[role="stepNumber"] { font-family: "Playfair Display", "Georgia", serif; font-size: 16px; color: #D7263D; background: transparent; }
+QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #FFFFFF; background: transparent; }
+QLabel[role="statLabel"] { color: #8B8B94; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
+QLabel[role="error"] { color: #F87171; background-color: rgba(215,38,61,0.10); border: 1px solid rgba(248,113,113,0.30);
+                       border-radius: 8px; padding: 9px 12px; }
+QLabel[role="success"] { color: #4ADE80; background-color: rgba(34,197,94,0.10); border: 1px solid rgba(74,222,128,0.30);
+                         border-radius: 8px; padding: 9px 12px; }
+
+/* ---------- Cards ---------- */
+QFrame[card="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
+QFrame#frameHero, QFrame#frameLoginVisual { border: 1px solid #1F1F23; border-radius: 20px;
+                   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #141418, stop:1 #0B0B0D); }
+QFrame#framePriceCard { border: 1px solid #4A1D25;
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #22101A, stop:0.6 #151216, stop:1 #141417); }
+QFrame#frameSummary { background-color: #0F0F12; border: 1px solid #1F1F23; border-radius: 10px; }
+QFrame[divider="true"] { background-color: #232328; border: none; max-height: 1px; min-height: 1px; }
+
+/* ---------- Inputs ---------- */
+QLineEdit, QComboBox, QSpinBox {
+    background-color: #0E0E11; border: 1px solid #2A2A30; border-radius: 9px;
+    padding: 10px 12px; color: #F4F4F5; min-height: 20px;
+    selection-background-color: #D7263D; selection-color: #FFFFFF;
+}
+QLineEdit:hover, QComboBox:hover, QSpinBox:hover { border-color: #3A3A42; }
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #D7263D; }
+QLineEdit[lineEditState="error"] { border-color: #F87171; }
+QComboBox:disabled { color: #55555E; border-color: #1F1F23; }
+QComboBox::drop-down { border: none; width: 30px; }
+QComboBox::down-arrow { image: url(../images/ic_chevron_down.png); width: 12px; height: 8px; margin-right: 12px; }
+QComboBox QAbstractItemView { background-color: #141417; border: 1px solid #2A2A30; color: #EDEDEF;
+    selection-background-color: #D7263D; selection-color: #FFFFFF; outline: 0; padding: 4px; }
+QSpinBox::up-button, QSpinBox::down-button { width: 0px; border: none; }
+QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #FFFFFF; }
+QSlider::groove:horizontal { height: 4px; background: #2A2A30; border-radius: 2px; }
+QSlider::sub-page:horizontal { background: #D7263D; border-radius: 2px; }
+QSlider::handle:horizontal { background: #FFFFFF; width: 16px; height: 16px; margin: -6px 0; border-radius: 8px; }
+QCheckBox { color: #B4B4BC; spacing: 9px; background: transparent; }
+QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #3A3A42; border-radius: 4px; background-color: #0E0E11; }
+QCheckBox::indicator:hover { border-color: #D7263D; }
+QCheckBox::indicator:checked { background-color: #D7263D; border-color: #D7263D; image: url(../images/ic_check.png); }
+
+/* ---------- Buttons ---------- */
+QPushButton { background-color: #D7263D; color: #FFFFFF; border: none; border-radius: 9px;
+              padding: 13px 26px; font-weight: 700; font-size: 12px; letter-spacing: 2px; }
+QPushButton:hover { background-color: #E63950; }
+QPushButton:pressed { background-color: #B51F33; }
+QPushButton:disabled { background-color: #3A1A20; color: #7A7A82; }
+QPushButton[variant="ghost"] { background-color: transparent; border: 1px solid #2F2F36; color: #E4E4E7; }
+QPushButton[variant="ghost"]:hover { border-color: #D7263D; color: #FFFFFF; }
+QPushButton[variant="link"] { background-color: transparent; color: #A1A1AA; padding: 4px 0px;
+                              text-align: left; letter-spacing: 1px; font-size: 12px; }
+QPushButton[variant="link"]:hover { color: #FFFFFF; }
+QPushButton[variant="inlineLink"] { background-color: transparent; color: #E0475B; padding: 2px 0px;
+                                    letter-spacing: 0px; font-size: 13px; font-weight: 600; }
+QPushButton[variant="inlineLink"]:hover { color: #FF6B7D; }
+QPushButton[variant="icon"] { background-color: transparent; border: 1px solid #2A2A30; border-radius: 9px; padding: 8px; }
+QPushButton[variant="icon"]:hover { border-color: #D7263D; }
+
+/* ---------- Scroll ---------- */
+QScrollArea { background: transparent; border: none; }
+QScrollArea &gt; QWidget &gt; QWidget { background: transparent; }
+QScrollBar:vertical { background: transparent; width: 10px; margin: 6px 2px; }
+QScrollBar::handle:vertical { background: #2A2A30; border-radius: 3px; min-height: 40px; }
+QScrollBar::handle:vertical:hover { background: #3F3F46; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
+
+/* ---------- Results ---------- */
+QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 58px; color: #FFFFFF; background: transparent; }
+QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 32px; color: #FFFFFF; background: transparent; }
+QLabel#labelBudgetVerdict { border-radius: 12px; padding: 5px 12px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+QLabel#labelBudgetVerdict[state="ok"] { background-color: rgba(34,197,94,0.12); color: #4ADE80; border: 1px solid rgba(74,222,128,0.35); }
+QLabel#labelBudgetVerdict[state="over"] { background-color: rgba(215,38,61,0.14); color: #F87171; border: 1px solid rgba(248,113,113,0.35); }
+
+/* ---------- Car cards (Top 5 + same price range) ---------- */
+QFrame[carCard="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
+QFrame[carCard="true"]:hover { border-color: #D7263D; }
+QFrame#frameTopCar1 { border-color: #4A1D25;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1A1114, stop:1 #141417); }
+QLabel[role="carImage"] { border-radius: 10px; color: #3A3A42; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1D1D22, stop:1 #111114); }
+QLabel[role="carRank"] { background-color: #D7263D; color: #FFFFFF; border-radius: 10px; padding: 3px 9px;
+                         font-size: 11px; font-weight: 700; }
+QLabel[role="carMatch"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
+QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #FFFFFF; background: transparent; }
+QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #FFFFFF; background: transparent; }
+QLabel[role="carDetail"] { color: #8B8B94; font-size: 12px; background: transparent; }
+QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #FFFFFF; background: transparent; }
+QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
+
+QMessageBox { background-color: #141417; }
+QMessageBox QLabel { color: #EDEDEF; }
+QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayoutLogin">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="frameLoginVisual">
+      <property name="minimumSize">
+       <size>
+        <width>520</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayoutLoginVisual">
+       <property name="spacing">
+        <number>14</number>
+       </property>
+       <property name="leftMargin">
+        <number>48</number>
+       </property>
+       <property name="topMargin">
+        <number>40</number>
+       </property>
+       <property name="rightMargin">
+        <number>48</number>
+       </property>
+       <property name="bottomMargin">
+        <number>44</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayoutLoginBrand">
+         <property name="spacing">
+          <number>14</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelLoginBrandMark">
+           <property name="text">
+            <string />
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>8</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>8</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="pixmap">
+            <pixmap>../images/ic_logo.png</pixmap>
+           </property>
+           <property name="imageName" stdset="0">
+            <string>ic_logo.png</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayoutLoginBrand">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="labelLoginBrand">
+             <property name="text">
+              <string>AUTOWISE</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelLoginTagline">
+             <property name="text">
+              <string>AI CAR ADVISOR</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="spacerLoginBrand">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="spacerLoginVisualTop">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelLoginVisualEyebrow">
+         <property name="text">
+          <string>USED-CAR INTELLIGENCE</string>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="role" stdset="0">
+          <string>eyebrow</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelLoginVisualTitle">
+         <property name="text">
+          <string>Drive smarter.
+Pay what it's worth.</string>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="role" stdset="0">
+          <string>display</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelLoginVisualSubtitle">
+         <property name="text">
+          <string>Machine-learning price estimates and tailored recommendations,
+built on real used-car listings.</string>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="role" stdset="0">
+          <string>lead</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacerLoginStats">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>20</width>
+           <height>18</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayoutLoginStats">
+         <property name="spacing">
+          <number>36</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayoutStatListings">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="labelStatListingsValue">
+             <property name="text">
+              <string>191K</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statValue</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelStatListings">
+             <property name="text">
+              <string>LISTINGS ANALYZED</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statLabel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayoutStatBrands">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="labelStatBrandsValue">
+             <property name="text">
+              <string>53</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statValue</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelStatBrands">
+             <property name="text">
+              <string>BRANDS COVERED</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statLabel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayoutStatAccuracy">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="labelStatAccuracyValue">
+             <property name="text">
+              <string>R² 0.91</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statValue</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelStatAccuracy">
+             <property name="text">
+              <string>PRICE MODEL FIT</string>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="role" stdset="0">
+              <string>statLabel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="spacerLoginStatsRight">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayoutLoginForm">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>64</number>
+      </property>
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <property name="rightMargin">
+       <number>44</number>
+      </property>
+      <property name="bottomMargin">
+       <number>8</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutLoginTop">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <spacer name="spacerLoginTop">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonExit">
+          <property name="text">
+           <string />
+          </property>
+          <property name="variant" stdset="0">
+           <string>icon</string>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="toolTip">
+           <string>Exit AutoWise</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../images/ic_close.png</normaloff>../images/ic_close.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="iconName" stdset="0">
+           <string>close</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="spacerLoginFormTop">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="stackedWidgetAuth">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>460</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <widget class="QWidget" name="pageLogin">
+         <layout class="QVBoxLayout" name="verticalLayoutPageLogin">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="labelLoginEyebrow">
+            <property name="text">
+             <string>WELCOME BACK</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>eyebrow</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelLoginTitle">
+            <property name="text">
+             <string>Sign in</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>title</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelLoginSubtitle">
+            <property name="text">
+             <string>Sign in to continue to your AutoWise dashboard.</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>muted</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerLoginHeader">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>16</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelUserName">
+            <property name="text">
+             <string>USERNAME</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>field</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditUserName">
+            <property name="placeholderText">
+             <string>Enter your username</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerLoginField">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>6</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelPassword">
+            <property name="text">
+             <string>PASSWORD</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>field</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditPassword">
+            <property name="placeholderText">
+             <string>Enter your password</string>
+            </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutLoginOptions">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>6</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBoxSave">
+              <property name="text">
+               <string>Remember me</string>
+              </property>
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerLoginOptions">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxShowPassword">
+              <property name="text">
+               <string>Show password</string>
+              </property>
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelLoginMessage">
+            <property name="text">
+             <string />
+            </property>
+            <property name="role" stdset="0">
+             <string>error</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonLogin">
+            <property name="text">
+             <string>  SIGN IN</string>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../images/ic_login.png</normaloff>../images/ic_login.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="iconName" stdset="0">
+             <string>login</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerLoginFooter">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="frameLoginDivider">
+            <property name="divider" stdset="0">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutSwitchRegister">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>8</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <spacer name="spacerSwitchRegisterLeft">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelNoAccount">
+              <property name="text">
+               <string>New to AutoWise?</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>muted</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonShowRegister">
+              <property name="text">
+               <string>Create an account</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>inlineLink</string>
+              </property>
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerSwitchRegisterRight">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="spacerPageLoginBottom">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="pageRegister">
+         <layout class="QVBoxLayout" name="verticalLayoutPageRegister">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="labelRegisterEyebrow">
+            <property name="text">
+             <string>GET STARTED</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>eyebrow</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelRegisterTitle">
+            <property name="text">
+             <string>Create account</string>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="role" stdset="0">
+             <string>title</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelRegisterSubtitle">
+            <property name="text">
+             <string>It takes less than a minute. Your account stays on this computer.</string>
+            </property>
+            <property name="role" stdset="0">
+             <string>muted</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerRegisterHeader">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayoutRegister">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>14</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>6</number>
+            </property>
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="labelFullName">
+              <property name="text">
+               <string>FULL NAME</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="QLineEdit" name="lineEditFullName">
+              <property name="placeholderText">
+               <string>Jane Nguyen</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="1">
+             <widget class="QLabel" name="labelRegisterUserName">
+              <property name="text">
+               <string>USERNAME</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="1">
+             <widget class="QLineEdit" name="lineEditRegisterUserName">
+              <property name="placeholderText">
+               <string>janenguyen</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1" colspan="1">
+             <widget class="QLabel" name="labelEmail">
+              <property name="text">
+               <string>EMAIL</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="1">
+             <widget class="QLineEdit" name="lineEditEmail">
+              <property name="placeholderText">
+               <string>jane@email.com</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="1">
+             <widget class="QLabel" name="labelRegisterPassword">
+              <property name="text">
+               <string>PASSWORD</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="1">
+             <widget class="QLineEdit" name="lineEditRegisterPassword">
+              <property name="placeholderText">
+               <string>At least 6 characters</string>
+              </property>
+              <property name="echoMode">
+               <enum>QLineEdit::Password</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="1">
+             <widget class="QLabel" name="labelConfirmPassword">
+              <property name="text">
+               <string>CONFIRM PASSWORD</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" colspan="1">
+             <widget class="QLineEdit" name="lineEditConfirmPassword">
+              <property name="placeholderText">
+               <string>Repeat password</string>
+              </property>
+              <property name="echoMode">
+               <enum>QLineEdit::Password</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxAgree">
+            <property name="text">
+             <string>I understand my account is stored locally on this computer.</string>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelRegisterMessage">
+            <property name="text">
+             <string />
+            </property>
+            <property name="role" stdset="0">
+             <string>error</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonRegister">
+            <property name="text">
+             <string>CREATE ACCOUNT</string>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="spacerRegisterFooter">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>6</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="frameRegisterDivider">
+            <property name="divider" stdset="0">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutSwitchLogin">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>8</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <spacer name="spacerSwitchLoginLeft">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelHaveAccount">
+              <property name="text">
+               <string>Already have an account?</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="role" stdset="0">
+               <string>muted</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonShowLogin">
+              <property name="text">
+               <string>Sign in</string>
+              </property>
+              <property name="variant" stdset="0">
+               <string>inlineLink</string>
+              </property>
+              <property name="cursor">
+               <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="spacerSwitchLoginRight">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="spacerPageRegisterBottom">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="spacerLoginFormBottom">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelLoginFooter">
+        <property name="text">
+         <string>© 2026 AutoWise AI · Machine Learning course project</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="role" stdset="0">
+         <string>muted</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources />
+ <connections />
+</ui>
