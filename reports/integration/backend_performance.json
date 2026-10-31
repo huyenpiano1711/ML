@@ -9,10 +9,10 @@
   "top5_va_cung_gia_khong_trung": true,
   "moi_anh_deu_mo_duoc": true,
   "ty_le_the_xe_dung_anh_thay_the_pct": 3.03,
-  "nap_mo_hinh_luc_mo_ung_dung_ms": 1577.2,
+  "nap_mo_hinh_luc_mo_ung_dung_ms": 3155.8,
   "so_lan_nap_mo_hinh": 1,
   "so_lan_dung_lai_mo_hinh": 300,
   "so_lan_nap_catalog": 1,
-  "thoi_gian_tong_trung_binh_ms": 140.47,
-  "thoi_gian_tong_p95_ms": 231.13
+  "thoi_gian_tong_trung_binh_ms": 122.17,
+  "thoi_gian_tong_p95_ms": 156.61
 }
