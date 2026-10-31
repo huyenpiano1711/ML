@@ -1,0 +1,1578 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+  <class>AutoWiseWindow</class>
+  <widget class="QMainWindow" name="AutoWiseWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1150</width>
+        <height>820</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>AutoWise AI</string>
+    </property>
+    <property name="styleSheet">
+      <string>
+QMainWindow, QWidget {
+    background: #F7F8FA;
+    color: #111827;
+    font-family: "Segoe UI";
+    font-size: 13px;
+}
+QFrame#header {
+    background: #111827;
+}
+QLabel#logo {
+    background: transparent;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+QLabel#stepIndicator {
+    background: transparent;
+    color: #FCA5A5;
+    font-weight: bold;
+}
+QLabel[heading="true"] {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111827;
+}
+QLabel[section="true"] {
+    font-size: 17px;
+    font-weight: bold;
+}
+QLabel[muted="true"] {
+    color: #6B7280;
+}
+QFrame[card="true"] {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+}
+QLineEdit, QComboBox, QSpinBox {
+    border: 1px solid #CBD5E1;
+    border-radius: 7px;
+    background: white;
+    min-height: 28px;
+    padding: 7px;
+}
+QPushButton {
+    background: #C91E32;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background: #A91A2B;
+}
+QPushButton[secondary="true"] {
+    background: #E5E7EB;
+    color: #111827;
+}
+QGroupBox {
+    font-weight: bold;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding-top: 12px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 5px;
+}
+QScrollArea {
+    border: none;
+}
+</string>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <layout class="QVBoxLayout" name="mainLayout">
+        <property name="leftMargin">
+          <number>0</number>
+        </property>
+        <property name="topMargin">
+          <number>0</number>
+        </property>
+        <property name="rightMargin">
+          <number>0</number>
+        </property>
+        <property name="bottomMargin">
+          <number>0</number>
+        </property>
+        <property name="spacing">
+          <number>0</number>
+        </property>
+        <item>
+          <widget class="QFrame" name="header">
+            <layout class="QHBoxLayout" name="headerLayout">
+              <property name="leftMargin">
+                <number>24</number>
+              </property>
+              <property name="topMargin">
+                <number>24</number>
+              </property>
+              <property name="rightMargin">
+                <number>24</number>
+              </property>
+              <property name="bottomMargin">
+                <number>24</number>
+              </property>
+              <property name="spacing">
+                <number>12</number>
+              </property>
+              <item>
+                <widget class="QLabel" name="logo">
+                  <property name="text">
+                    <string>AUTOWISE AI</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QLabel" name="stepIndicator">
+                  <property name="text">
+                    <string>BƯỚC 1 / 3</string>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </widget>
+        </item>
+        <item>
+          <widget class="QStackedWidget" name="stackedWidget">
+            <property name="currentIndex">
+              <number>0</number>
+            </property>
+            <widget class="QWidget" name="pageUser">
+              <layout class="QVBoxLayout" name="userPageLayout">
+                <property name="leftMargin">
+                  <number>65</number>
+                </property>
+                <property name="topMargin">
+                  <number>65</number>
+                </property>
+                <property name="rightMargin">
+                  <number>65</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>65</number>
+                </property>
+                <property name="spacing">
+                  <number>22</number>
+                </property>
+                <item>
+                  <widget class="QLabel" name="welcomeTitle">
+                    <property name="text">
+                      <string>Chào mừng đến với AutoWise AI</string>
+                    </property>
+                    <property name="heading" stdset="0">
+                      <bool>true</bool>
+                    </property>
+                  </widget>
+                </item>
+                <item>
+                  <widget class="QLabel" name="welcomeSubtitle">
+                    <property name="text">
+                      <string>Ứng dụng học máy hỗ trợ dự đoán giá và lựa chọn xe ô tô phù hợp.</string>
+                    </property>
+                    <property name="muted" stdset="0">
+                      <bool>true</bool>
+                    </property>
+                  </widget>
+                </item>
+                <item>
+                  <widget class="QFrame" name="userCard">
+                    <property name="card" stdset="0">
+                      <bool>true</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="userCardLayout">
+                      <property name="leftMargin">
+                        <number>24</number>
+                      </property>
+                      <property name="topMargin">
+                        <number>24</number>
+                      </property>
+                      <property name="rightMargin">
+                        <number>24</number>
+                      </property>
+                      <property name="bottomMargin">
+                        <number>24</number>
+                      </property>
+                      <property name="spacing">
+                        <number>12</number>
+                      </property>
+                      <item>
+                        <widget class="QLabel" name="userCardTitle">
+                          <property name="text">
+                            <string>Thông tin của bạn</string>
+                          </property>
+                          <property name="section" stdset="0">
+                            <bool>true</bool>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="fullNameLabel">
+                          <property name="text">
+                            <string>Họ và tên *</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLineEdit" name="txtFullName">
+                          <property name="placeholderText">
+                            <string>Nhập họ và tên</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="displayNameLabel">
+                          <property name="text">
+                            <string>Tên hiển thị</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLineEdit" name="txtDisplayName">
+                          <property name="placeholderText">
+                            <string>Bạn muốn AutoWise gọi mình là gì?</string>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QLabel" name="privacyNote">
+                          <property name="text">
+                            <string>Thông tin này chỉ để cá nhân hóa giao diện.</string>
+                          </property>
+                          <property name="muted" stdset="0">
+                            <bool>true</bool>
+                          </property>
+                        </widget>
+                      </item>
+                      <item>
+                        <widget class="QPushButton" name="btnStart">
+                          <property name="text">
+                            <string>BẮT ĐẦU TƯ VẤN</string>
+                          </property>
+                        </widget>
+                      </item>
+                    </layout>
+                  </widget>
+                </item>
+              </layout>
+            </widget>
+            <widget class="QWidget" name="pageVehicle">
+              <layout class="QVBoxLayout" name="vehiclePageLayout">
+                <property name="leftMargin">
+                  <number>18</number>
+                </property>
+                <property name="topMargin">
+                  <number>18</number>
+                </property>
+                <property name="rightMargin">
+                  <number>18</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>18</number>
+                </property>
+                <property name="spacing">
+                  <number>12</number>
+                </property>
+                <item>
+                  <widget class="QScrollArea" name="vehicleScroll">
+                    <property name="widgetResizable">
+                      <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="vehicleScrollContent">
+                      <layout class="QVBoxLayout" name="vehicleContentLayout">
+                        <property name="leftMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="topMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="rightMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="bottomMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="spacing">
+                          <number>12</number>
+                        </property>
+                        <item>
+                          <widget class="QLabel" name="vehicleTitle">
+                            <property name="text">
+                              <string>Thông tin chiếc xe mong muốn</string>
+                            </property>
+                            <property name="heading" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QLabel" name="vehicleSubtitle">
+                            <property name="text">
+                              <string>Điền thông tin xe và ngân sách để AutoWise phân tích.</string>
+                            </property>
+                            <property name="muted" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="basicCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="basicCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="basicCardTitle">
+                                  <property name="text">
+                                    <string>1. Thông tin cơ bản</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <layout class="QFormLayout" name="basicForm">
+                                  <item row="0" column="0">
+                                    <widget class="QLabel" name="label_cboManufacturer">
+                                      <property name="text">
+                                        <string>Hãng xe</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="0" column="1">
+                                    <widget class="QComboBox" name="cboManufacturer" />
+                                  </item>
+                                  <item row="1" column="0">
+                                    <widget class="QLabel" name="label_cboModel">
+                                      <property name="text">
+                                        <string>Dòng xe</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="1" column="1">
+                                    <widget class="QComboBox" name="cboModel" />
+                                  </item>
+                                  <item row="2" column="0">
+                                    <widget class="QLabel" name="label_spinYear">
+                                      <property name="text">
+                                        <string>Năm sản xuất</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="2" column="1">
+                                    <widget class="QSpinBox" name="spinYear">
+                                      <property name="minimum">
+                                        <number>1900</number>
+                                      </property>
+                                      <property name="maximum">
+                                        <number>2030</number>
+                                      </property>
+                                      <property name="value">
+                                        <number>2018</number>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="3" column="0">
+                                    <widget class="QLabel" name="label_cboType">
+                                      <property name="text">
+                                        <string>Kiểu dáng</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="3" column="1">
+                                    <widget class="QComboBox" name="cboType" />
+                                  </item>
+                                </layout>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="specsCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="specsCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="specsCardTitle">
+                                  <property name="text">
+                                    <string>2. Thông số kỹ thuật</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <layout class="QFormLayout" name="specsForm">
+                                  <item row="0" column="0">
+                                    <widget class="QLabel" name="label_spinOdometer">
+                                      <property name="text">
+                                        <string>Số miles đã đi</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="0" column="1">
+                                    <widget class="QSpinBox" name="spinOdometer">
+                                      <property name="maximum">
+                                        <number>1000000</number>
+                                      </property>
+                                      <property name="value">
+                                        <number>60000</number>
+                                      </property>
+                                      <property name="suffix">
+                                        <string> miles</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="1" column="0">
+                                    <widget class="QLabel" name="label_cboCondition">
+                                      <property name="text">
+                                        <string>Tình trạng xe</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="1" column="1">
+                                    <widget class="QComboBox" name="cboCondition" />
+                                  </item>
+                                  <item row="2" column="0">
+                                    <widget class="QLabel" name="label_cboFuel">
+                                      <property name="text">
+                                        <string>Nhiên liệu</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="2" column="1">
+                                    <widget class="QComboBox" name="cboFuel" />
+                                  </item>
+                                  <item row="3" column="0">
+                                    <widget class="QLabel" name="label_cboTransmission">
+                                      <property name="text">
+                                        <string>Hộp số</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="3" column="1">
+                                    <widget class="QComboBox" name="cboTransmission" />
+                                  </item>
+                                </layout>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="budgetCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="budgetCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="budgetCardTitle">
+                                  <property name="text">
+                                    <string>3. Ngân sách</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <layout class="QFormLayout" name="budgetForm">
+                                  <item row="0" column="0">
+                                    <widget class="QLabel" name="label_spinBudget">
+                                      <property name="text">
+                                        <string>Ngân sách tối đa (USD)</string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                  <item row="0" column="1">
+                                    <widget class="QSpinBox" name="spinBudget">
+                                      <property name="maximum">
+                                        <number>1000000</number>
+                                      </property>
+                                      <property name="value">
+                                        <number>20000</number>
+                                      </property>
+                                      <property name="prefix">
+                                        <string>$ </string>
+                                      </property>
+                                    </widget>
+                                  </item>
+                                </layout>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QGroupBox" name="advancedGroup">
+                            <property name="title">
+                              <string>Tùy chọn nâng cao (không bắt buộc)</string>
+                            </property>
+                            <property name="checkable">
+                              <bool>true</bool>
+                            </property>
+                            <property name="checked">
+                              <bool>false</bool>
+                            </property>
+                            <layout class="QFormLayout" name="advancedForm">
+                              <property name="leftMargin">
+                                <number>16</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>16</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>16</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>16</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item row="0" column="0">
+                                <widget class="QLabel" name="label_cboDrive">
+                                  <property name="text">
+                                    <string>Hệ dẫn động</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item row="0" column="1">
+                                <widget class="QComboBox" name="cboDrive" />
+                              </item>
+                              <item row="1" column="0">
+                                <widget class="QLabel" name="label_cboCylinders">
+                                  <property name="text">
+                                    <string>Số xi-lanh</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item row="1" column="1">
+                                <widget class="QComboBox" name="cboCylinders" />
+                              </item>
+                              <item row="2" column="0">
+                                <widget class="QLabel" name="label_cboPaintColor">
+                                  <property name="text">
+                                    <string>Màu xe</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item row="2" column="1">
+                                <widget class="QComboBox" name="cboPaintColor" />
+                              </item>
+                              <item row="3" column="0">
+                                <widget class="QLabel" name="label_cboTitleStatus">
+                                  <property name="text">
+                                    <string>Tình trạng giấy tờ</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item row="3" column="1">
+                                <widget class="QComboBox" name="cboTitleStatus" />
+                              </item>
+                              <item row="4" column="0">
+                                <widget class="QLabel" name="label_cboState">
+                                  <property name="text">
+                                    <string>Bang tại Mỹ</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item row="4" column="1">
+                                <widget class="QComboBox" name="cboState" />
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <layout class="QHBoxLayout" name="formButtons">
+                            <item>
+                              <widget class="QPushButton" name="btnBackUser">
+                                <property name="text">
+                                  <string>QUAY LẠI</string>
+                                </property>
+                                <property name="secondary" stdset="0">
+                                  <bool>true</bool>
+                                </property>
+                              </widget>
+                            </item>
+                            <item>
+                              <widget class="QPushButton" name="btnReset">
+                                <property name="text">
+                                  <string>NHẬP LẠI</string>
+                                </property>
+                                <property name="secondary" stdset="0">
+                                  <bool>true</bool>
+                                </property>
+                              </widget>
+                            </item>
+                            <item>
+                              <widget class="QPushButton" name="btnAnalyze">
+                                <property name="text">
+                                  <string>PHÂN TÍCH VÀ TÌM XE</string>
+                                </property>
+                              </widget>
+                            </item>
+                          </layout>
+                        </item>
+                      </layout>
+                    </widget>
+                  </widget>
+                </item>
+              </layout>
+            </widget>
+            <widget class="QWidget" name="pageResults">
+              <layout class="QVBoxLayout" name="resultsPageLayout">
+                <property name="leftMargin">
+                  <number>18</number>
+                </property>
+                <property name="topMargin">
+                  <number>18</number>
+                </property>
+                <property name="rightMargin">
+                  <number>18</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>18</number>
+                </property>
+                <property name="spacing">
+                  <number>12</number>
+                </property>
+                <item>
+                  <widget class="QScrollArea" name="resultsScroll">
+                    <property name="widgetResizable">
+                      <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="resultsScrollContent">
+                      <layout class="QVBoxLayout" name="resultsContentLayout">
+                        <property name="leftMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="topMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="rightMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="bottomMargin">
+                          <number>24</number>
+                        </property>
+                        <property name="spacing">
+                          <number>12</number>
+                        </property>
+                        <item>
+                          <widget class="QLabel" name="lblResultsTitle">
+                            <property name="text">
+                              <string>Kết quả phân tích AutoWise AI</string>
+                            </property>
+                            <property name="heading" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="predictionCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="predictionCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="predictionCardTitle">
+                                  <property name="text">
+                                    <string>1. Giá xe AI dự đoán</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QLabel" name="lblSelectedVehicle">
+                                  <property name="text">
+                                    <string>Tên và thông số xe sẽ hiển thị tại đây.</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QLabel" name="lblPredictedPrice">
+                                  <property name="text">
+                                    <string>CHƯA CÓ KẾT QUẢ ML</string>
+                                  </property>
+                                  <property name="styleSheet">
+                                    <string>font-size:28px;font-weight:bold;color:#C91E32;</string>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QLabel" name="lblPredictionNote">
+                                  <property name="text">
+                                    <string>Giá tham khảo dựa trên dữ liệu tin đăng xe cũ lịch sử tại Mỹ.</string>
+                                  </property>
+                                  <property name="muted" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <property name="wordWrap">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="recommendCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="recommendCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="recommendCardTitle">
+                                  <property name="text">
+                                    <string>2. Top 5 xe phù hợp</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QLabel" name="lblRecommendNote">
+                                  <property name="text">
+                                    <string>Các thẻ dưới đây là mẫu bố cục. Nội dung thật sẽ lấy từ mô hình gợi ý và CSV.</string>
+                                  </property>
+                                  <property name="muted" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <property name="wordWrap">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="recommended1Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="recommended1Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="recommended1Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="recommended1Info">
+                                        <item>
+                                          <widget class="QLabel" name="recommended1Name">
+                                            <property name="text">
+                                              <string>Xe đề xuất #1</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended1Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage · Tình trạng</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended1Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="recommended1DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="recommended2Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="recommended2Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="recommended2Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="recommended2Info">
+                                        <item>
+                                          <widget class="QLabel" name="recommended2Name">
+                                            <property name="text">
+                                              <string>Xe đề xuất #2</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended2Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage · Tình trạng</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended2Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="recommended2DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="recommended3Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="recommended3Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="recommended3Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="recommended3Info">
+                                        <item>
+                                          <widget class="QLabel" name="recommended3Name">
+                                            <property name="text">
+                                              <string>Xe đề xuất #3</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended3Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage · Tình trạng</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended3Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="recommended3DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="recommended4Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="recommended4Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="recommended4Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="recommended4Info">
+                                        <item>
+                                          <widget class="QLabel" name="recommended4Name">
+                                            <property name="text">
+                                              <string>Xe đề xuất #4</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended4Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage · Tình trạng</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended4Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="recommended4DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="recommended5Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="recommended5Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="recommended5Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="recommended5Info">
+                                        <item>
+                                          <widget class="QLabel" name="recommended5Name">
+                                            <property name="text">
+                                              <string>Xe đề xuất #5</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended5Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage · Tình trạng</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="recommended5Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="recommended5DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QFrame" name="alternativesCard">
+                            <property name="card" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                            <layout class="QVBoxLayout" name="alternativesCardLayout">
+                              <property name="leftMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="topMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="rightMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="bottomMargin">
+                                <number>24</number>
+                              </property>
+                              <property name="spacing">
+                                <number>12</number>
+                              </property>
+                              <item>
+                                <widget class="QLabel" name="alternativesCardTitle">
+                                  <property name="text">
+                                    <string>3. Những xe khác cùng mức giá</string>
+                                  </property>
+                                  <property name="section" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QLabel" name="lblAlternativeNote">
+                                  <property name="text">
+                                    <string>Những xe có giá niêm yết gần mức giá tham khảo.</string>
+                                  </property>
+                                  <property name="muted" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="alternative1Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="alternative1Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="alternative1Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="alternative1Info">
+                                        <item>
+                                          <widget class="QLabel" name="alternative1Name">
+                                            <property name="text">
+                                              <string>Lựa chọn thay thế #1</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative1Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative1Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="alternative1DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="alternative2Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="alternative2Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="alternative2Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="alternative2Info">
+                                        <item>
+                                          <widget class="QLabel" name="alternative2Name">
+                                            <property name="text">
+                                              <string>Lựa chọn thay thế #2</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative2Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative2Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="alternative2DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                              <item>
+                                <widget class="QFrame" name="alternative3Card">
+                                  <property name="card" stdset="0">
+                                    <bool>true</bool>
+                                  </property>
+                                  <layout class="QHBoxLayout" name="alternative3Layout">
+                                    <property name="leftMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="topMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="rightMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                      <number>12</number>
+                                    </property>
+                                    <property name="spacing">
+                                      <number>14</number>
+                                    </property>
+                                    <item>
+                                      <widget class="QLabel" name="alternative3Image">
+                                        <property name="text">
+                                          <string>ẢNH XE</string>
+                                        </property>
+                                        <property name="minimumWidth">
+                                          <number>125</number>
+                                        </property>
+                                        <property name="minimumHeight">
+                                          <number>95</number>
+                                        </property>
+                                        <property name="alignment">
+                                          <enum>Qt::AlignCenter</enum>
+                                        </property>
+                                        <property name="styleSheet">
+                                          <string>background:#F1F5F9; color:#64748B;border-radius:8px;</string>
+                                        </property>
+                                      </widget>
+                                    </item>
+                                    <item>
+                                      <layout class="QVBoxLayout" name="alternative3Info">
+                                        <item>
+                                          <widget class="QLabel" name="alternative3Name">
+                                            <property name="text">
+                                              <string>Lựa chọn thay thế #3</string>
+                                            </property>
+                                            <property name="section" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative3Specs">
+                                            <property name="text">
+                                              <string>Hãng · Dòng xe · Năm · Mileage</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QLabel" name="alternative3Price">
+                                            <property name="text">
+                                              <string>Giá sẽ lấy từ dữ liệu CSV</string>
+                                            </property>
+                                            <property name="muted" stdset="0">
+                                              <bool>true</bool>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                        <item>
+                                          <widget class="QPushButton" name="alternative3DetailsButton">
+                                            <property name="text">
+                                              <string>Xem thông số</string>
+                                            </property>
+                                          </widget>
+                                        </item>
+                                      </layout>
+                                    </item>
+                                  </layout>
+                                </widget>
+                              </item>
+                            </layout>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="QPushButton" name="btnBackVehicle">
+                            <property name="text">
+                              <string>CHỈNH SỬA THÔNG TIN</string>
+                            </property>
+                            <property name="secondary" stdset="0">
+                              <bool>true</bool>
+                            </property>
+                          </widget>
+                        </item>
+                      </layout>
+                    </widget>
+                  </widget>
+                </item>
+              </layout>
+            </widget>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+  </widget>
+  <resources />
+  <connections />
+</ui>
