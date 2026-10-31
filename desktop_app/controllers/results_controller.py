@@ -1,0 +1,220 @@
+"""
+results_controller.py - Screen 3 (pageResults): runs analyze() of app_service and shows its AnalysisResult.
+`ui` is the AutoWiseMainWindowEx that owns the widgets.
+
+The messages of app_service are in Vietnamese (owned by the Backend); this file only translates them,
+because the interface is in English. A message it does not know is shown unchanged.
+"""
+import logging
+import re
+import threading
+
+from backend.schemas.result_schema import MAX_ALTERNATIVES, TOP_K, AnalysisResult
+from desktop_app.controllers import PAGE_RESULTS
+from desktop_app.controllers.vehicle_controller import translateError
+from desktop_app.widgets.vehicle_card import VehicleCard, labelOf, money, setCardImage, vehicleTitle
+
+log = logging.getLogger("autowise.frontend")
+
+TOP_NOTE = "Ranked with KNN among cars priced within your budget."
+SIMILAR_NOTE = "Up to 6 listings priced close to the AutoWise estimate."
+TOP_EMPTY = "No car within your budget. Try a higher budget or fewer requirements."
+TOP_UNAVAILABLE = "Car recommendations are unavailable right now."
+SIMILAR_EMPTY = "No other listings near the estimated price."
+SIMILAR_UNAVAILABLE = "Listings in the same price range are unavailable right now."
+MSG_NOT_STARTED = "The analysis could not start. Please try again."
+
+# The part of Screen 3 a message is about
+PRICE, BUDGET, TOP, SIMILAR, CATALOG = "price", "budget", "top", "similar", "catalog"
+
+
+def usd(text):
+    """28.832 -> $28,832"""
+    return "$" + text.replace(".", ",")
+
+
+# Messages of app_service.py and recommend.py. tests/test_e03_results.py fails if they drift apart.
+MESSAGES = [
+    (r"Dữ liệu gửi từ giao diện không đúng định dạng \(cần một dict các ô nhập\)\.", None,
+     lambda m: "The form data was sent in the wrong format."),
+    (r"Không tìm thấy file mô hình dự đoán giá \((.+)\)\. Chưa thể dự đoán giá\.", PRICE,
+     lambda m: f"The price model file ({m[1]}) was not found, so no price can be estimated."),
+    (r"Mô hình dự đoán giá gặp lỗi, chưa thể dự đoán giá cho xe này\.", PRICE,
+     lambda m: "The price model failed, so no price can be estimated for this car."),
+    (r"Chưa có danh sách xe để gợi ý \(recommendation_catalog\.pkl\)\. "
+     r"Chạy: python -m src\.recommendation\.build_catalog", CATALOG,
+     lambda m: "The car list (recommendation_catalog.pkl) is missing. "
+               "Run: python -m src.recommendation.build_catalog"),
+    (r"Không nạp được danh sách xe để gợi ý\.", CATALOG,
+     lambda m: "The car list could not be loaded."),
+    (r"Chức năng gợi ý xe gặp lỗi, chưa thể tìm xe phù hợp\.", TOP,
+     lambda m: "The recommendation feature failed, so no matching cars could be found."),
+    (r"Chức năng tìm xe cùng mức giá gặp lỗi\.", SIMILAR,
+     lambda m: "Finding cars in the same price range failed."),
+    (r"Đã xảy ra lỗi không mong muốn khi phân tích\. Vui lòng thử lại\.", None,
+     lambda m: "An unexpected error occurred during the analysis. Please try again."),
+    (r"Chưa có giá dự đoán nên không tìm được xe cùng mức giá\.", SIMILAR,
+     lambda m: "There is no estimated price, so cars in the same price range cannot be found."),
+    (r"Giá dự đoán của xe bạn nhập \((\S+) USD\) cao hơn ngân sách tối đa \((\S+) USD\)\.", BUDGET,
+     lambda m: f"The estimated price ({usd(m[1])}) is above your maximum budget ({usd(m[2])})."),
+    (r"Không có xe nào trong dữ liệu có giá không vượt quá (\S+) USD và khớp các điều kiện bắt buộc\.", TOP,
+     lambda m: f"No car priced at or under {usd(m[1])} matches the required conditions."),
+    (r"Không có xe nào trong dữ liệu có giá không vượt quá (\S+) USD\. Hãy tăng ngân sách\.", TOP,
+     lambda m: f"No car is priced at or under {usd(m[1])}. Try a higher budget."),
+    (r"Chỉ tìm được (\d+) xe phù hợp trong ngân sách (\S+) USD \(yêu cầu (\d+)\)\.", TOP,
+     lambda m: f"Only {m[1]} of the {m[3]} requested cars fit your {usd(m[2])} budget."),
+    (r"Không có xe nào có giá trong ±(\d+)% của (\S+) USD\.", SIMILAR,
+     lambda m: f"No car is priced within ±{m[1]}% of {usd(m[2])}."),
+    (r"Chỉ tìm được (\d+) xe có giá gần (\S+) USD\.", SIMILAR,
+     lambda m: f"Only {m[1]} cars are priced close to {usd(m[2])}."),
+    (r"Đã mở rộng khoảng giá lên ±(\d+)% để đủ xe\.", SIMILAR,
+     lambda m: f"The price range was widened to ±{m[1]}% to find enough cars."),
+]
+MESSAGES = [(re.compile(pattern), section, english) for pattern, section, english in MESSAGES]
+
+
+def describeMessage(message):
+    """(English text, part of Screen 3 or None) of one message of app_service."""
+    for pattern, section, english in MESSAGES:
+        if match := pattern.fullmatch(message):
+            return english(match), section
+    return translateError(message), None
+
+
+def translateMessage(message):
+    return describeMessage(message)[0]
+
+
+def priceGapPct(price, predicted_price):
+    """Same formula as Recommender.similar_price(): the Backend does not send this value on CarCard."""
+    return round((price - predicted_price) / predicted_price * 100, 1)
+
+
+def defaultService():
+    """Imported here because the Backend takes seconds to load (see warmUp)."""
+    from backend.app_service import get_app_service
+    return get_app_service()
+
+
+class ResultsController:
+    def __init__(self, ui, getService=defaultService, setImage=setCardImage):
+        self.ui = ui
+        self.getService = getService
+        self.warmThread = None
+        self.topCards = [VehicleCard(ui, "TopCar", n, setImage) for n in range(1, TOP_K + 1)]
+        self.similarCards = [VehicleCard(ui, "SimilarCar", n, setImage) for n in range(1, MAX_ALTERNATIVES + 1)]
+
+    # ------------------------------------------------------------------ Backend
+    def warmUp(self):
+        """Load the model and catalog in the background: the window stays responsive while they load."""
+        if self.warmThread is None:
+            self.warmThread = threading.Thread(target=self.loadBackend, name="autowise-warm-up", daemon=True)
+            self.warmThread.start()
+
+    def loadBackend(self):
+        """Only logs: analyze() reports the same problems when the user clicks ANALYZE."""
+        try:
+            for error in self.getService().warm_up():
+                log.warning(error)
+        except Exception:
+            log.exception("Could not warm up the Backend")
+
+    def analyze(self, vehicle):
+        """AnalysisResult for a validated VehicleInput. Never raises (an exception in a PyQt slot closes the app)."""
+        if self.warmThread is not None:
+            self.warmThread.join()                       # do not load the model a second time
+        try:
+            return self.getService().analyze(vehicle.to_dict())
+        except Exception:
+            log.exception("Could not start the analysis")
+            return AnalysisResult.failure([MSG_NOT_STARTED])
+
+    # ------------------------------------------------------------------ Screen 3
+    def show(self, vehicle, result):
+        """Show every part of the result that exists; errors go to a dialog, warnings stay on the page."""
+        errors = [describeMessage(error) for error in result.errors]
+        warnings = [describeMessage(warning) for warning in result.warnings]
+        if result.price is None and not result.top_matches and not result.similar_price:
+            self.ui.showWarning("Could not analyze this car", self.bullets(errors + warnings))
+            return
+        self.ui.labelResultsTitle.setText(f"Results for {self.ui.userName() or 'you'}")
+        title = vehicleTitle(vehicle.manufacturer, vehicle.model_base, vehicle.year)
+        self.ui.labelSelectedVehicle.setText(
+            f"{title} · {vehicle.odometer:,.0f} mi · {labelOf('condition', vehicle.condition)} · "
+            f"{labelOf('fuel', vehicle.fuel)} · {labelOf('transmission', vehicle.transmission)}")
+        failed = {section for _, section in errors}
+        self.showPrice(result.price)
+        self.showBudget(vehicle.budget_max_usd, result.price, self.notesFor(warnings, BUDGET))
+        self.showTopMatches(result.top_matches, self.notesFor(warnings, TOP, None),
+                            TOP_UNAVAILABLE if failed & {TOP, CATALOG} else TOP_EMPTY)
+        self.showSimilarPrice(result.similar_price, result.price, self.notesFor(warnings, SIMILAR),
+                              SIMILAR_UNAVAILABLE if failed & {SIMILAR, CATALOG} or result.price is None
+                              else SIMILAR_EMPTY)
+        self.ui.scrollAreaResults.verticalScrollBar().setValue(0)
+        self.ui.goToPage(PAGE_RESULTS)
+        self.ui.settleLayout()
+        for widgets, cards in ((self.topCards, result.top_matches), (self.similarCards, result.similar_price)):
+            for widget, card in zip(widgets, cards):
+                widget.showImage(card)
+        if errors:
+            self.ui.showWarning("Some results are unavailable", self.bullets(errors))
+
+    def bullets(self, messages):
+        return "\n".join(f"• {text}" for text, _ in messages)
+
+    def notesFor(self, warnings, *sections):
+        return [text for text, section in warnings if section in sections]
+
+    def showPrice(self, price):
+        if price is None:
+            self.ui.labelPredictedPrice.setText("N/A")
+            self.ui.labelPriceRange.setText("")
+            self.ui.labelPriceNote.setText("The price estimate is unavailable for this analysis.")
+            return
+        self.ui.labelPredictedPrice.setText(money(price.predicted_price))
+        note = f"{price.model_name} trained on U.S. used-car listings."
+        if price.price_low is not None and price.price_high is not None:
+            self.ui.labelPriceRange.setText(f"Reference range: {money(price.price_low)} – {money(price.price_high)}")
+            note += " Reference range = estimate ± mean absolute error (MAE) on the test set."
+        else:
+            self.ui.labelPriceRange.setText("")
+        self.ui.labelPriceNote.setText(note)
+
+    def showBudget(self, budget, price, notes):
+        self.ui.labelBudgetValue.setText(money(budget))
+        if price is None:
+            verdict, state = "NOT AVAILABLE", ""
+            note = "There is no estimate to compare with your budget."
+        elif budget >= price.predicted_price:
+            verdict, state = "WITHIN BUDGET", "ok"
+            note = f"You would have about {money(budget - price.predicted_price)} left over at the estimated price."
+        else:
+            verdict, state = "OVER BUDGET", "over"
+            note = f"The estimate is about {money(price.predicted_price - budget)} above your budget."
+        self.ui.labelBudgetVerdict.setText(verdict)
+        self.ui.labelBudgetVerdict.setProperty("state", state)
+        self.ui.labelBudgetNote.setText(" ".join(notes) or note)
+        self.ui.repolish(self.ui.labelBudgetVerdict)
+
+    def showTopMatches(self, cards, notes, emptyText):
+        self.ui.labelTopNote.setText(" ".join(([TOP_NOTE] if cards else []) + notes))
+        for n, widget in enumerate(self.topCards):
+            if n < len(cards):
+                widget.show(cards[n], rank=n + 1)
+            else:
+                widget.hide()
+        self.ui.labelTopEmpty.setText(emptyText)
+        self.ui.widgetTopMatches.setVisible(len(cards) > 0)
+        self.ui.labelTopEmpty.setVisible(len(cards) == 0)
+
+    def showSimilarPrice(self, cards, price, notes, emptyText):
+        self.ui.labelSimilarNote.setText(" ".join(([SIMILAR_NOTE] if cards else []) + notes))
+        for n, widget in enumerate(self.similarCards):
+            if n < len(cards):
+                gap = priceGapPct(cards[n].price, price.predicted_price) if price is not None else None
+                widget.show(cards[n], gap=gap)
+            else:
+                widget.hide()
+        self.ui.labelSimilarEmpty.setText(emptyText)
+        self.ui.widgetSimilarPrice.setVisible(len(cards) > 0)
+        self.ui.labelSimilarEmpty.setVisible(len(cards) == 0)

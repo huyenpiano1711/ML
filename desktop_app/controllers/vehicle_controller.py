@@ -9,6 +9,7 @@ import re
 
 from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
 from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE
+from desktop_app.widgets.vehicle_card import modelLabel
 
 FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
                "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
@@ -45,8 +46,7 @@ def translateError(error):
 
 def modelOptions(make):
     """(display text, value) of every model of a make, from MODELS_BY_MAKE."""
-    return [(model.upper() if len(model) <= 4 else model.title(), model)
-            for model in sorted(MODELS_BY_MAKE.get(make, []))]
+    return [(modelLabel(model), model) for model in sorted(MODELS_BY_MAKE.get(make, []))]
 
 
 class VehicleController:
