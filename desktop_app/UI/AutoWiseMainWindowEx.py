@@ -25,15 +25,13 @@ from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from desktop_app.UI.AutoWiseMainWindow import Ui_MainWindow
 from desktop_app.utils.UIUtil import UIUtil, ImageBackground, IMAGE_DIR
-from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
+from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE, PAGE_RESULTS
+from desktop_app.controllers.user_controller import UserController
+from desktop_app.controllers.vehicle_controller import VehicleController, FIELD_NAMES
+from backend.schemas.vehicle_input import FEATURES
 
 TOP_CARDS = 5            # Top 5 best matches (KNN)
 SIMILAR_CARDS = 6        # up to 6 cars in the same price range (similar_price)
-PAGE_WELCOME, PAGE_VEHICLE, PAGE_RESULTS = 0, 1, 2
-
-FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
-               "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
-               "transmission": "Transmission", "budget_max_usd": "Budget"}
 
 
 def money(x):
@@ -64,6 +62,8 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
         self.MainWindow = MainWindow
+        self.userController = UserController(self)
+        self.vehicleController = VehicleController(self)
         UIUtil.setupWindow(MainWindow)
         image = UIUtil.firstImage("hero.jpg", "hero.png", "bg_hero.jpg")
         self.heroBackground = ImageBackground(self.frameHero, image)
@@ -85,16 +85,16 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
 
     # ------------------------------------------------------------------ setup
     def setupSignalAndSlot(self):
-        self.pushButtonStart.clicked.connect(self.openVehiclePage)
-        self.lineEditFullName.returnPressed.connect(self.openVehiclePage)
-        self.lineEditDisplayName.returnPressed.connect(self.openVehiclePage)
-        self.pushButtonBackWelcome.clicked.connect(lambda: self.goToPage(PAGE_WELCOME))
+        self.pushButtonStart.clicked.connect(self.userController.start)
+        self.lineEditFullName.returnPressed.connect(self.userController.start)
+        self.lineEditDisplayName.returnPressed.connect(self.userController.start)
+        self.pushButtonBackWelcome.clicked.connect(self.vehicleController.goBack)
         self.pushButtonAnalyze.clicked.connect(self.analyzeVehicle)
         self.pushButtonBackVehicle.clicked.connect(lambda: self.goToPage(PAGE_VEHICLE))
-        self.pushButtonReset.clicked.connect(self.resetForm)
+        self.pushButtonReset.clicked.connect(self.vehicleController.reset)
         self.pushButtonToggleAdvanced.clicked.connect(self.toggleAdvanced)
         self.pushButtonLogout.clicked.connect(self.processLogout)
-        self.comboBoxManufacturer.currentIndexChanged.connect(self.refreshModels)
+        self.comboBoxManufacturer.currentIndexChanged.connect(self.vehicleController.refreshModels)
         self.spinBoxBudget.valueChanged.connect(self.horizontalSliderBudget.setValue)
         self.horizontalSliderBudget.valueChanged.connect(self.spinBoxBudget.setValue)
         for combo in self.requiredCombos().values():
@@ -109,20 +109,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
             box.lineEdit().setTextMargins(10, 0, 0, 0)
 
     def userName(self):
-        """Display name if given, otherwise the full name."""
-        return self.lineEditDisplayName.text().strip() or self.lineEditFullName.text().strip()
-
-    def openVehiclePage(self):
-        """Screen 1 -> Screen 2: full name is required (personalisation only, nothing is stored)."""
-        if not self.lineEditFullName.text().strip():
-            self.showWarning("Missing information", "Please enter your full name to start.")
-            self.lineEditFullName.setFocus()
-            return
-        name = self.userName()
-        if self.user is None:
-            self.labelHeaderUser.setText(f"Hi, {name}")
-        self.labelVehicleTitle.setText(f"{name}, which car do you have in mind?")
-        self.goToPage(PAGE_VEHICLE)
+        return self.userController.userName()
 
     def requiredCombos(self):
         return {"manufacturer": self.comboBoxManufacturer, "model_base": self.comboBoxModel,
@@ -150,7 +137,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
                 combo.addItem(labelOf(name, value), value)
         self.comboBoxManufacturer.setMaxVisibleItems(14)
         self.comboBoxState.setMaxVisibleItems(14)
-        self.refreshModels()
+        self.vehicleController.refreshModels()
 
     # ------------------------------------------------------------------ navigation
     def goToPage(self, index):
@@ -165,42 +152,12 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.widgetAdvancedFields.setVisible(show)
         self.pushButtonToggleAdvanced.setText(f"{'−' if show else '+'}  ADVANCED OPTIONS (OPTIONAL)")
 
-    def resetForm(self):
-        for combo in list(self.requiredCombos().values()) + list(self.optionalCombos().values()):
-            combo.setCurrentIndex(0)
-        self.spinBoxYear.setValue(FEATURES["year"]["default"])
-        self.spinBoxOdometer.setValue(FEATURES["odometer"]["default"])
-        self.spinBoxBudget.setValue(int(FEATURES["budget_max_usd"]["default"]))
-        self.goToPage(PAGE_VEHICLE)
-
     def processLogout(self):
         if self.loginUi is not None:
             self.loginUi.backFromMainWindow()
         self.MainWindow.close()
 
     # ------------------------------------------------------------------ form
-    def refreshModels(self):
-        make = self.comboBoxManufacturer.currentData()
-        self.comboBoxModel.clear()
-        if make is None:
-            self.comboBoxModel.addItem("Select a make first…", None)
-            self.comboBoxModel.setEnabled(False)
-            return
-        self.comboBoxModel.setEnabled(True)
-        self.comboBoxModel.addItem("Select model…", None)
-        for model in sorted(MODELS_BY_MAKE.get(make, [])):
-            self.comboBoxModel.addItem(model.upper() if len(model) <= 4 else model.title(), model)
-        self.comboBoxModel.setMaxVisibleItems(14)
-
-    def collectInput(self):
-        data = {name: combo.currentData() for name, combo in self.requiredCombos().items()}
-        data.update({name: combo.currentData() for name, combo in self.optionalCombos().items()})
-        data["year"] = self.spinBoxYear.value()
-        data["odometer"] = self.spinBoxOdometer.value()
-        data["budget_max_usd"] = self.spinBoxBudget.value()
-        data["user_name"] = self.userName()
-        return VehicleInput.from_dict(data)
-
     def updateSummary(self):
         make = self.comboBoxManufacturer.currentData()
         model = self.comboBoxModel.currentData()
@@ -216,18 +173,10 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
                 parts.append(self.requiredCombos()[name].currentText())
         self.labelSummaryDetail.setText(" · ".join(parts) + f"\nBudget: {money(self.spinBoxBudget.value())}")
 
-    def missingFields(self, vehicle):
-        return [f"• {FIELD_NAMES[name]} is required." for name in FIELD_NAMES
-                if getattr(vehicle, name) is None]
-
     # ------------------------------------------------------------------ analysis
     def analyzeVehicle(self):
-        vehicle = self.collectInput()
-        errors = self.missingFields(vehicle)
-        if not errors and vehicle.validate():
-            errors = ["• Some values are outside the range the model was trained on."]
-        if errors:
-            self.showWarning("Missing information", "\n".join(errors))
+        vehicle = self.vehicleController.validatedInput()
+        if vehicle is None:
             return
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         self.pushButtonAnalyze.setEnabled(False)
