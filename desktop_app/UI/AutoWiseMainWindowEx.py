@@ -19,51 +19,30 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]          # D:\AutoWise
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
-from PyQt6.QtCore import Qt, QLocale
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt, QEventLoop, QLocale
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from desktop_app.UI.AutoWiseMainWindow import Ui_MainWindow
-from desktop_app.utils.UIUtil import UIUtil, ImageBackground, IMAGE_DIR
-from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
-
-TOP_CARDS = 5            # Top 5 best matches (KNN)
-SIMILAR_CARDS = 6        # up to 6 cars in the same price range (similar_price)
-PAGE_WELCOME, PAGE_VEHICLE, PAGE_RESULTS = 0, 1, 2
-
-FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
-               "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
-               "transmission": "Transmission", "budget_max_usd": "Budget"}
-
-
-def money(x):
-    return f"${x:,.0f}"
-
-
-def labelOf(field_name, value):
-    """Display text for a value from feature_schema.json (the value sent to the model stays unchanged)."""
-    if value is None:
-        return ""
-    if value == "unknown":
-        return "Unknown"
-    special = {"suv": "SUV", "4wd": "4WD", "fwd": "FWD", "rwd": "RWD", "mini-van": "Minivan",
-               "gas": "Gasoline", "like new": "Like new"}
-    if value in special:
-        return special[value]
-    if field_name == "state":
-        return value.upper()
-    return str(value)[:1].upper() + str(value)[1:]
+from desktop_app.utils.UIUtil import UIUtil, ImageBackground
+from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE
+from desktop_app.controllers.results_controller import ResultsController
+from desktop_app.controllers.user_controller import UserController
+from desktop_app.controllers.vehicle_controller import VehicleController, FIELD_NAMES
+from desktop_app.widgets.vehicle_card import labelOf, money
+from backend.schemas.vehicle_input import FEATURES
 
 
 class AutoWiseMainWindowEx(Ui_MainWindow):
     def __init__(self, user=None, loginUi=None):
         self.user = user                      # signed-in User (from LoginMainWindowEx); None = guest
         self.loginUi = loginUi
-        self.recommender = None               # catalog is loaded on the first analysis
 
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
         self.MainWindow = MainWindow
+        self.userController = UserController(self)
+        self.vehicleController = VehicleController(self)
+        self.resultsController = ResultsController(self)
         UIUtil.setupWindow(MainWindow)
         image = UIUtil.firstImage("hero.jpg", "hero.png", "bg_hero.jpg")
         self.heroBackground = ImageBackground(self.frameHero, image)
@@ -82,19 +61,20 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
 
     def showWindow(self):
         self.MainWindow.show()
+        self.resultsController.warmUp()
 
     # ------------------------------------------------------------------ setup
     def setupSignalAndSlot(self):
-        self.pushButtonStart.clicked.connect(self.openVehiclePage)
-        self.lineEditFullName.returnPressed.connect(self.openVehiclePage)
-        self.lineEditDisplayName.returnPressed.connect(self.openVehiclePage)
-        self.pushButtonBackWelcome.clicked.connect(lambda: self.goToPage(PAGE_WELCOME))
+        self.pushButtonStart.clicked.connect(self.userController.start)
+        self.lineEditFullName.returnPressed.connect(self.userController.start)
+        self.lineEditDisplayName.returnPressed.connect(self.userController.start)
+        self.pushButtonBackWelcome.clicked.connect(self.vehicleController.goBack)
         self.pushButtonAnalyze.clicked.connect(self.analyzeVehicle)
         self.pushButtonBackVehicle.clicked.connect(lambda: self.goToPage(PAGE_VEHICLE))
-        self.pushButtonReset.clicked.connect(self.resetForm)
+        self.pushButtonReset.clicked.connect(self.vehicleController.reset)
         self.pushButtonToggleAdvanced.clicked.connect(self.toggleAdvanced)
         self.pushButtonLogout.clicked.connect(self.processLogout)
-        self.comboBoxManufacturer.currentIndexChanged.connect(self.refreshModels)
+        self.comboBoxManufacturer.currentIndexChanged.connect(self.vehicleController.refreshModels)
         self.spinBoxBudget.valueChanged.connect(self.horizontalSliderBudget.setValue)
         self.horizontalSliderBudget.valueChanged.connect(self.spinBoxBudget.setValue)
         for combo in self.requiredCombos().values():
@@ -109,20 +89,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
             box.lineEdit().setTextMargins(10, 0, 0, 0)
 
     def userName(self):
-        """Display name if given, otherwise the full name."""
-        return self.lineEditDisplayName.text().strip() or self.lineEditFullName.text().strip()
-
-    def openVehiclePage(self):
-        """Screen 1 -> Screen 2: full name is required (personalisation only, nothing is stored)."""
-        if not self.lineEditFullName.text().strip():
-            self.showWarning("Missing information", "Please enter your full name to start.")
-            self.lineEditFullName.setFocus()
-            return
-        name = self.userName()
-        if self.user is None:
-            self.labelHeaderUser.setText(f"Hi, {name}")
-        self.labelVehicleTitle.setText(f"{name}, which car do you have in mind?")
-        self.goToPage(PAGE_VEHICLE)
+        return self.userController.userName()
 
     def requiredCombos(self):
         return {"manufacturer": self.comboBoxManufacturer, "model_base": self.comboBoxModel,
@@ -150,7 +117,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
                 combo.addItem(labelOf(name, value), value)
         self.comboBoxManufacturer.setMaxVisibleItems(14)
         self.comboBoxState.setMaxVisibleItems(14)
-        self.refreshModels()
+        self.vehicleController.refreshModels()
 
     # ------------------------------------------------------------------ navigation
     def goToPage(self, index):
@@ -165,42 +132,12 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.widgetAdvancedFields.setVisible(show)
         self.pushButtonToggleAdvanced.setText(f"{'−' if show else '+'}  ADVANCED OPTIONS (OPTIONAL)")
 
-    def resetForm(self):
-        for combo in list(self.requiredCombos().values()) + list(self.optionalCombos().values()):
-            combo.setCurrentIndex(0)
-        self.spinBoxYear.setValue(FEATURES["year"]["default"])
-        self.spinBoxOdometer.setValue(FEATURES["odometer"]["default"])
-        self.spinBoxBudget.setValue(int(FEATURES["budget_max_usd"]["default"]))
-        self.goToPage(PAGE_VEHICLE)
-
     def processLogout(self):
         if self.loginUi is not None:
             self.loginUi.backFromMainWindow()
         self.MainWindow.close()
 
     # ------------------------------------------------------------------ form
-    def refreshModels(self):
-        make = self.comboBoxManufacturer.currentData()
-        self.comboBoxModel.clear()
-        if make is None:
-            self.comboBoxModel.addItem("Select a make first…", None)
-            self.comboBoxModel.setEnabled(False)
-            return
-        self.comboBoxModel.setEnabled(True)
-        self.comboBoxModel.addItem("Select model…", None)
-        for model in sorted(MODELS_BY_MAKE.get(make, [])):
-            self.comboBoxModel.addItem(model.upper() if len(model) <= 4 else model.title(), model)
-        self.comboBoxModel.setMaxVisibleItems(14)
-
-    def collectInput(self):
-        data = {name: combo.currentData() for name, combo in self.requiredCombos().items()}
-        data.update({name: combo.currentData() for name, combo in self.optionalCombos().items()})
-        data["year"] = self.spinBoxYear.value()
-        data["odometer"] = self.spinBoxOdometer.value()
-        data["budget_max_usd"] = self.spinBoxBudget.value()
-        data["user_name"] = self.userName()
-        return VehicleInput.from_dict(data)
-
     def updateSummary(self):
         make = self.comboBoxManufacturer.currentData()
         model = self.comboBoxModel.currentData()
@@ -216,150 +153,31 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
                 parts.append(self.requiredCombos()[name].currentText())
         self.labelSummaryDetail.setText(" · ".join(parts) + f"\nBudget: {money(self.spinBoxBudget.value())}")
 
-    def missingFields(self, vehicle):
-        return [f"• {FIELD_NAMES[name]} is required." for name in FIELD_NAMES
-                if getattr(vehicle, name) is None]
-
     # ------------------------------------------------------------------ analysis
     def analyzeVehicle(self):
-        vehicle = self.collectInput()
-        errors = self.missingFields(vehicle)
-        if not errors and vehicle.validate():
-            errors = ["• Some values are outside the range the model was trained on."]
-        if errors:
-            self.showWarning("Missing information", "\n".join(errors))
+        vehicle = self.vehicleController.validatedInput()
+        if vehicle is None:
             return
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         self.pushButtonAnalyze.setEnabled(False)
         self.pushButtonAnalyze.setText("ANALYZING…")
         QApplication.processEvents()
         try:
-            price, top, similar = self.runModels(vehicle)
-        except Exception as ex:
-            QApplication.restoreOverrideCursor()
-            self.showWarning("Could not run the models", f"{type(ex).__name__}: {ex}")
-            return
+            result = self.resultsController.analyze(vehicle)
         finally:
             self.pushButtonAnalyze.setEnabled(True)
             self.pushButtonAnalyze.setText("ANALYZE && FIND CARS  ")
-        QApplication.restoreOverrideCursor()
-        self.showResults(vehicle, price, top, similar)
-
-    def runModels(self, vehicle):
-        from backend.services.prediction_service import predict_vehicle_price
-        from src.recommendation.recommend import get_recommender
-        price = predict_vehicle_price(vehicle)
-        if self.recommender is None:
-            self.recommender = get_recommender()
-        query = vehicle.to_recommendation_query()
-        top = self.recommender.recommend(query)
-        similar = self.recommender.similar_price(price.predicted_price, exclude_ids=top.cars["id"].tolist(),
-                                                 preferences=query["preferences"])
-        return price, top, similar
-
-    def showResults(self, vehicle, price, top, similar):
-        self.labelResultsTitle.setText(f"Results for {self.userName() or 'you'}")
-        self.labelSelectedVehicle.setText(
-            f"{vehicle.title} · {vehicle.odometer:,.0f} mi · {labelOf('condition', vehicle.condition)} · "
-            f"{labelOf('fuel', vehicle.fuel)} · {labelOf('transmission', vehicle.transmission)}")
-        # 1. predicted price
-        self.labelPredictedPrice.setText(money(price.predicted_price))
-        self.labelPriceRange.setText(
-            f"Reference range: {money(price.price_low)} – {money(price.price_high)}"
-            if price.price_low is not None else "")
-        self.labelPriceNote.setText(
-            f"{price.model_name} trained on U.S. used-car listings. "
-            "Reference range = estimate ± mean absolute error (MAE) on the test set.")
-        # 2. budget comparison
-        budget = vehicle.budget_max_usd
-        diff = budget - price.predicted_price
-        self.labelBudgetValue.setText(money(budget))
-        if diff >= 0:
-            self.labelBudgetVerdict.setText("WITHIN BUDGET")
-            self.labelBudgetVerdict.setProperty("state", "ok")
-            self.labelBudgetNote.setText(f"You would have about {money(diff)} left over at the estimated price.")
-        else:
-            self.labelBudgetVerdict.setText("OVER BUDGET")
-            self.labelBudgetVerdict.setProperty("state", "over")
-            self.labelBudgetNote.setText(f"The estimate is about {money(-diff)} above your budget. "
-                                         "See the alternatives below.")
-        UIUtil.repolish(self.labelBudgetVerdict)
-        # 3. Top 5 + same price range
-        note = f"Ranked with KNN among {top.n_candidates:,} cars priced within your budget."
-        if 0 < len(top.cars) < 5:
-            note += f" Only {len(top.cars)} cars matched."
-        self.labelTopNote.setText(note)
-        self.showTopMatches(top.to_cards())
-        gaps = similar.cars["price_gap_pct"].tolist() if "price_gap_pct" in similar.cars else []
-        self.showSimilarPrice(similar.to_cards(), gaps)
-        self.scrollAreaResults.verticalScrollBar().setValue(0)
-        self.goToPage(PAGE_RESULTS)
-
-    # ------------------------------------------------------------------ cards (designed in the .ui)
-    def cardWidgets(self, prefix, n):
-        """frameTopCar1, labelTopCar1Title, ... -> dict of the widgets of card number n."""
-        names = ("frame", "labelImage", "labelRank", "labelMatch", "labelGap", "labelTitle", "labelDetail",
-                 "labelSpecs", "labelPrice")
-        out = {}
-        for name in names:
-            kind, part = (name, "") if name == "frame" else ("label", name[5:])
-            out[name] = getattr(self, f"{kind}{prefix}{n}{part}", None)
-        return out
-
-    def showTopMatches(self, cards):
-        for n in range(1, TOP_CARDS + 1):
-            w = self.cardWidgets("TopCar", n)
-            card = cards[n - 1] if n <= len(cards) else None
-            w["frame"].setVisible(card is not None)
-            if card is None:
-                continue
-            self.showCarImage(w["labelImage"], card)
-            w["labelRank"].setText(f"#{n}")
-            w["labelMatch"].setText(f"{card.score * 100:.0f}% MATCH" if card.score is not None else "")
-            w["labelTitle"].setText(card.title)
-            w["labelDetail"].setText(f"{card.odometer:,.0f} mi · {labelOf('condition', card.condition)}")
-            w["labelSpecs"].setText(f"{labelOf('fuel', card.fuel)} · {labelOf('transmission', card.transmission)}")
-            w["labelPrice"].setText(money(card.price))
-        self.widgetTopMatches.setVisible(len(cards) > 0)
-        self.labelTopEmpty.setVisible(len(cards) == 0)
-
-    def showSimilarPrice(self, cards, gaps):
-        for n in range(1, SIMILAR_CARDS + 1):
-            w = self.cardWidgets("SimilarCar", n)
-            card = cards[n - 1] if n <= len(cards) else None
-            w["frame"].setVisible(card is not None)
-            if card is None:
-                continue
-            self.showCarImage(w["labelImage"], card)
-            gap = gaps[n - 1] if n <= len(gaps) else None
-            w["labelGap"].setText(f"{gap:+.1f}% VS. ESTIMATE" if gap is not None else "")
-            w["labelTitle"].setText(card.title)
-            w["labelDetail"].setText(f"{card.odometer:,.0f} mi · {labelOf('condition', card.condition)}")
-            w["labelPrice"].setText(money(card.price))
-        self.widgetSimilarPrice.setVisible(len(cards) > 0)
-        self.labelSimilarEmpty.setVisible(len(cards) == 0)
-
-    def carDetail(self, card):
-        return (f"{card.odometer:,.0f} mi · {labelOf('condition', card.condition)} · "
-                f"{labelOf('fuel', card.fuel)} · {labelOf('transmission', card.transmission)}")
-
-    def showCarImage(self, label, card):
-        """Photo from the catalog (image_path) or images/types/<body type>.jpg|png; otherwise the body type text."""
-        paths = []
-        if card.image_path:
-            p = Path(card.image_path)
-            paths.append(p if p.is_absolute() else PROJECT_DIR / p)
-        paths += [IMAGE_DIR / "types" / f"{card.type}.{ext}" for ext in ("jpg", "png", "webp")]
-        pix = next((QPixmap(str(p)) for p in paths if p.exists()), None)
-        if pix is not None and not pix.isNull():
-            label.setPixmap(pix.scaled(label.width(), label.maximumHeight(),
-                                       Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-                                       Qt.TransformationMode.SmoothTransformation))
-        else:
-            label.setPixmap(QPixmap())
-            label.setText((card.type if card.type and card.type != "unknown" else "car").upper())
+            QApplication.restoreOverrideCursor()
+        self.resultsController.show(vehicle, result)
 
     # ------------------------------------------------------------------ utils
+    def repolish(self, widget):
+        UIUtil.repolish(widget)
+
+    def settleLayout(self):
+        """Apply pending layouts; clicks stay queued, so ANALYZE cannot start again from here."""
+        QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
+
     def showWarning(self, title, text):
         box = QMessageBox(self.MainWindow)
         box.setIcon(QMessageBox.Icon.Warning)
