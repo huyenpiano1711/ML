@@ -33,3 +33,6 @@ reports/kiem_tra_ket_noi.txt
 
 # Local recovery copy; the canonical project lives at repository root.
 ML-main/
+
+# Local user accounts of the desktop app - never commit
+desktop_app/databases/*.sqlite

@@ -106,7 +106,7 @@ class AppService:
         return self._recommender
 
     def warm_up(self) -> list[str]:
-        """Nạp sẵn mô hình, catalog và danh mục ảnh lúc mở ứng dụng (gọi từ main.py),
+        """Nạp sẵn mô hình, catalog và danh mục ảnh lúc mở ứng dụng (gọi từ ResultsController.warmUp()),
         để lần bấm nút đầu tiên không phải chờ. Trả danh sách lỗi (rỗng = sẵn sàng)."""
         errors = []
         try:
@@ -220,8 +220,9 @@ class AppService:
         # 5. Gắn ảnh (không bao giờ làm hỏng kết quả)
         t = time.perf_counter()
         try:
-            top_cards = self.images.with_images(top_cards)
-            alt_cards = self.images.with_images(alt_cards)
+            # Gán ảnh cho cả trang một lượt: Top 5 trước, rồi xe cùng mức giá -> không trùng ảnh khi còn ảnh khác
+            cards = self.images.with_unique_images(top_cards + alt_cards)
+            top_cards, alt_cards = cards[:len(top_cards)], cards[len(top_cards):]
         except Exception:                                   # noqa: BLE001
             log.exception("Lỗi gắn ảnh")
         timings["images"] = (time.perf_counter() - t) * 1000

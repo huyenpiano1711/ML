@@ -75,6 +75,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.pushButtonToggleAdvanced.clicked.connect(self.toggleAdvanced)
         self.pushButtonLogout.clicked.connect(self.processLogout)
         self.comboBoxManufacturer.currentIndexChanged.connect(self.vehicleController.refreshModels)
+        self.comboBoxModel.currentIndexChanged.connect(self.vehicleController.applyModelConstraints)
         self.spinBoxBudget.valueChanged.connect(self.horizontalSliderBudget.setValue)
         self.horizontalSliderBudget.valueChanged.connect(self.spinBoxBudget.setValue)
         for combo in self.requiredCombos().values():

@@ -14,6 +14,15 @@ Thứ tự tìm ảnh cho một thẻ xe (CarCard):
      (đúng năm, nếu không có thì năm gần nhất của cùng dòng xe).
   3. Ảnh thay thế.
 
+Ảnh bị gộp khi khử trùng (assets/image_aliases.csv):
+  Bước khử trùng ảnh đã xóa 1.867 file trùng tuyệt đối và chỉ giữ một tên, vd lexus_rx300_1999.jpg
+  -> giữ lexus_rx_1999.jpg. Bảng alias,file giúp tìm lại ảnh theo tên cũ, nếu không các dòng xe đó
+  (Lexus RX300, Acura RL...) sẽ mất hết ảnh.
+
+Không trùng ảnh trong một trang kết quả (with_unique_images):
+  Top 5 và các xe cùng mức giá được gán ảnh cùng một lượt, theo thứ tự hiển thị. Mỗi thẻ lấy ảnh
+  cùng dòng xe có năm gần nhất mà CHƯA thẻ nào trước nó dùng; chỉ khi dòng xe đã hết ảnh mới dùng lại.
+
 Một ảnh chỉ được coi là dùng được khi:
   - nằm trong thư mục ảnh của dự án (chặn đường dẫn kiểu "../../..."),
   - có đuôi .jpg / .jpeg / .png (định dạng QPixmap đọc được mà không cần plugin),
@@ -44,6 +53,7 @@ from backend.schemas.result_schema import CarCard
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 IMAGE_DIR = PROJECT_DIR / "assets" / "car_images_unique"
 PLACEHOLDER_PATH = PROJECT_DIR / "assets" / "placeholder_car.png"
+ALIASES_PATH = PROJECT_DIR / "assets" / "image_aliases.csv"
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 MAX_FILE_MB = 20
@@ -130,12 +140,27 @@ def create_placeholder(path: Path, size: tuple[int, int] = PLACEHOLDER_SIZE) -> 
     return path
 
 
+def load_aliases(path: Path) -> dict[str, str]:
+    """{tên file cũ: tên file còn giữ} từ assets/image_aliases.csv (cột alias,file). Không có file -> {}."""
+    try:
+        lines = Path(path).read_text(encoding="utf-8-sig").splitlines()
+    except OSError:
+        return {}
+    out = {}
+    for line in lines[1:]:
+        alias, _, file = line.partition(",")
+        if alias.strip() and file.strip():
+            out[alias.strip()] = file.strip()
+    return out
+
+
 class ImageService:
     """Tìm và kiểm tra ảnh xe; nạp một lần, dùng lại cho mọi yêu cầu (không đọc lại ảnh đã kiểm)."""
 
     def __init__(self, project_dir: Path | str = PROJECT_DIR, image_dir: Path | str | None = None,
                  placeholder_path: Path | str | None = None, verify_images: bool = True,
-                 max_file_mb: float = MAX_FILE_MB, full_verify: bool = False):
+                 max_file_mb: float = MAX_FILE_MB, full_verify: bool = False,
+                 aliases_path: Path | str | None = None):
         self.project_dir = Path(project_dir).resolve()
         self.image_dir = Path(image_dir).resolve() if image_dir else (self.project_dir / "assets" / "car_images_unique")
         self.placeholder = Path(placeholder_path) if placeholder_path else (self.project_dir / "assets" / "placeholder_car.png")
@@ -147,6 +172,8 @@ class ImageService:
         self._index: dict[str, list[tuple[int, str]]] | None = None
         self._placeholder_ok = False
         self._placeholder_abs = self.placeholder.resolve()
+        self.aliases_path = Path(aliases_path) if aliases_path else (self.project_dir / "assets" / "image_aliases.csv")
+        self.aliases = load_aliases(self.aliases_path)
 
     # ------------------------------------------------------------------ kiểm tra 1 file
     def _to_path(self, image_path: str | Path) -> Path:
@@ -232,11 +259,19 @@ class ImageService:
     # ------------------------------------------------------------------ tìm theo hãng-dòng-năm
     def _build_index(self) -> dict[str, list[tuple[int, str]]]:
         index: dict[str, list[tuple[int, str]]] = {}
+
+        def add(name: str, file: str) -> None:
+            m = re.match(r"^(.*)_(\d{4})\.(jpg|jpeg|png)$", name.lower())
+            if m:
+                index.setdefault(m.group(1), []).append((int(m.group(2)), file))
+
         if self.image_dir.is_dir():
-            for p in self.image_dir.iterdir():
-                m = re.match(r"^(.*)_(\d{4})\.(jpg|jpeg|png)$", p.name.lower())
-                if m:
-                    index.setdefault(m.group(1), []).append((int(m.group(2)), p.name))
+            files = {p.name: p.name for p in self.image_dir.iterdir()}
+            for name in files:
+                add(name, name)
+            for alias, file in self.aliases.items():      # tên cũ của ảnh đã gộp -> file còn giữ
+                if file in files and alias not in files:
+                    add(alias, file)
         for files in index.values():
             files.sort()
         return index
@@ -258,6 +293,27 @@ class ImageService:
         best_year, best_file = min(files, key=lambda f: (abs(f[0] - y), f[0]))
         source = SOURCE_LOOKUP_EXACT if best_year == y else SOURCE_LOOKUP_NEAREST
         return self.image_dir / best_file, source
+
+    def candidates(self, manufacturer: object, model_base: object, year: object,
+                   family: bool = False) -> list[Path]:
+        """Mọi ảnh của dòng xe, sắp theo độ gần năm (hòa thì năm nhỏ hơn) - cùng thứ tự với lookup().
+        family=True: ảnh của DÒNG GỐC thay vì chính dòng xe - phần chữ đứng trước số trong tên dòng
+        (lexus rx300 -> lexus rx, bmw x5 -> bmw x), chỉ khi dòng gốc có ảnh riêng."""
+        if self._index is None:
+            self.lookup("", "", 0)                       # dựng chỉ mục một lần
+        model = str(model_base or "").lower()
+        if family:
+            m = re.match(r"^([a-z]+)\d", model)
+            if not m or m.group(1) == model:
+                return []
+            model = m.group(1)
+        files = self._index.get(safe_key(f"{manufacturer}_{model}"), [])
+        try:
+            y = int(year)
+        except (TypeError, ValueError):
+            return []
+        ordered = sorted(files, key=lambda f: (abs(f[0] - y), f[0]))
+        return [self.image_dir / name for _, name in ordered]
 
     # ------------------------------------------------------------------ API cho Backend
     def resolve(self, image_path: object) -> ImageResult:
@@ -294,12 +350,41 @@ class ImageService:
         (ảnh minh họa hoặc ảnh thay thế). Các trường khác giữ nguyên."""
         return [replace(c, image_path=self.resolve_card(c).path) for c in cards]
 
+    def with_unique_images(self, cards: Iterable[CarCard]) -> list[CarCard]:
+        """Như with_images(), nhưng các thẻ trong CÙNG một trang không dùng chung ảnh khi còn ảnh khác.
+        Thẻ được xét theo thứ tự truyền vào (Top 5 trước, rồi xe cùng mức giá): mỗi thẻ lấy ảnh
+        hợp lệ đầu tiên chưa bị thẻ trước dùng trong [ảnh catalog, ảnh cùng dòng theo năm gần nhất,
+        ảnh của dòng gốc (lexus rx300 -> lexus rx)]; nếu tất cả đã bị dùng thì lấy lại ảnh riêng
+        gần năm nhất (dòng xe có ít ảnh hơn số thẻ);
+        nếu dòng xe không có ảnh nào thì dùng ảnh thay thế."""
+        used: set[str] = set()
+        out = []
+        for card in cards:
+            options = []
+            first = self.resolve(card.image_path)
+            if not first.is_placeholder:
+                options.append(first.path)
+            for path in self.candidates(card.manufacturer, card.model_base, card.year):
+                if str(path) not in options and self.check_file(path) == OK:
+                    options.append(str(path))
+            family = [str(p) for p in self.candidates(card.manufacturer, card.model_base, card.year, family=True)
+                      if str(p) not in options and self.check_file(p) == OK]
+            if not options and not family:
+                chosen = str(self.placeholder_path())
+            else:
+                # 1) ảnh riêng chưa dùng  2) ảnh dòng gốc chưa dùng  3) dùng lại ảnh riêng gần năm nhất
+                chosen = next((p for p in options + family if p not in used), (options or family)[0])
+                used.add(chosen)
+            out.append(replace(card, image_path=chosen))
+        return out
+
     def clear_cache(self) -> None:
         """Xóa bộ đệm (dùng khi vừa thêm/xóa ảnh trong lúc ứng dụng đang chạy)."""
         with self._lock:
             self._checked.clear()
             self._index = None
             self._placeholder_ok = False
+            self.aliases = load_aliases(self.aliases_path)
 
 
 # Hàm tiện lợi cho Backend: tạo dịch vụ một lần cho cả phiên chạy

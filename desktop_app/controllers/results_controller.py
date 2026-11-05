@@ -12,7 +12,7 @@ import threading
 from backend.schemas.result_schema import MAX_ALTERNATIVES, TOP_K, AnalysisResult
 from desktop_app.controllers import PAGE_RESULTS
 from desktop_app.controllers.vehicle_controller import translateError
-from desktop_app.widgets.vehicle_card import VehicleCard, labelOf, money, setCardImage, vehicleTitle
+from desktop_app.widgets.vehicle_card import VehicleCard, labelOf, makeLabel, money, setCardImage, vehicleTitle
 
 log = logging.getLogger("autowise.frontend")
 
@@ -69,6 +69,13 @@ MESSAGES = [
      lambda m: f"Only {m[1]} cars are priced close to {usd(m[2])}."),
     (r"Đã mở rộng khoảng giá lên ±(\d+)% để đủ xe\.", SIMILAR,
      lambda m: f"The price range was widened to ±{m[1]}% to find enough cars."),
+    # backend/services/recommendation_service.py: the make is a required condition (C02)
+    (r"Không có xe (.+) nào có giá không vượt quá (\S+) USD\. Đang gợi ý xe hãng khác gần nhu cầu nhất\.", TOP,
+     lambda m: f"No {makeLabel(m[1])} is priced at or under {usd(m[2])}, so the closest cars "
+               "from other makes are shown."),
+    (r"Chỉ có (\d+) xe (.+) có giá không vượt quá (\S+) USD\. Các xe còn lại là hãng khác gần nhu cầu nhất\.", TOP,
+     lambda m: f"Only {m[1]} {makeLabel(m[2])} {'car is' if m[1] == '1' else 'cars are'} priced at or under "
+               f"{usd(m[3])}; the other places show the closest cars from other makes."),
 ]
 MESSAGES = [(re.compile(pattern), section, english) for pattern, section, english in MESSAGES]
 

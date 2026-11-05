@@ -9,7 +9,8 @@ import re
 
 from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
 from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE
-from desktop_app.widgets.vehicle_card import modelLabel
+from desktop_app.widgets.vehicle_card import labelOf, modelLabel, vehicleTitle
+from src.features.model_constraints import CATEGORICAL, constraints_for, violations
 
 FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
                "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
@@ -42,6 +43,15 @@ def translateError(error):
     if match := WRONG_MAKE.fullmatch(error):
         return f"Model {match[1]} does not belong to make {match[2]}."
     return error
+
+
+def constraintMessage(vehicle, name, allowed):
+    """English message for one value outside what the data has for this model (model_constraints.py)."""
+    title = vehicleTitle(vehicle.manufacturer, vehicle.model_base, "").strip()
+    if name == "year":
+        return f"{title} is only listed from {allowed[0]} to {allowed[1]} in the data. Please pick a year in that range."
+    values = ", ".join(labelOf(name, value) for value in allowed)
+    return f"{FIELD_NAMES[name]} of {title} in the data: {values}. Please pick one of them."
 
 
 def modelOptions(make):
@@ -78,6 +88,25 @@ class VehicleController:
             self.ui.comboBoxModel.addItem(text, model)
         self.ui.comboBoxModel.setMaxVisibleItems(14)
 
+    def applyModelConstraints(self):
+        """After a model is picked, the year range and the body type / fuel / transmission lists follow
+        what the data has for that model (Lexus RX300: 1999-2003, SUV, gas). No model -> all options."""
+        c = constraints_for(self.ui.comboBoxManufacturer.currentData(), self.ui.comboBoxModel.currentData())
+        low, high = c["year"] if c else (FEATURES["year"]["min"], FEATURES["year"]["max"])
+        self.ui.spinBoxYear.setRange(int(low), int(high))
+        for name in CATEGORICAL:
+            combo = self.ui.requiredCombos()[name]
+            values = (c or {}).get(name) or FEATURES[name]["ui_options"]
+            current = combo.currentData()
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem(f"Select {FIELD_NAMES[name].lower()}…", None)
+            for value in values:
+                combo.addItem(labelOf(name, value), value)
+            combo.setCurrentIndex(values.index(current) + 1 if current in values else 0)
+            combo.blockSignals(False)
+        self.ui.updateSummary()
+
     def collectInput(self):
         data = {name: combo.currentData() for name, combo in self.ui.requiredCombos().items()}
         data.update({name: combo.currentData() for name, combo in self.ui.optionalCombos().items()})
@@ -90,9 +119,10 @@ class VehicleController:
     def validatedInput(self):
         """The VehicleInput to send to the Backend, or None after showing every error."""
         vehicle = self.collectInput()
-        errors = vehicle.validate()
-        if errors:
-            self.ui.showWarning("Please check your information",
-                                "\n".join(f"• {translateError(error)}" for error in errors))
+        messages = [translateError(error) for error in vehicle.validate()]
+        if not messages:                                 # the model exists: check it against the data
+            messages = [constraintMessage(vehicle, name, allowed) for name, allowed in violations(vehicle)]
+        if messages:
+            self.ui.showWarning("Please check your information", "\n".join(f"• {m}" for m in messages))
             return None
         return vehicle
