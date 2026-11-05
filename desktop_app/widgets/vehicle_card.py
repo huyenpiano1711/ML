@@ -51,14 +51,33 @@ def vehicleTitle(manufacturer, model, year):
     return f"{manufacturer.title()} {modelLabel(model)} {year}"
 
 
+def isPlaceholder(image_path):
+    """True when image_path is the placeholder of D05 (assets/placeholder_car.png) or empty.
+    That image is light grey with a Vietnamese caption, so Screen 3 shows its own dark tile instead."""
+    if not image_path:
+        return True
+    from pathlib import Path
+    from backend.services.image_service import PLACEHOLDER_PATH
+    try:
+        return Path(image_path).resolve() == PLACEHOLDER_PATH.resolve()
+    except OSError:
+        return False
+
+
+def bodyTypeText(card):
+    """Text of the dark tile when there is no photo: the body type, e.g. SEDAN."""
+    return (card.type if card.type and card.type != "unknown" else "car").upper()
+
+
 def setCardImage(label, card):
-    """Photo from card.image_path (D05); if it cannot be opened, the body type as text."""
+    """Photo from card.image_path (D05). No real photo (placeholder or unreadable file) -> the body type
+    as text on the dark tile designed in the .ui (role carImage)."""
     from PyQt6.QtCore import Qt
     from PyQt6.QtGui import QPixmap
-    pix = QPixmap(card.image_path or "")
+    pix = QPixmap() if isPlaceholder(card.image_path) else QPixmap(card.image_path)
     if pix.isNull():
         label.setPixmap(QPixmap())
-        label.setText((card.type if card.type and card.type != "unknown" else "car").upper())
+        label.setText(bodyTypeText(card))
         return
     label.setPixmap(pix.scaled(label.width(), label.maximumHeight(),
                                Qt.AspectRatioMode.KeepAspectRatioByExpanding,

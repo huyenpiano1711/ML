@@ -604,3 +604,21 @@ def test_results_code_needs_neither_pyqt_nor_the_loaded_backend_at_import():
     code = ("import sys; import desktop_app.controllers.results_controller; "
             "sys.exit('PyQt6' in sys.modules or 'backend.app_service' in sys.modules)")
     assert subprocess.run([sys.executable, "-c", code], cwd=PROJECT_DIR).returncode == 0
+
+
+# ---------------------------------------------------------------- placeholder image (dark tile instead)
+def test_placeholder_image_is_detected():
+    from backend.services.image_service import PLACEHOLDER_PATH
+    from desktop_app.widgets.vehicle_card import isPlaceholder
+    assert isPlaceholder(None)
+    assert isPlaceholder("")
+    assert isPlaceholder(str(PLACEHOLDER_PATH))
+    assert not isPlaceholder(str(PLACEHOLDER_PATH.parent / "car_images_unique" / "ford_f150_2015.jpg"))
+
+
+def test_body_type_text_on_dark_tile():
+    from types import SimpleNamespace
+    from desktop_app.widgets.vehicle_card import bodyTypeText
+    assert bodyTypeText(SimpleNamespace(type="sedan")) == "SEDAN"
+    assert bodyTypeText(SimpleNamespace(type="unknown")) == "CAR"
+    assert bodyTypeText(SimpleNamespace(type=None)) == "CAR"
