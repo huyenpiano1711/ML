@@ -604,3 +604,30 @@ def test_results_code_needs_neither_pyqt_nor_the_loaded_backend_at_import():
     code = ("import sys; import desktop_app.controllers.results_controller; "
             "sys.exit('PyQt6' in sys.modules or 'backend.app_service' in sys.modules)")
     assert subprocess.run([sys.executable, "-c", code], cwd=PROJECT_DIR).returncode == 0
+
+
+# ---------------------------------------------------------------- placeholder of D05 -> dark tile of the .ui
+def test_placeholder_image_is_detected():
+    from backend.services.image_service import PLACEHOLDER_PATH
+    from desktop_app.widgets.vehicle_card import isPlaceholder
+    assert isPlaceholder(None) and isPlaceholder("") and isPlaceholder(str(PLACEHOLDER_PATH))
+    assert not isPlaceholder(str(PLACEHOLDER_PATH.parent / "car_images_unique" / "ford_f150_2015.jpg"))
+
+
+# ---------------------------------------------------------------- make names (GMC, not Gmc)
+def test_make_labels_use_the_usual_spelling():
+    from desktop_app.widgets.vehicle_card import labelOf, makeLabel, vehicleTitle
+    assert [makeLabel(m) for m in ("gmc", "bmw", "mercedes-benz", "land rover", "ford")] == \
+        ["GMC", "BMW", "Mercedes-Benz", "Land Rover", "Ford"]
+    assert labelOf("manufacturer", "ram") == "RAM"
+    assert vehicleTitle("gmc", "2500hd", 2013) == "GMC 2500HD 2013"
+
+
+# ---------------------------------------------------------------- make is required (C02): messages
+def test_same_make_warnings_are_translated_to_the_top_section():
+    from backend.services.recommendation_service import MSG_FEW_SAME_MAKE, MSG_NO_SAME_MAKE
+    from desktop_app.controllers.results_controller import TOP, describeMessage
+    assert describeMessage(MSG_FEW_SAME_MAKE.format(n=1, make="Gmc", budget="20.000")) == (
+        "Only 1 GMC car is priced at or under $20,000; the other places show the closest cars from other makes.", TOP)
+    assert describeMessage(MSG_NO_SAME_MAKE.format(make="Tesla", budget="20.000")) == (
+        "No Tesla is priced at or under $20,000, so the closest cars from other makes are shown.", TOP)

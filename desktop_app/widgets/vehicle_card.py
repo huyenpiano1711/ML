@@ -10,10 +10,23 @@ def money(x):
     return f"${x:,.0f}"
 
 
+# Makes whose usual spelling is not "first letter upper case" (gmc -> GMC, not Gmc)
+MAKE_LABELS = {"gmc": "GMC", "bmw": "BMW", "ram": "RAM", "mini": "MINI", "fiat": "FIAT",
+               "mercedes-benz": "Mercedes-Benz", "alfa-romeo": "Alfa Romeo", "land rover": "Land Rover"}
+
+
+def makeLabel(manufacturer):
+    """Display text of a make: GMC, BMW, Mercedes-Benz, Land Rover, Ford..."""
+    make = str(manufacturer or "").strip().lower()
+    return MAKE_LABELS.get(make) or " ".join(word.capitalize() for word in make.split())
+
+
 def labelOf(field_name, value):
     """Display text for a value from feature_schema.json (the value sent to the model stays unchanged)."""
     if value is None:
         return ""
+    if field_name == "manufacturer":
+        return makeLabel(value)
     if value == "unknown":
         return "Unknown"
     special = {"suv": "SUV", "4wd": "4WD", "fwd": "FWD", "rwd": "RWD", "mini-van": "Minivan",
@@ -48,14 +61,27 @@ def modelLabel(model):
 
 
 def vehicleTitle(manufacturer, model, year):
-    return f"{manufacturer.title()} {modelLabel(model)} {year}"
+    return f"{makeLabel(manufacturer)} {modelLabel(model)} {year}"
+
+
+def isPlaceholder(image_path):
+    """True when image_path is the placeholder of D05 (assets/placeholder_car.png) or empty: that image is
+    light grey with a Vietnamese caption, so the card shows the dark tile of the .ui instead."""
+    if not image_path:
+        return True
+    from pathlib import Path
+    from backend.services.image_service import PLACEHOLDER_PATH
+    try:
+        return Path(image_path).resolve() == PLACEHOLDER_PATH.resolve()
+    except OSError:
+        return False
 
 
 def setCardImage(label, card):
-    """Photo from card.image_path (D05); if it cannot be opened, the body type as text."""
+    """Photo from card.image_path (D05); placeholder or unreadable file -> the body type as text."""
     from PyQt6.QtCore import Qt
     from PyQt6.QtGui import QPixmap
-    pix = QPixmap(card.image_path or "")
+    pix = QPixmap() if isPlaceholder(card.image_path) else QPixmap(card.image_path)
     if pix.isNull():
         label.setPixmap(QPixmap())
         label.setText((card.type if card.type and card.type != "unknown" else "car").upper())
