@@ -5,7 +5,8 @@
 ```python
 from backend.app_service import analyze, get_app_service
 
-get_app_service().warm_up()   # ResultsController.warmUp(), lúc mở ứng dụng: nạp sẵn mô hình, catalog, danh mục ảnh
+get_app_service().warm_up()   # ResultsController.warmUp(), lúc mở ứng dụng: nạp sẵn mô hình, catalog, danh mục ảnh;
+                              # lỗi trả về (và thư viện sai phiên bản) được báo ngay bằng hộp thoại, không đợi bấm ANALYZE
 result = analyze(form_dict)   # khi bấm "Phân tích và tìm xe" -> AnalysisResult, không bao giờ ném lỗi
 ```
 

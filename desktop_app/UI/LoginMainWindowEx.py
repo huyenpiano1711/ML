@@ -8,14 +8,20 @@ LoginMainWindowEx.py - Sign in / Create account window.
 Regenerate after editing the .ui:
     pyuic6 desktop_app/UI/LoginMainWindow.ui -o desktop_app/UI/LoginMainWindow.py
 """
-from PyQt6.QtCore import QSettings
+import math
+import time
+
+from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtWidgets import QMainWindow, QLineEdit
 
 from desktop_app.UI.LoginMainWindow import Ui_MainWindow
-from desktop_app.dal.user_dao import UserDao
+from desktop_app.dal.user_dao import (UserDao, MAX_EMAIL_LENGTH, MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH,
+                                      MAX_USERNAME_LENGTH)
 from desktop_app.utils.UIUtil import UIUtil, ImageBackground
 
 PAGE_LOGIN, PAGE_REGISTER = 0, 1
+MAX_FAILED_LOGINS = 5          # wrong passwords in a row before the username is locked
+LOCK_SECONDS = 5 * 60
 
 
 class LoginMainWindowEx(Ui_MainWindow):
@@ -31,6 +37,7 @@ class LoginMainWindowEx(Ui_MainWindow):
         self.loginBackground = ImageBackground(self.frameLoginVisual, image, shade=(120, 60, 30))
         self.labelLoginMessage.hide()
         self.labelRegisterMessage.hide()
+        self.setupInputLimits()
         self.loadSavedUser()
         self.setupSignalAndSlot()
         self.showPage(PAGE_LOGIN)
@@ -50,6 +57,39 @@ class LoginMainWindowEx(Ui_MainWindow):
         self.pushButtonExit.clicked.connect(self.MainWindow.close)
 
     # ------------------------------------------------------------------ helpers
+    def setupInputLimits(self):
+        """Maximum lengths, and messages shown as plain text (a name like <h1>..</h1> is not HTML)."""
+        limits = {self.lineEditUserName: MAX_USERNAME_LENGTH, self.lineEditPassword: MAX_PASSWORD_LENGTH,
+                  self.lineEditFullName: MAX_NAME_LENGTH, self.lineEditRegisterUserName: MAX_USERNAME_LENGTH,
+                  self.lineEditEmail: MAX_EMAIL_LENGTH, self.lineEditRegisterPassword: MAX_PASSWORD_LENGTH,
+                  self.lineEditConfirmPassword: MAX_PASSWORD_LENGTH}
+        for box, limit in limits.items():
+            box.setMaxLength(limit)
+        for label in (self.labelLoginMessage, self.labelRegisterMessage):
+            label.setTextFormat(Qt.TextFormat.PlainText)
+
+    def lockKey(self, uid):
+        return f"loginLock/{uid.strip().lower()}"
+
+    def lockedMinutes(self, uid):
+        """Minutes left while this username is locked after too many wrong passwords, else 0."""
+        until = float(self.settings.value(self.lockKey(uid) + "/until", 0) or 0)
+        return math.ceil((until - time.time()) / 60) if until > time.time() else 0
+
+    def recordFailedLogin(self, uid):
+        """Count one wrong password; return True when the username has just been locked."""
+        key = self.lockKey(uid)
+        count = int(self.settings.value(key + "/count", 0) or 0) + 1
+        if count >= MAX_FAILED_LOGINS:
+            self.settings.setValue(key + "/until", time.time() + LOCK_SECONDS)
+            self.settings.setValue(key + "/count", 0)
+            return True
+        self.settings.setValue(key + "/count", count)
+        return False
+
+    def clearFailedLogins(self, uid):
+        self.settings.remove(self.lockKey(uid))
+
     def showPage(self, page):
         self.stackedWidgetAuth.setCurrentIndex(page)
         self.labelLoginMessage.hide()
@@ -82,12 +122,21 @@ class LoginMainWindowEx(Ui_MainWindow):
         if not uid or not pwd:
             self.showMessage(self.labelLoginMessage, "Please enter your username and password.")
             return
+        if minutes := self.lockedMinutes(uid):
+            self.showMessage(self.labelLoginMessage,
+                             f"Too many wrong passwords. Please try again in {minutes} minute{'s' if minutes > 1 else ''}.")
+            return
         us = UserDao.login(uid, pwd)
         if us is None:
-            self.showMessage(self.labelLoginMessage, "Incorrect username or password.")
+            if self.recordFailedLogin(uid):
+                self.showMessage(self.labelLoginMessage, f"Too many wrong passwords. This username is locked for "
+                                                         f"{LOCK_SECONDS // 60} minutes.")
+            else:
+                self.showMessage(self.labelLoginMessage, "Incorrect username or password.")
             self.lineEditPassword.selectAll()
             self.lineEditPassword.setFocus()
             return
+        self.clearFailedLogins(uid)
         if us.is_banned:
             self.showMessage(self.labelLoginMessage, "This account has been locked.")
             return

@@ -3,6 +3,7 @@ user_controller.py - Screen 1 (pageWelcome): the START button and the full name 
 `ui` is the AutoWiseMainWindowEx that owns the widgets.
 """
 from desktop_app.controllers import PAGE_VEHICLE
+from desktop_app.dal.user_dao import nameError
 
 
 class UserController:
@@ -19,6 +20,12 @@ class UserController:
             self.ui.showWarning("Missing information", "Please enter your full name to start.")
             self.ui.lineEditFullName.setFocus()
             return
+        for box, label in ((self.ui.lineEditFullName, "Full name"), (self.ui.lineEditDisplayName, "Display name")):
+            text = box.text().strip()
+            if text and (error := nameError(text)):
+                self.ui.showWarning("Please check your name", error.replace("Full name", label))
+                box.setFocus()
+                return
         name = self.userName()
         if self.ui.user is None:
             self.ui.labelHeaderUser.setText(f"Hi, {name}")

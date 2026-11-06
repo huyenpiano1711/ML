@@ -21,6 +21,11 @@ def makeLabel(manufacturer):
     return MAKE_LABELS.get(make) or " ".join(word.capitalize() for word in make.split())
 
 
+def known(*parts):
+    """Card details without the values the listing did not give ("Unknown" or empty)."""
+    return [part for part in parts if part and part != "Unknown"]
+
+
 def labelOf(field_name, value):
     """Display text for a value from feature_schema.json (the value sent to the model stays unchanged)."""
     if value is None:
@@ -109,14 +114,14 @@ class VehicleCard:
     def show(self, card, rank=None, gap=None):
         self.frame.setVisible(True)
         self.labelTitle.setText(vehicleTitle(card.manufacturer, card.model_base, card.year))
-        self.labelDetail.setText(f"{card.odometer:,.0f} mi · {labelOf('condition', card.condition)}")
+        self.labelDetail.setText(" · ".join(known(f"{card.odometer:,.0f} mi", labelOf("condition", card.condition))))
         self.labelPrice.setText(money(card.price))
         if self.labelRank is not None:
             self.labelRank.setText(f"#{rank}")
         if self.labelMatch is not None:
             self.labelMatch.setText(f"{card.score * 100:.0f}% MATCH" if card.score is not None else "")
         if self.labelSpecs is not None:
-            self.labelSpecs.setText(f"{labelOf('fuel', card.fuel)} · {labelOf('transmission', card.transmission)}")
+            self.labelSpecs.setText(" · ".join(known(labelOf("fuel", card.fuel), labelOf("transmission", card.transmission))))
         if self.labelGap is not None:
             self.labelGap.setText(f"{gap:+.1f}% VS. ESTIMATE" if gap is not None else "")
 

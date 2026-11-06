@@ -10,7 +10,12 @@ import re
 from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
 from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE
 from desktop_app.widgets.vehicle_card import labelOf, modelLabel, vehicleTitle
+from src.config import SCRAPE_YEAR
 from src.features.model_constraints import CATEGORICAL, constraints_for, violations
+
+# Mileage that does not fit the car (data: 99.9% of listings drive under ~53,000 mi a year).
+MAX_MILES_PER_YEAR = 50_000
+MAX_MILES_NEW = 10_000
 
 FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
                "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
@@ -52,6 +57,20 @@ def constraintMessage(vehicle, name, allowed):
         return f"{title} is only listed from {allowed[0]} to {allowed[1]} in the data. Please pick a year in that range."
     values = ", ".join(labelOf(name, value) for value in allowed)
     return f"{FIELD_NAMES[name]} of {title} in the data: {values}. Please pick one of them."
+
+
+def mileageMessages(vehicle):
+    """English messages when the mileage does not fit the year or the condition (same car age as the model)."""
+    messages = []
+    age = max(SCRAPE_YEAR - vehicle.year, 1)
+    if vehicle.odometer > MAX_MILES_PER_YEAR * age:
+        messages.append(f"{vehicle.odometer:,.0f} mi is too much for a {vehicle.year} car (data from {SCRAPE_YEAR}): "
+                        f"at most {MAX_MILES_PER_YEAR * age:,} mi ({MAX_MILES_PER_YEAR:,} mi a year). "
+                        "Please check the mileage or the year.")
+    if vehicle.condition == "new" and vehicle.odometer > MAX_MILES_NEW:
+        messages.append(f"A new car has at most {MAX_MILES_NEW:,} mi. With {vehicle.odometer:,.0f} mi, "
+                        "please pick another condition (for example Like new or Excellent).")
+    return messages
 
 
 def modelOptions(make):
@@ -122,6 +141,7 @@ class VehicleController:
         messages = [translateError(error) for error in vehicle.validate()]
         if not messages:                                 # the model exists: check it against the data
             messages = [constraintMessage(vehicle, name, allowed) for name, allowed in violations(vehicle)]
+            messages += mileageMessages(vehicle)
         if messages:
             self.ui.showWarning("Please check your information", "\n".join(f"• {m}" for m in messages))
             return None

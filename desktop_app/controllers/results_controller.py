@@ -8,6 +8,7 @@ because the interface is in English. A message it does not know is shown unchang
 import logging
 import re
 import threading
+from importlib.metadata import PackageNotFoundError, version
 
 from backend.schemas.result_schema import MAX_ALTERNATIVES, TOP_K, AnalysisResult
 from desktop_app.controllers import PAGE_RESULTS
@@ -23,6 +24,9 @@ TOP_UNAVAILABLE = "Car recommendations are unavailable right now."
 SIMILAR_EMPTY = "No other listings near the estimated price."
 SIMILAR_UNAVAILABLE = "Listings in the same price range are unavailable right now."
 MSG_NOT_STARTED = "The analysis could not start. Please try again."
+FIX_ENVIRONMENT = ("Start the app with the project's .venv (python -m pip install -r requirements.txt), "
+                   "see README.md.")
+STARTUP_TITLE = "AutoWise could not load everything"
 
 # The part of Screen 3 a message is about
 PRICE, BUDGET, TOP, SIMILAR, CATALOG = "price", "budget", "top", "similar", "catalog"
@@ -40,13 +44,13 @@ MESSAGES = [
     (r"Không tìm thấy file mô hình dự đoán giá \((.+)\)\. Chưa thể dự đoán giá\.", PRICE,
      lambda m: f"The price model file ({m[1]}) was not found, so no price can be estimated."),
     (r"Mô hình dự đoán giá gặp lỗi, chưa thể dự đoán giá cho xe này\.", PRICE,
-     lambda m: "The price model failed, so no price can be estimated for this car."),
+     lambda m: "The price model failed, so no price can be estimated for this car. " + FIX_ENVIRONMENT),
     (r"Chưa có danh sách xe để gợi ý \(recommendation_catalog\.pkl\)\. "
      r"Chạy: python -m src\.recommendation\.build_catalog", CATALOG,
      lambda m: "The car list (recommendation_catalog.pkl) is missing. "
                "Run: python -m src.recommendation.build_catalog"),
     (r"Không nạp được danh sách xe để gợi ý\.", CATALOG,
-     lambda m: "The car list could not be loaded."),
+     lambda m: "The car list could not be loaded. " + FIX_ENVIRONMENT),
     (r"Chức năng gợi ý xe gặp lỗi, chưa thể tìm xe phù hợp\.", TOP,
      lambda m: "The recommendation feature failed, so no matching cars could be found."),
     (r"Chức năng tìm xe cùng mức giá gặp lỗi\.", SIMILAR,
@@ -97,6 +101,31 @@ def priceGapPct(price, predicted_price):
     return round((price - predicted_price) / predicted_price * 100, 1)
 
 
+# Versions the saved files need: models/price_prediction/final_pipeline.joblib was saved with
+# scikit-learn 1.9.1 (numpy 2 pickles), recommendation_catalog.pkl with the pandas string dtype of pandas >= 2.3.
+REQUIRED_VERSIONS = {"scikit-learn": ("==", (1, 9, 1)), "numpy": (">=", (2, 0)), "pandas": (">=", (2, 3))}
+
+
+def versionTuple(text):
+    return tuple(int(part) for part in re.findall(r"\d+", text)[:3])
+
+
+def environmentProblems(getVersion=version):
+    """English messages for missing or wrong library versions (checked before loading the Backend)."""
+    problems = []
+    for package, (op, needed) in REQUIRED_VERSIONS.items():
+        wanted = ".".join(map(str, needed))
+        try:
+            found = getVersion(package)
+        except PackageNotFoundError:
+            problems.append(f"{package} is not installed (needs {op}{wanted}).")
+            continue
+        have = versionTuple(found)[:len(needed)]
+        if (op == "==" and have != needed) or (op == ">=" and have < needed):
+            problems.append(f"{package} {found} is installed, but AutoWise needs {package}{op}{wanted}.")
+    return problems
+
+
 def defaultService():
     """Imported here because the Backend takes seconds to load (see warmUp)."""
     from backend.app_service import get_app_service
@@ -108,6 +137,7 @@ class ResultsController:
         self.ui = ui
         self.getService = getService
         self.warmThread = None
+        self.startupProblems = []
         self.topCards = [VehicleCard(ui, "TopCar", n, setImage) for n in range(1, TOP_K + 1)]
         self.similarCards = [VehicleCard(ui, "SimilarCar", n, setImage) for n in range(1, MAX_ALTERNATIVES + 1)]
 
@@ -119,12 +149,22 @@ class ResultsController:
             self.warmThread.start()
 
     def loadBackend(self):
-        """Only logs: analyze() reports the same problems when the user clicks ANALYZE."""
+        """Runs in the warm-up thread: problems are logged and shown at once (not only after ANALYZE)."""
+        problems = environmentProblems()
+        if problems:
+            problems.append(FIX_ENVIRONMENT)
         try:
-            for error in self.getService().warm_up():
-                log.warning(error)
+            errors = self.getService().warm_up()
         except Exception:
             log.exception("Could not warm up the Backend")
+            errors = [MSG_NOT_STARTED]
+        for error in errors:
+            log.warning(error)
+        problems += [translateMessage(error) for error in errors]
+        self.startupProblems = list(dict.fromkeys(problems))
+        if self.startupProblems and hasattr(self.ui, "postBackendProblems"):
+            # thread-safe: the window shows the dialog in the GUI thread
+            self.ui.postBackendProblems(STARTUP_TITLE, "\n".join(f"• {text}" for text in self.startupProblems))
 
     def analyze(self, vehicle):
         """AnalysisResult for a validated VehicleInput. Never raises (an exception in a PyQt slot closes the app)."""
@@ -179,7 +219,7 @@ class ResultsController:
             self.ui.labelPriceNote.setText("The price estimate is unavailable for this analysis.")
             return
         self.ui.labelPredictedPrice.setText(money(price.predicted_price))
-        note = f"{price.model_name} trained on U.S. used-car listings."
+        note = f"{price.model_name} trained on U.S. used-car listings from 2021 (not today's market prices)."
         if price.price_low is not None and price.price_high is not None:
             self.ui.labelPriceRange.setText(f"Reference range: {money(price.price_low)} – {money(price.price_high)}")
             note += " Reference range = estimate ± mean absolute error (MAE) on the test set."

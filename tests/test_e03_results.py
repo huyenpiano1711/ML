@@ -17,6 +17,7 @@ from backend.schemas.vehicle_input import MODELS_BY_MAKE, VehicleInput
 from desktop_app.controllers import PAGE_RESULTS
 from desktop_app.controllers.results_controller import (
     BUDGET,
+    FIX_ENVIRONMENT,
     MSG_NOT_STARTED,
     SIMILAR,
     SIMILAR_EMPTY,
@@ -428,7 +429,7 @@ def test_model_error_still_shows_top_5():
     assert ui.labelSimilarEmpty.visible and ui.labelSimilarEmpty.content == SIMILAR_UNAVAILABLE
     assert "no estimated price" in ui.labelSimilarNote.content
     assert ui.warnings == [("Some results are unavailable",
-                            "• The price model failed, so no price can be estimated for this car.")]
+                            "• The price model failed, so no price can be estimated for this car. " + FIX_ENVIRONMENT)]
 
 
 def test_catalog_error_still_shows_the_price():
@@ -440,7 +441,7 @@ def test_catalog_error_still_shows_the_price():
     assert ui.labelTopEmpty.visible and ui.labelTopEmpty.content == TOP_UNAVAILABLE
     assert ui.labelSimilarEmpty.visible and ui.labelSimilarEmpty.content == SIMILAR_UNAVAILABLE
     assert not ui.widgetTopMatches.visible and not ui.widgetSimilarPrice.visible
-    assert ui.warnings[0][1] == "• The car list could not be loaded."
+    assert ui.warnings[0][1] == "• The car list could not be loaded. " + FIX_ENVIRONMENT
 
 
 def test_images_are_drawn_after_the_layout_and_before_the_error_dialog():
@@ -464,8 +465,8 @@ def test_nothing_to_show_stays_on_screen_2():
 
     assert ui.pages == []
     assert ui.warnings == [("Could not analyze this car",
-                            "• The price model failed, so no price can be estimated for this car.\n"
-                            "• The car list could not be loaded.")]
+                            "• The price model failed, so no price can be estimated for this car. " + FIX_ENVIRONMENT + "\n"
+                            "• The car list could not be loaded. " + FIX_ENVIRONMENT)]
 
 
 def test_nothing_to_show_also_lists_the_warnings():
@@ -542,10 +543,10 @@ def _catalog() -> pd.DataFrame:
     (app_mod.MSG_BAD_FORM, "The form data was sent in the wrong format."),
     (app_mod.MSG_MODEL_MISSING.format(path="final_pipeline.joblib"),
      "The price model file (final_pipeline.joblib) was not found, so no price can be estimated."),
-    (app_mod.MSG_MODEL_ERROR, "The price model failed, so no price can be estimated for this car."),
+    (app_mod.MSG_MODEL_ERROR, "The price model failed, so no price can be estimated for this car. " + FIX_ENVIRONMENT),
     (app_mod.MSG_CATALOG_MISSING,
      "The car list (recommendation_catalog.pkl) is missing. Run: python -m src.recommendation.build_catalog"),
-    (app_mod.MSG_CATALOG_ERROR, "The car list could not be loaded."),
+    (app_mod.MSG_CATALOG_ERROR, "The car list could not be loaded. " + FIX_ENVIRONMENT),
     (app_mod.MSG_RECOMMEND_ERROR, "The recommendation feature failed, so no matching cars could be found."),
     (app_mod.MSG_ALTERNATIVE_ERROR, "Finding cars in the same price range failed."),
     (app_mod.MSG_NO_PRICE_FOR_ALTERNATIVES,

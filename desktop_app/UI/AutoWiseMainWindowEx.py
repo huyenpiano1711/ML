@@ -19,7 +19,7 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]          # D:\AutoWise
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
-from PyQt6.QtCore import Qt, QEventLoop, QLocale
+from PyQt6.QtCore import Qt, QEventLoop, QLocale, QObject, pyqtSignal
 from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from desktop_app.UI.AutoWiseMainWindow import Ui_MainWindow
@@ -30,6 +30,12 @@ from desktop_app.controllers.user_controller import UserController
 from desktop_app.controllers.vehicle_controller import VehicleController, FIELD_NAMES
 from desktop_app.widgets.vehicle_card import labelOf, money
 from backend.schemas.vehicle_input import FEATURES
+from desktop_app.dal.user_dao import MAX_NAME_LENGTH
+
+
+class BackendProblems(QObject):
+    """Queued signal: the warm-up thread asks the GUI thread to show a dialog."""
+    posted = pyqtSignal(str, str)
 
 
 class AutoWiseMainWindowEx(Ui_MainWindow):
@@ -43,6 +49,8 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.userController = UserController(self)
         self.vehicleController = VehicleController(self)
         self.resultsController = ResultsController(self)
+        self.backendProblems = BackendProblems()
+        self.backendProblems.posted.connect(self.showWarning, Qt.ConnectionType.QueuedConnection)
         UIUtil.setupWindow(MainWindow)
         image = UIUtil.firstImage("hero.jpg", "hero.png", "bg_hero.jpg")
         self.heroBackground = ImageBackground(self.frameHero, image)
@@ -50,6 +58,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.labelTopEmpty.hide()
         self.labelSimilarEmpty.hide()
         self.pushButtonLogout.setVisible(self.loginUi is not None)
+        self.setupInputLimits()
         self.setupSpinBoxes()
         self.loadOptions()
         if self.user is not None:
@@ -82,6 +91,13 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
             combo.currentIndexChanged.connect(self.updateSummary)
         for box in (self.spinBoxYear, self.spinBoxOdometer, self.spinBoxBudget):
             box.valueChanged.connect(self.updateSummary)
+
+    def setupInputLimits(self):
+        """Names are limited in length and always shown as plain text (never read as HTML)."""
+        for box in (self.lineEditFullName, self.lineEditDisplayName):
+            box.setMaxLength(MAX_NAME_LENGTH)
+        for label in (self.labelHeaderUser, self.labelVehicleTitle, self.labelResultsTitle):
+            label.setTextFormat(Qt.TextFormat.PlainText)
 
     def setupSpinBoxes(self):
         english = QLocale(QLocale.Language.English, QLocale.Country.UnitedStates)
@@ -178,6 +194,10 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
     def settleLayout(self):
         """Apply pending layouts; clicks stay queued, so ANALYZE cannot start again from here."""
         QApplication.processEvents(QEventLoop.ProcessEventsFlag.ExcludeUserInputEvents)
+
+    def postBackendProblems(self, title, text):
+        """Called from the warm-up thread when the Backend cannot load: the dialog opens at start-up."""
+        self.backendProblems.posted.emit(title, text)
 
     def showWarning(self, title, text):
         box = QMessageBox(self.MainWindow)

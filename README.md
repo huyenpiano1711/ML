@@ -49,6 +49,30 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+Luôn chạy ứng dụng và test bằng Python trong `.venv` của dự án. Mô hình `final_pipeline.joblib` được lưu bằng scikit-learn 1.9.1, numpy 2 và pandas 3, nên Python khác (thiếu thư viện hoặc sai phiên bản) không nạp được mô hình. Phiên bản tối thiểu: `scikit-learn==1.9.1`, `numpy>=2.0`, `pandas>=2.3` (đã ghi trong `requirements.txt`).
+
+PyCharm: **Settings → Project → Python Interpreter → Add Interpreter → Existing**, chọn `.venv\Scripts\python.exe` trong thư mục dự án. Kiểm tra nhanh:
+
+```bash
+.venv\Scripts\python -c "import sklearn, numpy, pandas; print(sklearn.__version__, numpy.__version__, pandas.__version__)"
+.venv\Scripts\python -m pytest -q
+```
+
+Nếu mở ứng dụng bằng Python sai phiên bản, cửa sổ chính báo ngay lúc khởi động (hộp thoại "AutoWise could not load everything"), ghi rõ thư viện nào sai và cần bản nào.
+
+### Ràng buộc dữ liệu nhập trên giao diện
+
+| Ô nhập | Ràng buộc |
+|---|---|
+| Họ tên, tên hiển thị | 1–60 ký tự, phải có chữ cái; chỉ gồm chữ (kể cả tiếng Việt), khoảng trắng và `. ' -`; luôn hiển thị dạng chữ thường (không hiểu thành HTML) |
+| Tên đăng nhập | 3–30 ký tự: chữ, số, `_`, `.` |
+| Email | Không bắt buộc; tối đa 100 ký tự; mỗi email chỉ dùng cho một tài khoản |
+| Mật khẩu | 8–64 ký tự, có cả chữ và số |
+| Đăng nhập | Sai mật khẩu 5 lần liên tiếp thì tên đăng nhập bị khóa 5 phút |
+| Số dặm | Không quá 50.000 dặm cho mỗi năm tuổi xe (tuổi xe = 2021 − năm, tối thiểu 1); xe tình trạng "New" tối đa 10.000 dặm |
+
+Giá ước tính dựa trên tin rao tại Mỹ năm 2021, không phải giá thị trường hiện tại; trang kết quả có ghi chú điều này.
+
 ## Tải dữ liệu
 
 Dữ liệu và ảnh quá lớn cho git nên được đính kèm ở mục **Releases** của repo (bản `data-v1`). Giải nén tại **thư mục gốc repo**; riêng ba file ảnh giải nén vào thư mục `assets/`.
