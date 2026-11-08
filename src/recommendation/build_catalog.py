@@ -14,6 +14,9 @@ Quy ước:
   - Tên cột trùng `recommendation_columns.display` trong feature_schema.json và trùng
     các trường của CarCard (backend/schemas/result_schema.py).
   - Ảnh là ảnh minh họa theo (hãng, dòng, năm), không phải ảnh thật của tin đăng.
+  - title_status (giấy tờ) và state giữ nguyên từ dữ liệu gốc, để thẻ xe cảnh báo xe rebuilt/salvage.
+  - Xe có ảnh đã bị loại vì sai nội dung (assets/removed_images.csv, kể cả tên cũ trong
+    image_aliases.csv trỏ tới ảnh đó) không được đưa vào danh sách gợi ý. Mô hình giá không đổi.
 """
 from __future__ import annotations
 
@@ -32,11 +35,13 @@ FILLED_PKL = config.PROCESSED_DIR / "vehicles_filled.pkl"
 CATALOG_PKL = config.PROCESSED_DIR / "recommendation_catalog.pkl"
 REPORT_DIR = config.REPORT_DIR / "recommendation"
 IMAGE_REL_DIR = "assets/car_images_unique"          # đường dẫn tương đối so với gốc repo
+REMOVED_IMAGES = config.PROJECT_DIR / "assets" / "removed_images.csv"   # ảnh sai đã xóa
+IMAGE_ALIASES = config.PROJECT_DIR / "assets" / "image_aliases.csv"
 
 # Cột đầu ra của catalog
 CATALOG_COLUMNS = ["id", "manufacturer", "model_base", "make_model", "year", "car_age",
                    "price", "odometer", "type", "condition", "fuel", "transmission", "drive",
-                   "image_path", "image_match"]
+                   "title_status", "state", "image_path", "image_match"]
 # Cột bắt buộc có giá trị (không thiếu)
 REQUIRED_NOT_NULL = ["id", "manufacturer", "model_base", "year", "price", "odometer",
                      "type", "condition", "fuel", "transmission", "drive"]
@@ -48,6 +53,23 @@ DUP_KEYS = ["manufacturer", "model_base", "year", "price", "odometer",
 def safe_key(value: str) -> str:
     """Cùng quy tắc với safe_filename() trong scripts/download_car_images.py."""
     return re.sub(r"[^a-z0-9]+", "_", str(value).lower().strip()).strip("_")[:120]
+
+
+def image_file_key(cat: pd.DataFrame) -> pd.Series:
+    """Tên file ảnh của từng xe: <hãng>_<dòng>_<năm>.jpg (cùng quy tắc với image_service)."""
+    return ((cat["manufacturer"].astype(str) + "_" + cat["model_base"].astype(str)).map(safe_key)
+            + "_" + cat["year"].astype(int).astype(str) + ".jpg")
+
+
+def load_removed_images(removed_path: Path = REMOVED_IMAGES, alias_path: Path = IMAGE_ALIASES) -> set[str]:
+    """Ảnh đã bị xóa vì sai nội dung, cộng các tên cũ (alias) trỏ tới chúng."""
+    if not Path(removed_path).exists():
+        return set()
+    removed = set(pd.read_csv(removed_path)["file"].astype(str).str.lower())
+    if Path(alias_path).exists():
+        aliases = pd.read_csv(alias_path)
+        removed |= set(aliases.loc[aliases["file"].str.lower().isin(removed), "alias"].str.lower())
+    return removed
 
 
 # ---------------------------------------------------------------------------
@@ -121,8 +143,12 @@ def validate_catalog(cat: pd.DataFrame) -> list[str]:
 # ---------------------------------------------------------------------------
 # Quy trình chính
 # ---------------------------------------------------------------------------
-def build_catalog(df: pd.DataFrame, image_dir: Path | None = None) -> tuple[pd.DataFrame, dict]:
-    """df: vehicles_filled (đọc từ pkl). Trả về (catalog, report)."""
+def build_catalog(df: pd.DataFrame, image_dir: Path | None = None,
+                  removed_images: set[str] | None = None) -> tuple[pd.DataFrame, dict]:
+    """df: vehicles_filled (đọc từ pkl). removed_images: tên file ảnh sai đã xóa (mặc định đọc
+    assets/removed_images.csv). Trả về (catalog, report)."""
+    if removed_images is None:
+        removed_images = load_removed_images()
     report = {"rows_input": int(len(df))}
 
     cat = pd.DataFrame({
@@ -132,13 +158,18 @@ def build_catalog(df: pd.DataFrame, image_dir: Path | None = None) -> tuple[pd.D
         "type": df["type_filled"], "condition": df["condition"],
         "fuel": df["fuel_filled"], "transmission": df["transmission_filled"],
         "drive": df["drive_filled"],
+        # giấy tờ (rebuilt, salvage...) và bang của tin đăng: hiện trên thẻ xe, và để mô hình giá
+        # ước tính giá hợp lý của chính chiếc xe đó (app_service)
+        "title_status": df["title_status"] if "title_status" in df else "unknown",
+        "state": df["state"] if "state" in df else "unknown",
     })
 
     # 1. Bỏ dòng thiếu thông tin quan trọng
     before = len(cat)
     cat = cat.dropna(subset=["id", "manufacturer", "model_base", "year", "price", "odometer"])
     report["dropped_missing_core"] = int(before - len(cat))
-    for c in ["manufacturer", "model_base", "type", "condition", "fuel", "transmission", "drive"]:
+    for c in ["manufacturer", "model_base", "type", "condition", "fuel", "transmission", "drive",
+              "title_status", "state"]:
         cat[c] = cat[c].astype(str).str.strip().str.lower()
         cat.loc[cat[c].isin(["", "nan", "none", "<na>"]), c] = "unknown"
     cat["year"] = cat["year"].astype(int)
@@ -149,6 +180,12 @@ def build_catalog(df: pd.DataFrame, image_dir: Path | None = None) -> tuple[pd.D
     before = len(cat)
     cat = cat.sort_values("id").drop_duplicates(subset=DUP_KEYS, keep="first")
     report["dropped_duplicate_listings"] = int(before - len(cat))
+
+    # 2b. Bỏ xe có ảnh đã bị loại vì sai nội dung
+    before = len(cat)
+    cat = cat[~image_file_key(cat).isin(removed_images)]
+    report["removed_image_files"] = len(removed_images)
+    report["dropped_wrong_image"] = int(before - len(cat))
 
     # 3. Cột phụ
     cat["make_model"] = cat["manufacturer"] + " " + cat["model_base"]
@@ -168,7 +205,9 @@ def build_catalog(df: pd.DataFrame, image_dir: Path | None = None) -> tuple[pd.D
     report["n_manufacturers"] = int(cat["manufacturer"].nunique())
     report["n_make_models"] = int(cat["make_model"].nunique())
     report["share_unknown_pct"] = {c: round(float((cat[c] == "unknown").mean() * 100), 2)
-                                   for c in ["type", "condition", "fuel", "transmission", "drive"]}
+                                   for c in ["type", "condition", "fuel", "transmission", "drive",
+                                             "title_status"]}
+    report["title_status_counts"] = {k: int(v) for k, v in cat["title_status"].value_counts().items()}
     report["problems"] = problems
     if problems:
         raise ValueError("Catalog không đạt kiểm tra: " + "; ".join(problems))

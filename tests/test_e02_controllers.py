@@ -8,8 +8,7 @@ from pathlib import Path
 import pytest
 
 from backend.schemas.vehicle_input import FEATURES, MODELS_BY_MAKE, OPTIONAL_FIELDS, REQUIRED_FIELDS, VehicleInput
-from desktop_app.controllers import PAGE_VEHICLE, PAGE_WELCOME
-from desktop_app.controllers.user_controller import UserController
+from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.controllers.vehicle_controller import (
     ENGLISH_LABELS,
     FIELD_NAMES,
@@ -20,6 +19,7 @@ from desktop_app.controllers.vehicle_controller import (
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 COMBO_FIELDS = ["manufacturer", "model_base", "type", "condition", "fuel", "transmission"]
+ADVANCED_FIELDS = ["title_status", "state"]          # drive, cylinders, paint color are no longer on the form
 
 
 class FakeCombo:
@@ -87,14 +87,13 @@ class FakeLabel:
 class FakeUi:
     """The parts of AutoWiseMainWindowEx the controllers use."""
 
-    def __init__(self, full_name="", display_name="", user=None):
+    def __init__(self, full_name="", user=None):
         self.user = user
-        self.lineEditFullName = FakeLineEdit(full_name)
-        self.lineEditDisplayName = FakeLineEdit(display_name)
+        self.full_name = full_name
         self.labelHeaderUser = FakeLabel()
         self.labelVehicleTitle = FakeLabel()
         self.required = {name: FakeCombo() for name in COMBO_FIELDS}
-        self.optional = {name: FakeCombo() for name in OPTIONAL_FIELDS}
+        self.optional = {name: FakeCombo() for name in ADVANCED_FIELDS}
         self.comboBoxManufacturer = self.required["manufacturer"]
         self.comboBoxModel = self.required["model_base"]
         self.spinBoxYear = FakeSpinBox(2015)
@@ -102,7 +101,6 @@ class FakeUi:
         self.spinBoxBudget = FakeSpinBox(25_000)
         self.warnings = []
         self.pages = []
-        self.userController = UserController(self)
 
     def requiredCombos(self):
         return self.required
@@ -111,7 +109,7 @@ class FakeUi:
         return self.optional
 
     def userName(self):
-        return self.userController.userName()
+        return self.full_name.strip()
 
     def showWarning(self, title, text):
         self.warnings.append((title, text))
@@ -134,46 +132,10 @@ def _shown_errors(ui: FakeUi) -> list[str]:
     return ui.warnings[0][1].split("\n")
 
 
-# --------------------------------------------------------------------- Screen 1
-@pytest.mark.parametrize("full_name", ["", "    "])
-def test_start_requires_full_name(full_name):
-    ui = FakeUi(full_name=full_name, display_name="Duy")
-    UserController(ui).start()
-
-    assert ui.pages == []
-    assert ui.warnings == [("Missing information", "Please enter your full name to start.")]
-    assert ui.lineEditFullName.focused
-
-
-def test_start_opens_vehicle_page_and_prefers_display_name():
-    ui = FakeUi(full_name="  Duy Le ", display_name=" Duy ")
-    UserController(ui).start()
-
-    assert ui.pages == [PAGE_VEHICLE]
-    assert ui.warnings == []
-    assert ui.labelHeaderUser.content == "Hi, Duy"
-    assert ui.labelVehicleTitle.content == "Duy, which car do you have in mind?"
-
-
-def test_start_falls_back_to_full_name_and_keeps_signed_in_header():
-    ui = FakeUi(full_name="Duy Le", user=object())
-    ui.labelHeaderUser.setText("Signed in as Duy Le")
-    UserController(ui).start()
-
-    assert ui.labelHeaderUser.content == "Signed in as Duy Le"
-    assert ui.labelVehicleTitle.content == "Duy Le, which car do you have in mind?"
-
-
 # --------------------------------------------------------------------- Screen 2: buttons
-def test_back_goes_to_welcome_page():
-    ui = FakeUi()
-    VehicleController(ui).goBack()
-    assert ui.pages == [PAGE_WELCOME]
-
-
 def test_reset_clears_form_and_shows_vehicle_page():
     ui = _filled_ui()
-    ui.optional["drive"].select("4wd")
+    ui.optional["title_status"].select("rebuilt")
     VehicleController(ui).reset()
 
     for combo in list(ui.required.values()) + list(ui.optional.values()):
@@ -218,22 +180,35 @@ def test_refresh_models_follows_the_selected_make():
 # --------------------------------------------------------------------- Screen 2: validation
 def test_valid_form_gives_vehicle_input_without_warning():
     ui = _filled_ui()
-    ui.optional["drive"].select("4wd")
+    ui.optional["title_status"].select("rebuilt")
     vehicle = VehicleController(ui).validatedInput()
 
     assert ui.warnings == []
     assert isinstance(vehicle, VehicleInput)
     assert vehicle.manufacturer == "ford"
     assert (vehicle.year, vehicle.odometer, vehicle.budget_max_usd) == (2015, 50_000, 25_000)
-    assert vehicle.drive == "4wd"
+    assert vehicle.title_status == "rebuilt"
+    assert (vehicle.drive, vehicle.cylinders, vehicle.paint_color) == (None, None, None)
     assert vehicle.user_name == "Duy Le"
 
 
-def test_empty_form_lists_every_missing_field():
+def test_empty_form_asks_only_for_make_and_model():
     ui = FakeUi()
     assert VehicleController(ui).validatedInput() is None
 
-    assert _shown_errors(ui) == [f"• {FIELD_NAMES[name]} is required." for name in COMBO_FIELDS]
+    assert _shown_errors(ui) == ["• Make is required.", "• Model is required."]
+
+
+def test_body_type_condition_fuel_transmission_are_optional():
+    ui = FakeUi(full_name="Duy Le")
+    ui.required["manufacturer"].select("ford")
+    ui.required["model_base"].select("f150")
+    vehicle = VehicleController(ui).validatedInput()
+
+    assert ui.warnings == [] and vehicle is not None
+    assert (vehicle.type, vehicle.condition, vehicle.fuel, vehicle.transmission) == (None, None, None, None)
+    row = vehicle.to_model_row()
+    assert all(row[name] == "unknown" for name in ("type", "condition", "fuel", "transmission"))
 
 
 @pytest.mark.parametrize("box, value, expected", [
@@ -253,10 +228,10 @@ def test_several_errors_are_all_shown():
     ui = _filled_ui()
     ui.spinBoxYear.setValue(1980)
     ui.spinBoxBudget.setValue(10)
-    ui.required["fuel"].select(None)
+    ui.required["model_base"].select(None)
 
     assert VehicleController(ui).validatedInput() is None
-    assert _shown_errors(ui) == ["• Fuel is required.",
+    assert _shown_errors(ui) == ["• Model is required.",
                                  "• Year must be between 1990 and 2022.",
                                  "• Budget must be between 1,000 and 150,000."]
 
@@ -274,12 +249,10 @@ def test_every_validate_message_is_translated():
     """Fails if D01 rewords a message in validate(), so the patterns can be updated."""
     label = FEATURES["year"]["ui_label"]
     errors = VehicleInput.from_dict({"manufacturer": "ford", "model_base": "camry", "year": 1980, "type": "boat",
-                                     "odometer": "abc", "budget_max_usd": 20_000}).validate()
+                                     "odometer": "abc"}).validate()
 
     assert [translateError(error) for error in errors] == [
-        "Condition is required.",
-        "Fuel is required.",
-        "Transmission is required.",
+        "Budget is required.",
         "Year must be between 1990 and 2022.",
         "Mileage must be a number.",
         "Body type has an invalid value: 'boat'.",
@@ -299,6 +272,6 @@ def test_unknown_message_is_kept_unchanged():
 
 # --------------------------------------------------------------------- no GUI dependency
 def test_controllers_do_not_import_pyqt():
-    code = ("import sys; import desktop_app.controllers.user_controller, desktop_app.controllers.vehicle_controller; "
+    code = ("import sys; import desktop_app.controllers.vehicle_controller, desktop_app.controllers.results_controller; "
             "sys.exit('PyQt6' in sys.modules)")
     assert subprocess.run([sys.executable, "-c", code], cwd=PROJECT_DIR).returncode == 0

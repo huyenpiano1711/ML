@@ -51,6 +51,8 @@ Nếu `assets/placeholder_car.png` bị xóa hoặc hỏng, service tự vẽ l�
 - `scripts/15_image_service_check.py` → `reports/integration/image_service_check.json`:
   - 6.842/6.842 ảnh trong `car_images_unique` đọc được.
   - 191.196 xe trong catalog: 99,0% có ảnh minh họa, 1,0% (1.904 xe, dòng xe không có ảnh nào) dùng ảnh thay thế.
+  - Sau khi xóa 269 ảnh sai (07/11/2026, danh sách trong `assets/removed_images.csv`): còn 6.573 ảnh; catalog còn
+    184.867 xe (bỏ các xe dùng ảnh đã xóa), trong đó 92,3% có ảnh đúng năm, 6,8% ảnh năm gần nhất, 0,9% ảnh thay thế.
   - Nếu catalog được build khi máy chưa có thư mục ảnh (`image_path` trống), bước tìm lại vẫn cho 99,0%
     (85,0% đúng năm, 14,0% năm gần nhất).
 

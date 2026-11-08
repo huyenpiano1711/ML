@@ -4,8 +4,7 @@
 Môn Học máy trong Phân tích Kinh doanh.
 
 - **Dữ liệu:** Craigslist Cars & Trucks (Kaggle), 426.880 tin đăng tại Mỹ, 04–05/2021. Giá tính bằng USD, quãng đường tính bằng dặm.
-- **Đã xong:** EDA, tiền xử lý dữ liệu (16 bước lọc), giải mã VIN, điền dữ liệu thiếu, thu thập và khử trùng ảnh minh họa.
-- **Tiếp theo:** dự đoán giá, gợi ý xe, backend và giao diện PyQt6 (theo ML Draft của nhóm).
+- **Đã xong:** EDA, tiền xử lý dữ liệu (16 bước lọc), giải mã VIN, điền dữ liệu thiếu, thu thập và khử trùng ảnh minh họa, mô hình dự đoán giá (HistGradientBoosting), gợi ý xe (KNN), backend và ứng dụng desktop PyQt6.
 
 ## Cấu trúc thư mục
 
@@ -39,7 +38,15 @@ AutoWise/
     └── DATA_DESCRIPTION.md    # mô tả bộ ảnh và bảng ảnh
 ```
 
-Các thư mục `models/`, `backend/`, `desktop_app/`, `tests/`, `src/prediction/`, `src/recommendation/` sẽ được thêm khi các phần việc tương ứng hoàn thành, theo cấu trúc trong ML Draft.
+Ngoài các thư mục trên:
+
+| Thư mục | Nội dung |
+|---|---|
+| `src/prediction/`, `models/price_prediction/` | Huấn luyện và mô hình giá `final_pipeline.joblib` |
+| `src/recommendation/` | Danh mục xe gợi ý (`build_catalog.py`) và KNN (`recommend.py`) |
+| `backend/` | `app_service.analyze()`: kiểm tra dữ liệu nhập, dự đoán giá, Top 5, xe cùng tầm giá, ảnh |
+| `desktop_app/` | Ứng dụng PyQt6: `UI/` (file `.ui`, file sinh bằng pyuic6, file `*Ex.py`), `controllers/`, `widgets/`, `dal/` (tài khoản SQLite) |
+| `tests/` | Test tự động (`python -m pytest -q`) |
 
 ## Cài đặt
 
@@ -48,6 +55,35 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows
 pip install -r requirements.txt
 ```
+
+Luôn chạy ứng dụng và test bằng Python trong `.venv` của dự án. Mô hình `final_pipeline.joblib` được lưu bằng scikit-learn 1.9.1, numpy 2 và pandas 3, nên Python khác (thiếu thư viện hoặc sai phiên bản) không nạp được mô hình. Phiên bản tối thiểu: `scikit-learn==1.9.1`, `numpy>=2.0`, `pandas>=2.3` (đã ghi trong `requirements.txt`).
+
+PyCharm: **Settings → Project → Python Interpreter → Add Interpreter → Existing**, chọn `.venv\Scripts\python.exe` trong thư mục dự án. Kiểm tra nhanh:
+
+```bash
+.venv\Scripts\python -c "import sklearn, numpy, pandas; print(sklearn.__version__, numpy.__version__, pandas.__version__)"
+.venv\Scripts\python -m pytest -q
+```
+
+Mở ứng dụng: `.venv\Scripts\python desktop_app\test\TestLoginMainWindowEx.py` (màn hình đăng nhập → nhập thông tin xe → kết quả).
+
+Nếu mở ứng dụng bằng Python sai phiên bản, cửa sổ chính báo ngay lúc khởi động (hộp thoại "AutoWise could not load everything"), ghi rõ thư viện nào sai và cần bản nào.
+
+### Ràng buộc dữ liệu nhập trên giao diện
+
+| Ô nhập | Ràng buộc |
+|---|---|
+| Họ tên (khi đăng ký) | 1–60 ký tự, phải có chữ cái; chỉ gồm chữ (kể cả tiếng Việt), khoảng trắng và `. ' -`; luôn hiển thị dạng chữ thường (không hiểu thành HTML) |
+| Tên đăng nhập | 3–30 ký tự: chữ, số, `_`, `.` |
+| Email | Không bắt buộc; tối đa 100 ký tự; mỗi email chỉ dùng cho một tài khoản |
+| Mật khẩu | 8–64 ký tự, có cả chữ và số |
+| Đăng nhập | Sai mật khẩu 5 lần liên tiếp thì tên đăng nhập bị khóa 5 phút |
+| Hãng, dòng xe | Bắt buộc; gõ một phần tên (gợi ý hiện ra) hoặc lướt danh sách để chọn; tên không có trong danh sách thì không được nhận |
+| Kiểu dáng, tình trạng, nhiên liệu, hộp số | Không bắt buộc; để "Not sure" thì mô hình nhận `unknown` |
+| Tùy chọn nâng cao | Luôn hiện, không bắt buộc; chỉ còn tình trạng giấy tờ và bang; đã bỏ hệ dẫn động, số xi-lanh, màu xe (dữ liệu thiếu 27–35%) |
+| Số dặm | Không quá 50.000 dặm cho mỗi năm tuổi xe (tuổi xe = 2021 − năm, tối thiểu 1); xe tình trạng "New" tối đa 10.000 dặm |
+
+Giá ước tính dựa trên tin rao tại Mỹ năm 2021, không phải giá thị trường hiện tại; trang kết quả có ghi chú điều này.
 
 ## Tải dữ liệu
 

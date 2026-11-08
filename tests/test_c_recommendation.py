@@ -11,6 +11,9 @@ from backend.schemas.vehicle_input import VehicleInput
 from src.recommendation.build_catalog import (
     CATALOG_COLUMNS,
     REQUIRED_NOT_NULL,
+    build_catalog,
+    image_file_key,
+    load_removed_images,
     validate_catalog,
 )
 from src.recommendation.recommend import Recommender
@@ -107,3 +110,30 @@ def test_no_result_returns_empty_frame_and_warning(recommender):
     assert result.n_candidates == 0
     assert result.warnings
 
+
+
+# ---------------------------------------------------------------------------
+# Xe có ảnh sai đã xóa (assets/removed_images.csv) không được gợi ý
+# ---------------------------------------------------------------------------
+def test_removed_image_list_includes_aliases():
+    removed = load_removed_images()
+    assert "ford_f150_2018.jpg" in removed
+    aliases = pd.read_csv(PROJECT_DIR / "assets" / "image_aliases.csv")
+    pointing = aliases.loc[aliases["file"].isin(removed), "alias"]
+    assert set(pointing.str.lower()) <= removed
+
+
+def test_catalog_has_no_car_with_a_removed_image(catalog):
+    removed = load_removed_images()
+    assert not image_file_key(catalog).isin(removed).any()
+
+
+def test_build_catalog_drops_only_cars_with_removed_images():
+    def row(i, model, year):
+        return {"id": i, "manufacturer": "ford", "model_base": model, "year": year, "price": 20000.0 + i,
+                "odometer": 50000.0, "type_filled": "pickup", "condition": "good", "fuel_filled": "gas",
+                "transmission_filled": "automatic", "drive_filled": "4wd"}
+    df = pd.DataFrame([row(1, "f150", 2018), row(2, "f150", 2017), row(3, "escape", 2018)])
+    cat, report = build_catalog(df, image_dir=None, removed_images={"ford_f150_2018.jpg"})
+    assert sorted(cat["id"]) == [2, 3]
+    assert report["dropped_wrong_image"] == 1

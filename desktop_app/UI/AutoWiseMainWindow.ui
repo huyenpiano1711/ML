@@ -22,72 +22,80 @@
   <property name="styleSheet">
    <string>
 * { font-family: "Inter", "Segoe UI", "Arial"; }
-QMainWindow, QWidget#centralwidget { background-color: #0B0B0D; }
-QWidget#pageLogin, QWidget#pageRegister, QWidget#pageWelcome, QWidget#pageVehicle, QWidget#pageResults,
-QWidget#scrollAreaVehicleContents, QWidget#scrollAreaResultsContents, QWidget#widgetAdvancedFields,
-QWidget#widgetTopMatches, QWidget#widgetSimilarPrice { background-color: #0B0B0D; }
-QWidget { color: #EDEDEF; font-size: 13px; }
-QToolTip { background-color: #1C1C21; color: #EDEDEF; border: 1px solid #2A2A30; padding: 6px; }
+QMainWindow, QWidget#centralwidget { background-color: #F5F5F7; }
+QWidget#pageLogin, QWidget#pageRegister, QWidget#pageVehicle, QWidget#pageResults,
+QWidget#scrollAreaVehicleContents, QWidget#scrollAreaResultsContents,
+QWidget#widgetTopMatches, QWidget#widgetSimilarPrice { background-color: #F5F5F7; }
+QWidget#widgetAdvancedFields { background: transparent; }
+QWidget { color: #18181B; font-size: 13px; }
+QToolTip { background-color: #18181B; color: #FFFFFF; border: none; padding: 6px; }
 
 /* ---------- Header ---------- */
-QFrame#frameHeader { background-color: #0B0B0D; border: none; border-bottom: 1px solid #1F1F23; }
-QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #FFFFFF; letter-spacing: 5px; background: transparent; }
-QLabel#labelTagline, QLabel#labelLoginTagline { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
-QLabel[step="true"] { color: #55555E; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+QFrame#frameHeader { background-color: #FFFFFF; border: none; border-bottom: 1px solid #E4E4E9; }
+QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }
+QLabel#labelTagline, QLabel#labelLoginTagline { color: #8A8A93; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
+QLabel[step="true"] { color: #A1A1AA; font-size: 11px; font-weight: 700; letter-spacing: 2px;
                       padding: 8px 2px; border-bottom: 2px solid transparent; }
-QLabel[step="true"][done="true"] { color: #A1A1AA; }
-QLabel[step="true"][active="true"] { color: #FFFFFF; border-bottom: 2px solid #D7263D; }
-QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #2E2E35; }
+QLabel[step="true"][done="true"] { color: #52525B; }
+QLabel[step="true"][active="true"] { color: #18181B; border-bottom: 2px solid #D7263D; }
+QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #D4D4DA; }
 
 /* ---------- Typography ---------- */
-QLabel[role="eyebrow"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
-QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #FFFFFF; background: transparent; }
-QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
-QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #FFFFFF; background: transparent; }
-QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #FFFFFF; background: transparent; }
-QLabel[role="lead"] { color: #B4B4BC; font-size: 15px; background: transparent; }
-QLabel[role="muted"] { color: #8B8B94; background: transparent; }
-QLabel[role="field"] { color: #9A9AA3; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
-QLabel[role="chip"] { background-color: rgba(255,255,255,0.04); border: 1px solid #2A2A30; border-radius: 13px;
-                      padding: 5px 12px; color: #C4C4CC; font-size: 11px; font-weight: 500; }
+QLabel[role="eyebrow"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
+QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #18181B; background: transparent; }
+QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
+QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #18181B; background: transparent; }
+QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #18181B; background: transparent; }
+QLabel[role="lead"] { color: #52525B; font-size: 15px; background: transparent; }
+QLabel[role="muted"] { color: #6B6B74; background: transparent; }
+QLabel[role="field"] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
+QLabel[role="chip"] { background-color: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 13px;
+                      padding: 5px 12px; color: #3F3F46; font-size: 11px; font-weight: 500; }
 QLabel[role="stepNumber"] { font-family: "Playfair Display", "Georgia", serif; font-size: 16px; color: #D7263D; background: transparent; }
-QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #FFFFFF; background: transparent; }
-QLabel[role="statLabel"] { color: #8B8B94; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
-QLabel[role="error"] { color: #F87171; background-color: rgba(215,38,61,0.10); border: 1px solid rgba(248,113,113,0.30);
+QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #18181B; background: transparent; }
+QLabel[role="statLabel"] { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
+QLabel[role="error"] { color: #B91C1C; background-color: #FEF2F2; border: 1px solid #FECACA;
                        border-radius: 8px; padding: 9px 12px; }
-QLabel[role="success"] { color: #4ADE80; background-color: rgba(34,197,94,0.10); border: 1px solid rgba(74,222,128,0.30);
+QLabel[role="success"] { color: #15803D; background-color: #F0FDF4; border: 1px solid #BBF7D0;
                          border-radius: 8px; padding: 9px 12px; }
 
+/* ---------- Login picture panel: photo with a dark shade, so its text stays white ---------- */
+QFrame#frameLoginVisual { border: none; border-radius: 20px;
+                   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2A1118, stop:1 #7A1D2B); }
+QFrame#frameLoginVisual QLabel { color: #FFFFFF; }
+QFrame#frameLoginVisual QLabel#labelLoginTagline, QFrame#frameLoginVisual QLabel[role="statLabel"] { color: #D4D4D8; }
+QFrame#frameLoginVisual QLabel[role="lead"] { color: #E4E4E7; }
+QFrame#frameLoginVisual QLabel[role="eyebrow"] { color: #FF8A99; }
+
 /* ---------- Cards ---------- */
-QFrame[card="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
-QFrame#frameHero, QFrame#frameLoginVisual { border: 1px solid #1F1F23; border-radius: 20px;
-                   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #141418, stop:1 #0B0B0D); }
-QFrame#framePriceCard { border: 1px solid #4A1D25;
-                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #22101A, stop:0.6 #151216, stop:1 #141417); }
-QFrame#frameSummary { background-color: #0F0F12; border: 1px solid #1F1F23; border-radius: 10px; }
-QFrame[divider="true"] { background-color: #232328; border: none; max-height: 1px; min-height: 1px; }
+QFrame[card="true"] { background-color: #FFFFFF; border: 1px solid #E4E4E9; border-radius: 14px; }
+QFrame#framePriceCard { border: 1px solid #F5C2CA;
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #FFEEF1, stop:0.6 #FFF8F9, stop:1 #FFFFFF); }
+QFrame#frameSummary { background-color: #F7F7F9; border: 1px solid #E4E4E9; border-radius: 10px; }
+QFrame[divider="true"] { background-color: #E4E4E9; border: none; max-height: 1px; min-height: 1px; }
 
 /* ---------- Inputs ---------- */
 QLineEdit, QComboBox, QSpinBox {
-    background-color: #0E0E11; border: 1px solid #2A2A30; border-radius: 9px;
-    padding: 10px 12px; color: #F4F4F5; min-height: 20px;
+    background-color: #FAFAFB; border: 1px solid #D9D9DF; border-radius: 9px;
+    padding: 10px 12px; color: #18181B; min-height: 20px;
     selection-background-color: #D7263D; selection-color: #FFFFFF;
 }
-QLineEdit:hover, QComboBox:hover, QSpinBox:hover { border-color: #3A3A42; }
-QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #D7263D; }
-QLineEdit[lineEditState="error"] { border-color: #F87171; }
-QComboBox:disabled { color: #55555E; border-color: #1F1F23; }
+QLineEdit:hover, QComboBox:hover, QSpinBox:hover { border-color: #B4B4BC; }
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #D7263D; background-color: #FFFFFF; }
+QLineEdit[lineEditState="error"] { border-color: #DC2626; }
+QComboBox:disabled { color: #A1A1AA; border-color: #E9E9ED; background-color: #F4F4F5; }
+QComboBox QLineEdit { background: transparent; border: none; padding: 0px; min-height: 0px; }
 QComboBox::drop-down { border: none; width: 30px; }
 QComboBox::down-arrow { image: url(../images/ic_chevron_down.png); width: 12px; height: 8px; margin-right: 12px; }
-QComboBox QAbstractItemView { background-color: #141417; border: 1px solid #2A2A30; color: #EDEDEF;
+QComboBox QAbstractItemView { background-color: #FFFFFF; border: 1px solid #E4E4E9; color: #18181B;
     selection-background-color: #D7263D; selection-color: #FFFFFF; outline: 0; padding: 4px; }
 QSpinBox::up-button, QSpinBox::down-button { width: 0px; border: none; }
-QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #FFFFFF; }
-QSlider::groove:horizontal { height: 4px; background: #2A2A30; border-radius: 2px; }
+QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #18181B; }
+QSlider::groove:horizontal { height: 4px; background: #E4E4E7; border-radius: 2px; }
 QSlider::sub-page:horizontal { background: #D7263D; border-radius: 2px; }
-QSlider::handle:horizontal { background: #FFFFFF; width: 16px; height: 16px; margin: -6px 0; border-radius: 8px; }
-QCheckBox { color: #B4B4BC; spacing: 9px; background: transparent; }
-QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #3A3A42; border-radius: 4px; background-color: #0E0E11; }
+QSlider::handle:horizontal { background: #FFFFFF; border: 2px solid #D7263D; width: 14px; height: 14px; margin: -7px 0; border-radius: 9px; }
+QCheckBox { color: #3F3F46; spacing: 9px; background: transparent; }
+QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #C4C4CC; border-radius: 4px; background-color: #FFFFFF; }
 QCheckBox::indicator:hover { border-color: #D7263D; }
 QCheckBox::indicator:checked { background-color: #D7263D; border-color: #D7263D; image: url(../images/ic_check.png); }
 
@@ -96,52 +104,52 @@ QPushButton { background-color: #D7263D; color: #FFFFFF; border: none; border-ra
               padding: 13px 26px; font-weight: 700; font-size: 12px; letter-spacing: 2px; }
 QPushButton:hover { background-color: #E63950; }
 QPushButton:pressed { background-color: #B51F33; }
-QPushButton:disabled { background-color: #3A1A20; color: #7A7A82; }
-QPushButton[variant="ghost"] { background-color: transparent; border: 1px solid #2F2F36; color: #E4E4E7; }
-QPushButton[variant="ghost"]:hover { border-color: #D7263D; color: #FFFFFF; }
-QPushButton[variant="link"] { background-color: transparent; color: #A1A1AA; padding: 4px 0px;
+QPushButton:disabled { background-color: #F1C2C9; color: #FFFFFF; }
+QPushButton[variant="ghost"] { background-color: #FFFFFF; border: 1px solid #D4D4DA; color: #27272A; }
+QPushButton[variant="ghost"]:hover { border-color: #D7263D; color: #D7263D; }
+QPushButton[variant="link"] { background-color: transparent; color: #52525B; padding: 4px 0px;
                               text-align: left; letter-spacing: 1px; font-size: 12px; }
-QPushButton[variant="link"]:hover { color: #FFFFFF; }
-QPushButton[variant="inlineLink"] { background-color: transparent; color: #E0475B; padding: 2px 0px;
+QPushButton[variant="link"]:hover { color: #18181B; }
+QPushButton[variant="inlineLink"] { background-color: transparent; color: #D7263D; padding: 2px 0px;
                                     letter-spacing: 0px; font-size: 13px; font-weight: 600; }
-QPushButton[variant="inlineLink"]:hover { color: #FF6B7D; }
-QPushButton[variant="icon"] { background-color: transparent; border: 1px solid #2A2A30; border-radius: 9px; padding: 8px; }
+QPushButton[variant="inlineLink"]:hover { color: #B51F33; }
+QPushButton[variant="icon"] { background-color: #FFFFFF; border: 1px solid #D9D9DF; border-radius: 9px; padding: 8px; }
 QPushButton[variant="icon"]:hover { border-color: #D7263D; }
 
 /* ---------- Scroll ---------- */
 QScrollArea { background: transparent; border: none; }
 QScrollArea &gt; QWidget &gt; QWidget { background: transparent; }
 QScrollBar:vertical { background: transparent; width: 10px; margin: 6px 2px; }
-QScrollBar::handle:vertical { background: #2A2A30; border-radius: 3px; min-height: 40px; }
-QScrollBar::handle:vertical:hover { background: #3F3F46; }
+QScrollBar::handle:vertical { background: #D4D4DA; border-radius: 3px; min-height: 40px; }
+QScrollBar::handle:vertical:hover { background: #A1A1AA; }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
 
 /* ---------- Results ---------- */
-QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 48px; color: #FFFFFF; background: transparent; }
-QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 30px; color: #FFFFFF; background: transparent; }
+QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 48px; color: #18181B; background: transparent; }
+QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 30px; color: #18181B; background: transparent; }
 QLabel#labelBudgetVerdict { border-radius: 12px; padding: 5px 12px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
-QLabel#labelBudgetVerdict[state="ok"] { background-color: rgba(34,197,94,0.12); color: #4ADE80; border: 1px solid rgba(74,222,128,0.35); }
-QLabel#labelBudgetVerdict[state="over"] { background-color: rgba(215,38,61,0.14); color: #F87171; border: 1px solid rgba(248,113,113,0.35); }
+QLabel#labelBudgetVerdict[state="ok"] { background-color: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+QLabel#labelBudgetVerdict[state="over"] { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FCA5A5; }
 
 /* ---------- Car cards (Top 5 + same price range) ---------- */
-QFrame[carCard="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
+QFrame[carCard="true"] { background-color: #FFFFFF; border: 1px solid #E4E4E9; border-radius: 14px; }
 QFrame[carCard="true"]:hover { border-color: #D7263D; }
-QFrame#frameTopCar1 { border-color: #4A1D25;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1A1114, stop:1 #141417); }
-QLabel[role="carImage"] { border-radius: 10px; color: #3A3A42; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1D1D22, stop:1 #111114); }
+QFrame#frameTopCar1 { border-color: #F5C2CA;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFF1F3, stop:1 #FFFFFF); }
+QLabel[role="carImage"] { border-radius: 10px; color: #A1A1AA; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }
 QLabel[role="carRank"] { background-color: #D7263D; color: #FFFFFF; border-radius: 10px; padding: 3px 9px;
                          font-size: 11px; font-weight: 700; }
-QLabel[role="carMatch"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
-QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #FFFFFF; background: transparent; }
-QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #FFFFFF; background: transparent; }
-QLabel[role="carDetail"] { color: #8B8B94; font-size: 12px; background: transparent; }
-QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #FFFFFF; background: transparent; }
-QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
+QLabel[role="carMatch"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
+QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #18181B; background: transparent; }
+QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #18181B; background: transparent; }
+QLabel[role="carDetail"] { color: #6B6B74; font-size: 12px; background: transparent; }
+QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #18181B; background: transparent; }
+QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
 
-QMessageBox { background-color: #141417; }
-QMessageBox QLabel { color: #EDEDEF; }
+QMessageBox { background-color: #FFFFFF; }
+QMessageBox QLabel { color: #18181B; }
 QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
 </string>
   </property>
@@ -307,7 +315,7 @@ QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
        <item>
         <widget class="QLabel" name="labelStep1">
          <property name="text">
-          <string>01  WELCOME</string>
+          <string>01  VEHICLE</string>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -342,42 +350,7 @@ QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
        <item>
         <widget class="QLabel" name="labelStep2">
          <property name="text">
-          <string>02  VEHICLE</string>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="step" stdset="0">
-          <bool>true</bool>
-         </property>
-         <property name="active" stdset="0">
-          <bool>false</bool>
-         </property>
-         <property name="done" stdset="0">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelStepSep2">
-         <property name="text">
-          <string>———</string>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelStep3">
-         <property name="text">
-          <string>03  RESULTS</string>
+          <string>02  RESULTS</string>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -462,497 +435,6 @@ QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="pageWelcome">
-       <layout class="QVBoxLayout" name="verticalLayoutWelcome">
-        <property name="spacing">
-         <number>22</number>
-        </property>
-        <property name="leftMargin">
-         <number>36</number>
-        </property>
-        <property name="topMargin">
-         <number>28</number>
-        </property>
-        <property name="rightMargin">
-         <number>36</number>
-        </property>
-        <property name="bottomMargin">
-         <number>32</number>
-        </property>
-        <item>
-         <widget class="QFrame" name="frameHero">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>360</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayoutHero">
-           <property name="spacing">
-            <number>14</number>
-           </property>
-           <property name="leftMargin">
-            <number>56</number>
-           </property>
-           <property name="topMargin">
-            <number>48</number>
-           </property>
-           <property name="rightMargin">
-            <number>56</number>
-           </property>
-           <property name="bottomMargin">
-            <number>48</number>
-           </property>
-           <item>
-            <spacer name="spacerHeroTop">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelHeroEyebrow">
-             <property name="text">
-              <string>MACHINE-LEARNING USED-CAR ADVISOR</string>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="role" stdset="0">
-              <string>eyebrow</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelHeroTitle">
-             <property name="text">
-              <string>Choose with data,
-not with guesswork</string>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="role" stdset="0">
-              <string>display</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelHeroSubtitle">
-             <property name="text">
-              <string>AutoWise estimates the fair market price of the car you want
-and finds the best-value alternatives within your budget.</string>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="role" stdset="0">
-              <string>lead</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayoutHeroChips">
-             <property name="spacing">
-              <number>10</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>10</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <spacer name="spacerChipsLeft">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelChipModel">
-               <property name="text">
-                <string>Price prediction · Gradient Boosting</string>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="role" stdset="0">
-                <string>chip</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelChipKnn">
-               <property name="text">
-                <string>Top 5 matches · KNN</string>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="role" stdset="0">
-                <string>chip</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelChipData">
-               <property name="text">
-                <string>191K U.S. used-car listings</string>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="role" stdset="0">
-                <string>chip</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="spacerChipsRight">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <spacer name="spacerHeroBottom">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayoutUserRow">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <spacer name="spacerUserLeft">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QFrame" name="frameUserCard">
-            <property name="card" stdset="0">
-             <bool>true</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>860</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>1000</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayoutUserCard">
-             <property name="spacing">
-              <number>14</number>
-             </property>
-             <property name="leftMargin">
-              <number>32</number>
-             </property>
-             <property name="topMargin">
-              <number>24</number>
-             </property>
-             <property name="rightMargin">
-              <number>32</number>
-             </property>
-             <property name="bottomMargin">
-              <number>24</number>
-             </property>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayoutUserTitle">
-               <property name="spacing">
-                <number>12</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="labelUserStepNo">
-                 <property name="text">
-                  <string>01</string>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="role" stdset="0">
-                  <string>stepNumber</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="labelUserTitle">
-                 <property name="text">
-                  <string>First, tell AutoWise who you are</string>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="role" stdset="0">
-                  <string>cardTitle</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="spacerUserTitle">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QGridLayout" name="gridLayoutUser">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <property name="horizontalSpacing">
-                <number>16</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>8</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="labelFullName">
-                 <property name="text">
-                  <string>FULL NAME *</string>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="role" stdset="0">
-                  <string>field</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEditFullName">
-                 <property name="placeholderText">
-                  <string>e.g. Huyen Nguyen</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="labelDisplayName">
-                 <property name="text">
-                  <string>DISPLAY NAME</string>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="role" stdset="0">
-                  <string>field</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEditDisplayName">
-                 <property name="placeholderText">
-                  <string>What should AutoWise call you?</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="pushButtonStart">
-                 <property name="text">
-                  <string>START  </string>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>200</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
-                 <property name="icon">
-                  <iconset>
-                   <normaloff>../images/ic_arrow_right.png</normaloff>../images/ic_arrow_right.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>16</width>
-                   <height>16</height>
-                  </size>
-                 </property>
-                 <property name="iconName" stdset="0">
-                  <string>arrow_right</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QLabel" name="labelPrivacyNote">
-               <property name="text">
-                <string>Used only to personalise the interface. Nothing is saved or sent anywhere.</string>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="role" stdset="0">
-                <string>muted</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <spacer name="spacerUserRight">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="pageVehicle">
        <layout class="QHBoxLayout" name="horizontalLayoutVehiclePage">
         <property name="spacing">
@@ -1001,7 +483,7 @@ and finds the best-value alternatives within your budget.</string>
             <item>
              <widget class="QLabel" name="labelVehicleEyebrow">
               <property name="text">
-               <string>STEP 2 OF 3</string>
+               <string>STEP 1 OF 2</string>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1033,7 +515,7 @@ and finds the best-value alternatives within your budget.</string>
             <item>
              <widget class="QLabel" name="labelVehicleSubtitle">
               <property name="text">
-               <string>The closer to reality, the sharper the estimate and the recommendations. Fields marked * are required.</string>
+               <string>The more details you give, the more accurate the estimate. Fields marked * are required.</string>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1227,7 +709,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item row="2" column="1" colspan="1">
                   <widget class="QLabel" name="labelType">
                    <property name="text">
-                    <string>BODY TYPE *</string>
+                    <string>BODY TYPE</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1397,7 +879,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item row="0" column="1" colspan="1">
                   <widget class="QLabel" name="labelCondition">
                    <property name="text">
-                    <string>CONDITION *</string>
+                    <string>CONDITION</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1416,7 +898,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item row="2" column="0" colspan="1">
                   <widget class="QLabel" name="labelFuel">
                    <property name="text">
-                    <string>FUEL *</string>
+                    <string>FUEL</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1435,7 +917,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item row="2" column="1" colspan="1">
                   <widget class="QLabel" name="labelTransmission">
                    <property name="text">
-                    <string>TRANSMISSION *</string>
+                    <string>TRANSMISSION</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1466,19 +948,19 @@ and finds the best-value alternatives within your budget.</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayoutAdvanced">
                <property name="spacing">
-                <number>14</number>
+                <number>16</number>
                </property>
                <property name="leftMargin">
                 <number>28</number>
                </property>
                <property name="topMargin">
-                <number>18</number>
+                <number>24</number>
                </property>
                <property name="rightMargin">
                 <number>28</number>
                </property>
                <property name="bottomMargin">
-                <number>20</number>
+                <number>26</number>
                </property>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayoutAdvancedTitle">
@@ -1514,15 +996,18 @@ and finds the best-value alternatives within your budget.</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButtonToggleAdvanced">
+                  <widget class="QLabel" name="labelAdvancedCardTitle">
                    <property name="text">
-                    <string>+  ADVANCED OPTIONS (OPTIONAL)</string>
+                    <string>Advanced options (optional)</string>
                    </property>
-                   <property name="variant" stdset="0">
-                    <string>link</string>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
+                   <property name="role" stdset="0">
+                    <string>cardTitle</string>
                    </property>
                   </widget>
                  </item>
@@ -1543,7 +1028,7 @@ and finds the best-value alternatives within your budget.</string>
                </item>
                <item>
                 <widget class="QWidget" name="widgetAdvancedFields">
-                 <layout class="QGridLayout" name="gridLayoutAdvanced">
+                 <layout class="QGridLayout" name="gridLayoutAdvanced" columnstretch="1,1">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -1563,63 +1048,6 @@ and finds the best-value alternatives within your budget.</string>
                    <number>8</number>
                   </property>
                   <item row="0" column="0" colspan="1">
-                   <widget class="QLabel" name="labelDrive">
-                    <property name="text">
-                     <string>DRIVE</string>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="role" stdset="0">
-                     <string>field</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0" colspan="1">
-                   <widget class="QComboBox" name="comboBoxDrive" />
-                  </item>
-                  <item row="0" column="1" colspan="1">
-                   <widget class="QLabel" name="labelCylinders">
-                    <property name="text">
-                     <string>CYLINDERS</string>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="role" stdset="0">
-                     <string>field</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1" colspan="1">
-                   <widget class="QComboBox" name="comboBoxCylinders" />
-                  </item>
-                  <item row="0" column="2" colspan="1">
-                   <widget class="QLabel" name="labelPaintColor">
-                    <property name="text">
-                     <string>PAINT COLOR</string>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="role" stdset="0">
-                     <string>field</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2" colspan="1">
-                   <widget class="QComboBox" name="comboBoxPaintColor" />
-                  </item>
-                  <item row="2" column="0" colspan="1">
                    <widget class="QLabel" name="labelTitleStatus">
                     <property name="text">
                      <string>TITLE STATUS</string>
@@ -1635,10 +1063,10 @@ and finds the best-value alternatives within your budget.</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="0" colspan="1">
+                  <item row="1" column="0" colspan="1">
                    <widget class="QComboBox" name="comboBoxTitleStatus" />
                   </item>
-                  <item row="2" column="1" colspan="1">
+                  <item row="0" column="1" colspan="1">
                    <widget class="QLabel" name="labelState">
                     <property name="text">
                      <string>U.S. STATE</string>
@@ -1654,7 +1082,7 @@ and finds the best-value alternatives within your budget.</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1" colspan="1">
+                  <item row="1" column="1" colspan="1">
                    <widget class="QComboBox" name="comboBoxState" />
                   </item>
                  </layout>
@@ -1978,32 +1406,6 @@ and finds the best-value alternatives within your budget.</string>
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QPushButton" name="pushButtonBackWelcome">
-               <property name="text">
-                <string>  BACK</string>
-               </property>
-               <property name="variant" stdset="0">
-                <string>ghost</string>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>../images/ic_arrow_left.png</normaloff>../images/ic_arrow_left.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>16</width>
-                 <height>16</height>
-                </size>
-               </property>
-               <property name="iconName" stdset="0">
-                <string>arrow_left</string>
-               </property>
-              </widget>
-             </item>
             </layout>
            </widget>
           </item>
@@ -2302,7 +1704,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item>
                   <widget class="QLabel" name="labelPriceEyebrow">
                    <property name="text">
-                    <string>ESTIMATED MARKET PRICE</string>
+                    <string>ESTIMATED PRICE OF YOUR CAR</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -2331,7 +1733,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item>
                   <widget class="QLabel" name="labelPriceRange">
                    <property name="text">
-                    <string>Reference range: $22,436 – $26,955</string>
+                    <string>Likely price: $22,436 – $26,955</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -2347,7 +1749,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item>
                   <widget class="QLabel" name="labelPriceNote">
                    <property name="text">
-                    <string>HistGradientBoostingRegressor trained on U.S. used-car listings. Reference range = estimate ± mean absolute error (MAE) on the test set.</string>
+                    <string>Based on U.S. used-car listings from 2021, not today&apos;s prices.</string>
                    </property>
                    <property name="role" stdset="0">
                     <string>muted</string>
@@ -2399,7 +1801,7 @@ and finds the best-value alternatives within your budget.</string>
                  <item>
                   <widget class="QLabel" name="labelCompareEyebrow">
                    <property name="text">
-                    <string>VS. YOUR BUDGET</string>
+                    <string>YOUR BUDGET</string>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -2524,7 +1926,7 @@ and finds the best-value alternatives within your budget.</string>
               <item>
                <widget class="QLabel" name="labelTopNote">
                 <property name="text">
-                 <string>Ranked with KNN among cars priced within your budget.</string>
+                 <string>Cars within your budget that are most like the one you chose, same make first. Match % shows how close each car is to yours.</string>
                 </property>
                 <property name="role" stdset="0">
                  <string>muted</string>
@@ -3619,7 +3021,7 @@ and finds the best-value alternatives within your budget.</string>
               <item>
                <widget class="QLabel" name="labelSimilarNote">
                 <property name="text">
-                 <string>Up to 6 listings priced close to the AutoWise estimate.</string>
+                 <string>Up to 6 listings priced close to the estimated price of your car, so they may be over your budget.</string>
                 </property>
                 <property name="role" stdset="0">
                  <string>muted</string>

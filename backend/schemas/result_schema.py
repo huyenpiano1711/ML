@@ -18,6 +18,13 @@ MAX_ALTERNATIVES = 6       # số xe "cùng mức giá" tối đa - thống nh�
 CURRENCY = "USD"
 
 
+def _text(value) -> Optional[str]:
+    """Cột chữ của catalog; thiếu (catalog cũ, NaN) -> None."""
+    if value is None or (isinstance(value, float) and math.isnan(value)):
+        return None
+    return str(value)
+
+
 @dataclass
 class CarCard:
     """Một thẻ xe trên Màn hình 3. Tên trường trùng recommendation_columns.display
@@ -34,6 +41,9 @@ class CarCard:
     transmission: str
     image_path: Optional[str] = None # None -> image_service (D05) dùng ảnh thay thế
     score: Optional[float] = None    # độ phù hợp 0-1 (chỉ Top 5); None với xe cùng giá
+    title_status: Optional[str] = None   # giấy tờ của tin đăng: clean, rebuilt, salvage...
+    state: Optional[str] = None          # bang của tin đăng, ví dụ "tx"
+    fair_price: Optional[float] = None   # giá mô hình ước tính cho chính chiếc xe này (app_service gắn)
 
     @classmethod
     def from_row(cls, row, score: Optional[float] = None) -> "CarCard":
@@ -46,7 +56,8 @@ class CarCard:
                    price=float(row["price"]), odometer=float(row["odometer"]),
                    type=str(row["type"]), condition=str(row["condition"]),
                    fuel=str(row["fuel"]), transmission=str(row["transmission"]),
-                   image_path=image, score=None if score is None else float(score))
+                   image_path=image, score=None if score is None else float(score),
+                   title_status=_text(row.get("title_status")), state=_text(row.get("state")))
 
     @property
     def title(self) -> str:
@@ -89,4 +100,4 @@ class AnalysisResult:
 
     def to_dict(self) -> dict:
         """Chuyển sang dict thuần (dùng để in, lưu JSON, viết test)."""
-        return asdict(self)
+        return asdict(self)

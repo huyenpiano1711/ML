@@ -59,17 +59,19 @@ train, val, test = (df[df["id"].isin(ids[k])] for k in ("train", "val", "test"))
 | Hãng xe | `manufacturer` | Có | Có | Có | |
 | Dòng xe | `model_base` | Có | (qua `make_model`) | Có | |
 | Năm sản xuất | `year` | Có | (qua `car_age`) | Có | |
-| Kiểu dáng | `type` | Có | Có | Có | |
+| Kiểu dáng | `type` | Không | Có | Có | `unknown` rồi `GroupModeImputer` |
 | Số miles đã đi | `odometer` | Có | Có | Có | |
-| Tình trạng xe | `condition` | Có | Có | Có | |
-| Nhiên liệu | `fuel` | Có | Có | Có | |
-| Hộp số | `transmission` | Có | Có | Có | |
+| Tình trạng xe | `condition` | Không | Có | Có | `unknown` (nhóm riêng mô hình đã học) |
+| Nhiên liệu | `fuel` | Không | Có | Có | `unknown` rồi `GroupModeImputer` |
+| Hộp số | `transmission` | Không | Có | Có | `unknown` rồi `GroupModeImputer` |
 | Ngân sách tối đa | `budget_max_usd` | Có | Không | Lọc `price ≤ ngân sách` | |
-| Hệ dẫn động | `drive` | Không | Có | Có | `unknown` rồi `GroupModeImputer` |
-| Số xi-lanh | `cylinders` | Không | Có | | `unknown` rồi `GroupModeImputer` |
-| Màu xe | `paint_color` | Không | Có | | `unknown` |
+| Hệ dẫn động (đã bỏ khỏi form) | `drive` | Không | Có | Có | `unknown` rồi `GroupModeImputer` |
+| Số xi-lanh (đã bỏ khỏi form) | `cylinders` | Không | Có | | `unknown` rồi `GroupModeImputer` |
+| Màu xe (đã bỏ khỏi form) | `paint_color` | Không | Có | | `unknown` |
 | Tình trạng giấy tờ | `title_status` | Không | Có | | `clean` |
 | Bang tại Mỹ | `state` | Không | Có | | `ca` |
+
+Cập nhật 07/11/2026: bỏ ba ô Hệ dẫn động, Số xi-lanh, Màu xe khỏi form vì dữ liệu thiếu 27–35% (và màu không khớp ảnh minh họa); Backend luôn gửi `unknown` cho ba cột này. Kiểu dáng, Tình trạng, Nhiên liệu, Hộp số không còn bắt buộc. Mô hình không đổi; trên tập test, gửi `unknown` cho ba cột đã bỏ làm MAE tăng từ 2.259 lên 2.590 USD.
 
 Hệ thống tự tính: `car_age`, `log_odometer`, `miles_per_year`, `cylinders_num`, `condition_rank`, `brand_tier`, `make_model`. Công thức giống `add_features()` trong `src/features/preprocessing.py`.
 

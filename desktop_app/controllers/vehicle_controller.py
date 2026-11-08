@@ -1,5 +1,5 @@
 """
-vehicle_controller.py - Screen 2 (pageVehicle): BACK, reset, make -> model list, form validation.
+vehicle_controller.py - Screen 2 (pageVehicle): reset, make -> model list, form validation.
 `ui` is the AutoWiseMainWindowEx that owns the widgets.
 
 The rules stay in VehicleInput.validate() (Vietnamese messages, owned by D01); this file only
@@ -8,9 +8,18 @@ translates its messages, because the interface is in English.
 import re
 
 from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
-from desktop_app.controllers import PAGE_WELCOME, PAGE_VEHICLE
+from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.widgets.vehicle_card import labelOf, modelLabel, vehicleTitle
+from src.config import SCRAPE_YEAR
 from src.features.model_constraints import CATEGORICAL, constraints_for, violations
+
+# Mileage that does not fit the car (data: 99.9% of listings drive under ~53,000 mi a year).
+MAX_MILES_PER_YEAR = 50_000
+MAX_MILES_NEW = 10_000
+
+# Body type, condition, fuel and transmission are optional: the first item means "not chosen"
+# (the model then receives 'unknown', as for listings that did not give the value).
+NOT_SURE = "Not sure"
 
 FIELD_NAMES = {"manufacturer": "Make", "model_base": "Model", "year": "Year", "type": "Body type",
                "odometer": "Mileage", "condition": "Condition", "fuel": "Fuel",
@@ -54,6 +63,20 @@ def constraintMessage(vehicle, name, allowed):
     return f"{FIELD_NAMES[name]} of {title} in the data: {values}. Please pick one of them."
 
 
+def mileageMessages(vehicle):
+    """English messages when the mileage does not fit the year or the condition (same car age as the model)."""
+    messages = []
+    age = max(SCRAPE_YEAR - vehicle.year, 1)
+    if vehicle.odometer > MAX_MILES_PER_YEAR * age:
+        messages.append(f"{vehicle.odometer:,.0f} mi is too much for a {vehicle.year} car (data from {SCRAPE_YEAR}): "
+                        f"at most {MAX_MILES_PER_YEAR * age:,} mi ({MAX_MILES_PER_YEAR:,} mi a year). "
+                        "Please check the mileage or the year.")
+    if vehicle.condition == "new" and vehicle.odometer > MAX_MILES_NEW:
+        messages.append(f"A new car has at most {MAX_MILES_NEW:,} mi. With {vehicle.odometer:,.0f} mi, "
+                        "please pick another condition (for example Like new or Excellent).")
+    return messages
+
+
 def modelOptions(make):
     """(display text, value) of every model of a make, from MODELS_BY_MAKE."""
     return [(modelLabel(model), model) for model in sorted(MODELS_BY_MAKE.get(make, []))]
@@ -62,9 +85,6 @@ def modelOptions(make):
 class VehicleController:
     def __init__(self, ui):
         self.ui = ui
-
-    def goBack(self):
-        self.ui.goToPage(PAGE_WELCOME)
 
     def reset(self):
         """Clear the form and show Screen 2. Any button can use it: button.clicked.connect(controller.reset)"""
@@ -83,7 +103,7 @@ class VehicleController:
             self.ui.comboBoxModel.setEnabled(False)
             return
         self.ui.comboBoxModel.setEnabled(True)
-        self.ui.comboBoxModel.addItem("Select model…", None)
+        self.ui.comboBoxModel.addItem("Type or pick a model…", None)
         for text, model in modelOptions(make):
             self.ui.comboBoxModel.addItem(text, model)
         self.ui.comboBoxModel.setMaxVisibleItems(14)
@@ -100,7 +120,7 @@ class VehicleController:
             current = combo.currentData()
             combo.blockSignals(True)
             combo.clear()
-            combo.addItem(f"Select {FIELD_NAMES[name].lower()}…", None)
+            combo.addItem(NOT_SURE, None)
             for value in values:
                 combo.addItem(labelOf(name, value), value)
             combo.setCurrentIndex(values.index(current) + 1 if current in values else 0)
@@ -122,6 +142,7 @@ class VehicleController:
         messages = [translateError(error) for error in vehicle.validate()]
         if not messages:                                 # the model exists: check it against the data
             messages = [constraintMessage(vehicle, name, allowed) for name, allowed in violations(vehicle)]
+            messages += mileageMessages(vehicle)
         if messages:
             self.ui.showWarning("Please check your information", "\n".join(f"• {m}" for m in messages))
             return None

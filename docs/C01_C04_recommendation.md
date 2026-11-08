@@ -17,9 +17,11 @@ python tests/test_c_recommendation.py      # kiểm thử bằng dữ liệu gi�
 
 | Bước | Nội dung |
 |---|---|
-| Cột | `id, manufacturer, model_base, make_model, year, car_age, price, odometer, type, condition, fuel, transmission, drive, image_path, image_match` (trùng `recommendation_columns.display` và `CarCard`) |
+| Cột | `id, manufacturer, model_base, make_model, year, car_age, price, odometer, type, condition, fuel, transmission, drive, title_status, state, image_path, image_match` (trùng `recommendation_columns.display` và `CarCard`) |
+| Giấy tờ, bang | `title_status` (clean 173.731, rebuilt 4.858, salvage 2.503, unknown 2.427, lien 1.191, missing 115, parts only 42) và `state` giữ nguyên từ dữ liệu gốc. Không dùng để tính độ giống; dùng để thẻ xe ghi "Rebuilt title"... và để mô hình giá ước tính giá hợp lý của từng xe được gợi ý |
 | Nguồn thông số | `type/fuel/transmission/drive` lấy từ cột `*_filled`; `condition` giữ nguyên (nhóm chủ đích không điền, ~38% `unknown`) |
 | Tin lặp | Bỏ tin cùng hãng, dòng, năm, giá, odometer, kiểu dáng, nhiên liệu, hộp số, dẫn động, tình trạng (cùng xe đăng nhiều khu vực), giữ `id` nhỏ nhất. Số dòng bị bỏ ghi trong `catalog_report.json` |
+| Ảnh sai đã xóa | Bỏ các xe có file ảnh nằm trong `assets/removed_images.csv` (269 ảnh sai nội dung đã xóa ngày 07/11/2026), kể cả tên cũ trong `image_aliases.csv` trỏ tới các ảnh đó. Đợt này bỏ 6.329 xe; catalog còn 184.867 xe, 53 hãng, 2.295 cặp hãng–dòng. Chỉ ảnh hưởng gợi ý, mô hình giá không đổi |
 | Kiểm tra | `id` không trùng; cột bắt buộc không thiếu; giá, odometer, năm nằm trong ngưỡng của `src/config.py`. Sai thì dừng, không lưu |
 | Ảnh | Khóa `<hang>_<dong>_<nam>.jpg` (cùng quy tắc `download_car_images.py`). `image_match`: `exact`, `nearest_year` (cùng dòng, năm gần nhất) hoặc `none` (`image_path = None`, Frontend dùng ảnh thay thế) |
 

@@ -2,20 +2,32 @@
   "rows_input": 198514,
   "dropped_missing_core": 0,
   "dropped_duplicate_listings": 7318,
+  "removed_image_files": 362,
+  "dropped_wrong_image": 6329,
   "image_dir_found": false,
   "image_match_counts": {
-    "none": 191196
+    "none": 184867
   },
-  "rows_output": 191196,
-  "unique_ids": 191196,
+  "rows_output": 184867,
+  "unique_ids": 184867,
   "n_manufacturers": 53,
-  "n_make_models": 2348,
+  "n_make_models": 2295,
   "share_unknown_pct": {
-    "type": 10.39,
-    "condition": 37.49,
+    "type": 10.35,
+    "condition": 37.46,
     "fuel": 0.01,
     "transmission": 0.09,
-    "drive": 9.48
+    "drive": 9.34,
+    "title_status": 1.31
+  },
+  "title_status_counts": {
+    "clean": 173731,
+    "rebuilt": 4858,
+    "salvage": 2503,
+    "unknown": 2427,
+    "lien": 1191,
+    "missing": 115,
+    "parts only": 42
   },
   "problems": []
 }
