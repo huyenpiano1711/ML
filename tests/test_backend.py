@@ -115,7 +115,8 @@ def test_invalid_input_returns_clear_errors_without_crashing(service, change, fr
 
 def test_all_fields_missing_lists_every_required_field(service):
     r = service.analyze({})
-    assert not r.success and len(r.errors) >= 9
+    # make, model, year, mileage, budget; body type / condition / fuel / transmission are optional
+    assert not r.success and len(r.errors) == 5
 
 
 @pytest.mark.parametrize("bad", [None, "ford f150", 123, ["ford"]])

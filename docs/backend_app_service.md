@@ -27,8 +27,10 @@ result = analyze(form_dict)   # khi bấm "Phân tích và tìm xe" -> AnalysisR
 2. Dự đoán giá (`prediction_service`).
 3. Gợi ý tối đa 5 xe trong ngân sách (`recommendation_service`).
 4. Tìm tối đa 6 xe cùng mức giá, không trùng Top 5 (`alternative_service`).
-5. Gắn ảnh cho mọi thẻ xe (`image_service`).
-6. Gom kết quả, lỗi, cảnh báo, thời gian vào `AnalysisResult`.
+5. Ước tính giá thường gặp của từng xe được gợi ý (`estimate_card_prices`, gắn vào `CarCard.fair_price`),
+   để giao diện cảnh báo giá rao thấp bất thường. Chỉ chạy khi mô hình nạp được; lỗi ở bước này không làm hỏng kết quả.
+6. Gắn ảnh cho mọi thẻ xe (`image_service`).
+7. Gom kết quả, lỗi, cảnh báo, thời gian vào `AnalysisResult`.
 
 **Quy ước lỗi.** Thành phần nào lỗi thì thêm thông báo vào `errors` (`success = False`) nhưng vẫn trả
 phần kết quả còn lại: mô hình lỗi vẫn có Top 5; catalog lỗi vẫn có giá. Không đủ xe, giá dự đoán cao hơn
@@ -68,6 +70,9 @@ Chạy: `python -m pytest -q` (toàn repo: 84 test).
 | Xe cùng mức giá | 14,0 | 17,8 |
 | Gắn ảnh | 69,4 | 153,2 |
 | **Tổng** | **140,5** | **231,1** |
+
+Bảng trên đo trước khi có bước 5 (ước tính giá cho từng xe gợi ý); bước này thêm khoảng 40–50 ms mỗi lần phân tích
+(`last_timings["card_prices"]`). Chạy lại `scripts/16_backend_performance.py` để cập nhật bảng.
 
 - Tỷ lệ lỗi với yêu cầu hợp lệ: 0%; 10/10 yêu cầu sai bị từ chối kèm thông báo.
 - 100% yêu cầu có đủ 5 xe và 6 xe cùng giá; Top 5 luôn trong ngân sách, không trùng danh sách cùng giá.

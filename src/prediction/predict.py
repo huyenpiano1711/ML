@@ -47,3 +47,25 @@ def predict_price(
     if not np.isfinite(prediction):
         raise ValueError("The price model returned a non-finite prediction.")
     return max(100.0, prediction)
+
+
+def predict_prices(
+    vehicles: list[VehicleInput | Mapping[str, object]],
+    model_path: str | Path = DEFAULT_MODEL_PATH,
+) -> list[float | None]:
+    """One prediction per vehicle in a single call of the pipeline; None for a vehicle that does not pass
+    VehicleInput.check() (the others are still predicted)."""
+    rows, positions = [], []
+    for n, vehicle in enumerate(vehicles):
+        try:
+            item = vehicle if isinstance(vehicle, VehicleInput) else VehicleInput.from_dict(dict(vehicle))
+            item.check()
+        except Exception:                                   # noqa: BLE001
+            continue
+        rows.append(item.to_model_row())
+        positions.append(n)
+    result: list[float | None] = [None] * len(vehicles)
+    if rows:
+        for n, value in zip(positions, load_pipeline(model_path).predict(pd.DataFrame(rows))):
+            result[n] = max(100.0, float(value)) if np.isfinite(value) else None
+    return result

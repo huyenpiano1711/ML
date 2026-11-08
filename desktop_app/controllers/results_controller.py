@@ -13,12 +13,13 @@ from importlib.metadata import PackageNotFoundError, version
 from backend.schemas.result_schema import MAX_ALTERNATIVES, TOP_K, AnalysisResult
 from desktop_app.controllers import PAGE_RESULTS
 from desktop_app.controllers.vehicle_controller import translateError
-from desktop_app.widgets.vehicle_card import VehicleCard, labelOf, makeLabel, money, setCardImage, vehicleTitle
+from desktop_app.widgets.vehicle_card import VehicleCard, carDetails, known, labelOf, makeLabel, money, setCardImage, vehicleTitle
 
 log = logging.getLogger("autowise.frontend")
 
-TOP_NOTE = "Ranked with KNN among cars priced within your budget."
-SIMILAR_NOTE = "Up to 6 listings priced close to the AutoWise estimate."
+TOP_NOTE = ("Cars within your budget that are most like the one you chose, same make first. "
+            "Match % shows how close each car is to yours.")
+SIMILAR_NOTE = "Up to 6 listings priced close to the estimated price of your car, so they may be over your budget."
 TOP_EMPTY = "No car within your budget. Try a higher budget or fewer requirements."
 TOP_UNAVAILABLE = "Car recommendations are unavailable right now."
 SIMILAR_EMPTY = "No other listings near the estimated price."
@@ -138,6 +139,7 @@ class ResultsController:
         self.getService = getService
         self.warmThread = None
         self.startupProblems = []
+        self.budget, self.estimate = None, None          # of the last analysis, for the details window
         self.topCards = [VehicleCard(ui, "TopCar", n, setImage) for n in range(1, TOP_K + 1)]
         self.similarCards = [VehicleCard(ui, "SimilarCar", n, setImage) for n in range(1, MAX_ALTERNATIVES + 1)]
 
@@ -186,10 +188,12 @@ class ResultsController:
             return
         self.ui.labelResultsTitle.setText(f"Results for {self.ui.userName() or 'you'}")
         title = vehicleTitle(vehicle.manufacturer, vehicle.model_base, vehicle.year)
-        self.ui.labelSelectedVehicle.setText(
-            f"{title} · {vehicle.odometer:,.0f} mi · {labelOf('condition', vehicle.condition)} · "
-            f"{labelOf('fuel', vehicle.fuel)} · {labelOf('transmission', vehicle.transmission)}")
+        self.ui.labelSelectedVehicle.setText(" · ".join(known(
+            title, f"{vehicle.odometer:,.0f} mi", labelOf("type", vehicle.type), labelOf("condition", vehicle.condition),
+            labelOf("fuel", vehicle.fuel), labelOf("transmission", vehicle.transmission))))   # fields left "Not sure" are skipped
         failed = {section for _, section in errors}
+        self.budget = vehicle.budget_max_usd
+        self.estimate = result.price.predicted_price if result.price is not None else None
         self.showPrice(result.price)
         self.showBudget(vehicle.budget_max_usd, result.price, self.notesFor(warnings, BUDGET))
         self.showTopMatches(result.top_matches, self.notesFor(warnings, TOP, None),
@@ -219,29 +223,38 @@ class ResultsController:
             self.ui.labelPriceNote.setText("The price estimate is unavailable for this analysis.")
             return
         self.ui.labelPredictedPrice.setText(money(price.predicted_price))
-        note = f"{price.model_name} trained on U.S. used-car listings from 2021 (not today's market prices)."
+        note = "Based on U.S. used-car listings from 2021, not today's prices."
         if price.price_low is not None and price.price_high is not None:
-            self.ui.labelPriceRange.setText(f"Reference range: {money(price.price_low)} – {money(price.price_high)}")
-            note += " Reference range = estimate ± mean absolute error (MAE) on the test set."
+            self.ui.labelPriceRange.setText(f"Likely price: {money(price.price_low)} – {money(price.price_high)}")
+            note += (f" On average the estimate is off by about {money(price.price_high - price.predicted_price)}, "
+                     "which gives this range.")
         else:
             self.ui.labelPriceRange.setText("")
         self.ui.labelPriceNote.setText(note)
 
     def showBudget(self, budget, price, notes):
+        """The budget, a verdict with the gap in dollars and what to do next. The over-budget warning of the
+        Backend says the same as the verdict, so the page writes its own note instead of repeating it."""
         self.ui.labelBudgetValue.setText(money(budget))
         if price is None:
             verdict, state = "NOT AVAILABLE", ""
-            note = "There is no estimate to compare with your budget."
+            note = " ".join(notes) or "There is no estimate to compare with your budget."
         elif budget >= price.predicted_price:
             verdict, state = "WITHIN BUDGET", "ok"
             note = f"You would have about {money(budget - price.predicted_price)} left over at the estimated price."
         else:
-            verdict, state = "OVER BUDGET", "over"
-            note = f"The estimate is about {money(price.predicted_price - budget)} above your budget."
+            verdict, state = f"OVER BY {money(price.predicted_price - budget)}", "over"
+            note = "This car usually costs more than you plan to spend. The Top 5 below are cars within your budget."
         self.ui.labelBudgetVerdict.setText(verdict)
         self.ui.labelBudgetVerdict.setProperty("state", state)
-        self.ui.labelBudgetNote.setText(" ".join(notes) or note)
+        self.ui.labelBudgetNote.setText(note)
         self.ui.repolish(self.ui.labelBudgetVerdict)
+
+    def detailsOf(self, widget):
+        """(badge, title, price, rows) of the car a card shows, or None for a hidden card."""
+        if widget.card is None:
+            return None
+        return carDetails(widget.card, widget.rank, widget.gap, self.budget, self.estimate)
 
     def showTopMatches(self, cards, notes, emptyText):
         self.ui.labelTopNote.setText(" ".join(([TOP_NOTE] if cards else []) + notes))

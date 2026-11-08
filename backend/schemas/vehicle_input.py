@@ -46,19 +46,22 @@ class InputValidationError(ValueError):
 # ---------------------------------------------------------------------------
 @dataclass
 class VehicleInput:
-    # --- 1. Thông tin cơ bản (bắt buộc) ---
+    # Bắt buộc: hãng, dòng xe, năm, số miles, ngân sách. Kiểu dáng, tình trạng, nhiên liệu, hộp số
+    # không bắt buộc: None = người dùng không chọn -> mô hình nhận 'unknown' (xem to_model_row).
+    # --- 1. Thông tin cơ bản ---
     manufacturer: str            # Hãng xe, ví dụ "ford"
     model_base: str              # Dòng xe, ví dụ "f150"
     year: int                    # Năm sản xuất, 1990-2022
-    type: str                    # Kiểu dáng, ví dụ "pickup"
-    # --- 2. Thông số kỹ thuật (bắt buộc) ---
+    type: Optional[str]          # Kiểu dáng, ví dụ "pickup" (không bắt buộc)
+    # --- 2. Thông số kỹ thuật ---
     odometer: float              # Số miles đã đi, 0-400.000
-    condition: str               # Tình trạng xe, ví dụ "good"
-    fuel: str                    # Nhiên liệu, ví dụ "gas"
-    transmission: str            # Hộp số, ví dụ "automatic"
+    condition: Optional[str]     # Tình trạng xe, ví dụ "good" (không bắt buộc)
+    fuel: Optional[str]          # Nhiên liệu, ví dụ "gas" (không bắt buộc)
+    transmission: Optional[str]  # Hộp số, ví dụ "automatic" (không bắt buộc)
     # --- 3. Ngân sách (bắt buộc) ---
     budget_max_usd: float        # Ngân sách tối đa (USD), 1.000-150.000
     # --- Tùy chọn nâng cao (None = người dùng bỏ trống) ---
+    # drive, cylinders, paint_color không còn trên form (dữ liệu thiếu 27-35%); Backend vẫn nhận nếu gửi.
     drive: Optional[str] = None
     cylinders: Optional[str] = None
     paint_color: Optional[str] = None
@@ -134,8 +137,9 @@ class VehicleInput:
         """Một dòng dữ liệu cho mô hình dự đoán giá (B06 / D02).
         Tên cột trùng với dữ liệu huấn luyện. Ô nâng cao bỏ trống được thay theo
         quy tắc 'default' trong feature_schema.json:
-          drive, cylinders, paint_color -> 'unknown' (drive/cylinders sẽ được
-          GroupModeImputer trong pipeline suy ra từ hãng + dòng + năm);
+          type, condition, fuel, transmission, drive, cylinders, paint_color -> 'unknown'
+          (type/fuel/transmission/drive/cylinders sẽ được GroupModeImputer trong pipeline
+          suy ra từ hãng + dòng + năm; condition 'unknown' là một nhóm riêng mô hình đã học);
           title_status, state -> giá trị phổ biến nhất trong tập train.
         Các cột tính thêm (car_age, log_odometer, make_model...) do predict.py tính."""
         row = {name: getattr(self, name) for name in REQUIRED_FIELDS if name != "budget_max_usd"}

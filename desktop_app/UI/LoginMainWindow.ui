@@ -715,7 +715,7 @@ built on real used-car listings.</string>
           <item>
            <widget class="QLabel" name="labelLoginSubtitle">
             <property name="text">
-             <string>Sign in to continue to your AutoWise dashboard.</string>
+             <string>Sign in to estimate car prices and get recommendations.</string>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1195,7 +1195,7 @@ built on real used-car listings.</string>
             <item row="5" column="0" colspan="1">
              <widget class="QLineEdit" name="lineEditRegisterPassword">
               <property name="placeholderText">
-               <string>At least 6 characters</string>
+               <string>8+ letters &amp; numbers</string>
               </property>
               <property name="echoMode">
                <enum>QLineEdit::Password</enum>

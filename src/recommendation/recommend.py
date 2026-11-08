@@ -63,7 +63,7 @@ DEFAULT_WEIGHTS = {
 PRICE_TARGET_RATIO = 0.85       # giá "lý tưởng" = 85% ngân sách (không ép dùng hết ngân sách)
 
 DISPLAY_COLUMNS = ["id", "manufacturer", "model_base", "year", "price", "odometer", "type",
-                   "condition", "fuel", "transmission", "drive", "image_path", "image_match"]
+                   "condition", "fuel", "transmission", "drive", "title_status", "state", "image_path", "image_match"]
 
 
 def _vn_money(x: float) -> str:

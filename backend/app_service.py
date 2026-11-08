@@ -38,14 +38,14 @@ from backend.schemas.result_schema import AnalysisResult, CarCard, PriceResult
 from backend.schemas.vehicle_input import VehicleInput
 from backend.services.alternative_service import find_similar_price_vehicles
 from backend.services.image_service import ImageService, get_image_service
-from backend.services.prediction_service import METRICS_PATH, predict_vehicle_price
+from backend.services.prediction_service import METRICS_PATH, estimate_card_prices, predict_vehicle_price
 from backend.services.recommendation_service import recommend_vehicles
 from src.prediction.predict import DEFAULT_MODEL_PATH, load_pipeline
 from src.recommendation.recommend import Recommender, get_recommender
 
 log = logging.getLogger("autowise.backend")
 
-STAGES = ("validate", "predict", "recommend", "alternatives", "images", "total")
+STAGES = ("validate", "predict", "recommend", "alternatives", "card_prices", "images", "total")
 
 MSG_BAD_FORM = "Dữ liệu gửi từ giao diện không đúng định dạng (cần một dict các ô nhập)."
 MSG_MODEL_MISSING = "Không tìm thấy file mô hình dự đoán giá ({path}). Chưa thể dự đoán giá."
@@ -216,6 +216,18 @@ class AppService:
         elif engine is not None:
             warnings.append(MSG_NO_PRICE_FOR_ALTERNATIVES)
         timings["alternatives"] = (time.perf_counter() - t) * 1000
+
+        # 4b. Giá mô hình ước tính cho từng xe được gợi ý (để cảnh báo giá rao thấp bất thường).
+        #     Chỉ khi mô hình chạy được; lỗi ở đây không làm hỏng kết quả.
+        t = time.perf_counter()
+        if price is not None and top_cards + alt_cards:
+            try:
+                cards = top_cards + alt_cards
+                for card, fair in zip(cards, estimate_card_prices(cards, model_path=self.model_path)):
+                    card.fair_price = None if fair is None else round(fair, 2)
+            except Exception:                               # noqa: BLE001
+                log.exception("Lỗi ước tính giá cho xe được gợi ý")
+        timings["card_prices"] = (time.perf_counter() - t) * 1000
 
         # 5. Gắn ảnh (không bao giờ làm hỏng kết quả)
         t = time.perf_counter()

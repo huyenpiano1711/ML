@@ -4,13 +4,11 @@ from __future__ import annotations
 import pytest
 
 from desktop_app.connectors.connector import Connector
-from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.controllers.results_controller import FIX_ENVIRONMENT, STARTUP_TITLE, ResultsController, environmentProblems
-from desktop_app.controllers.user_controller import UserController
 from desktop_app.controllers.vehicle_controller import MAX_MILES_NEW, MAX_MILES_PER_YEAR, VehicleController, mileageMessages
 from desktop_app.dal.user_dao import MAX_NAME_LENGTH, UserDao, nameError, passwordError
 from desktop_app.widgets.vehicle_card import known, labelOf
-from tests.test_e02_controllers import FakeUi as FormUi, _filled_ui, _shown_errors
+from tests.test_e02_controllers import _filled_ui, _shown_errors
 from tests.test_e03_results import FakeService, FakeUi as ResultsUi
 
 
@@ -30,19 +28,6 @@ def test_real_names_are_accepted(name):
 @pytest.mark.parametrize("name", ["12345", "!!!", "@@@ ###", "Duy2", "<h1 style='color:red'>Duy</h1>", "A" * (MAX_NAME_LENGTH + 1)])
 def test_names_without_letters_symbols_or_too_long_are_rejected(name):
     assert nameError(name) is not None
-
-
-@pytest.mark.parametrize("full_name, display_name", [("12345", ""), ("!!!", ""), ("Duy Le", "@@@")])
-def test_start_rejects_names_that_are_not_names(full_name, display_name):
-    ui = FormUi(full_name=full_name, display_name=display_name)
-    UserController(ui).start()
-    assert ui.pages == [] and ui.warnings and ui.warnings[0][0] == "Please check your name"
-
-
-def test_start_accepts_vietnamese_name():
-    ui = FormUi(full_name="Nguyễn Thị Như Huyền")
-    UserController(ui).start()
-    assert ui.pages == [PAGE_VEHICLE] and ui.warnings == []
 
 
 # --------------------------------------------------------------------- account
@@ -163,3 +148,249 @@ def test_nothing_is_shown_when_the_backend_loads(monkeypatch):
     monkeypatch.setattr(rc, "environmentProblems", lambda: [])
     ResultsController(ui, getService=FakeService, setImage=lambda label, card: None).loadBackend()
     assert posted == []
+
+
+# --------------------------------------------------------------------- optional choices, searchable make / model
+def test_backend_works_with_only_the_required_fields():
+    from backend.app_service import get_app_service
+
+    result = get_app_service().analyze({"manufacturer": "toyota", "model_base": "camry", "year": 2015,
+                                        "odometer": 90_000, "budget_max_usd": 15_000})
+    assert result.success and result.price is not None and result.price.predicted_price > 0
+    assert len(result.top_matches) == 5 and all(card.manufacturer == "toyota" for card in result.top_matches)
+
+
+@pytest.fixture(scope="module")
+def main_window():
+    pytest.importorskip("PyQt6")
+    import os
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt6.QtWidgets import QApplication, QMainWindow
+    from desktop_app.UI.AutoWiseMainWindowEx import AutoWiseMainWindowEx
+
+    app = QApplication.instance() or QApplication([])
+    ui = AutoWiseMainWindowEx(None, None)
+    window = QMainWindow()
+    ui.setupUi(window)
+    app.processEvents()
+    yield ui
+    window.close()
+
+
+def test_drive_cylinders_paint_color_are_not_on_the_form(main_window):
+    for name in ("comboBoxDrive", "comboBoxCylinders", "comboBoxPaintColor"):
+        assert not hasattr(main_window, name)
+    assert set(main_window.optionalCombos()) == {"title_status", "state"}
+
+
+def test_choice_fields_start_at_not_sure(main_window):
+    for name in ("type", "condition", "fuel", "transmission"):
+        combo = main_window.requiredCombos()[name]
+        assert combo.itemText(0) == "Not sure" and combo.itemData(0) is None
+
+
+@pytest.mark.parametrize("typed, expected", [("Toyota", "toyota"), ("toyota", "toyota"), ("toyo", "toyota"),
+                                             ("mercedes", "mercedes-benz"), ("zzz", None), ("", None)])
+def test_make_can_be_typed(main_window, typed, expected):
+    combo = main_window.comboBoxManufacturer
+    assert combo.isEditable()
+    combo.setCurrentIndex(0)
+    combo.lineEdit().setText(typed)
+    main_window.matchTypedText(combo)
+    assert combo.currentData() == expected
+
+
+def test_model_can_be_typed_after_the_make(main_window):
+    make, model = main_window.comboBoxManufacturer, main_window.comboBoxModel
+    make.setCurrentIndex(make.findData("ford"))
+    model.lineEdit().setText("F150")
+    main_window.matchTypedText(model)
+    assert model.isEditable() and model.currentData() == "f150"
+
+
+def test_click_on_a_car_card_opens_its_details(main_window, monkeypatch):
+    from PyQt6.QtCore import QEvent, QPointF, Qt
+    from PyQt6.QtGui import QMouseEvent
+    from PyQt6.QtWidgets import QApplication
+    import desktop_app.UI.AutoWiseMainWindowEx as mw
+    from tests.test_e03_results import VEHICLE, _result
+
+    opened = []
+    monkeypatch.setattr(mw, "openCarDetails", lambda parent, card, details: opened.append((card, details)))
+    main_window.resultsController.show(VEHICLE, _result())
+    frame = main_window.frameTopCar2
+    assert frame.cursor().shape() == Qt.CursorShape.PointingHandCursor
+    release = QMouseEvent(QEvent.Type.MouseButtonRelease, QPointF(5, 5), QPointF(5, 5), Qt.MouseButton.LeftButton,
+                          Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier)
+    QApplication.sendEvent(frame, release)
+    assert len(opened) == 1 and opened[0][0].id == 2 and opened[0][1][0].startswith("#2 BEST MATCH")
+
+
+def test_details_window_shows_the_rows():
+    pytest.importorskip("PyQt6")
+    import os
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt6.QtWidgets import QApplication, QDialog, QLabel
+    from desktop_app.UI.CarDetailsDialogEx import CarDetailsDialogEx
+    from desktop_app.widgets.vehicle_card import carDetails
+    from tests.test_e03_results import _card
+
+    app = QApplication.instance() or QApplication([])
+    dialog = QDialog()
+    ui = CarDetailsDialogEx()
+    ui.setupUi(dialog)
+    card = _card(7)
+    ui.showCar(card, carDetails(card, rank=1, budget=25_000, estimate=20_000))
+    texts = [label.text() for label in ui.frameDetails.findChildren(QLabel)]
+    assert ui.labelTitle.text() == "Ford F150 2014" and ui.labelPrice.text() == "$19,000"
+    assert "MILEAGE" in texts and "70,000 mi" in texts and "7" in texts
+    dialog.close()
+
+
+# --------------------------------------------------------------------- title status and unusually low prices
+def test_catalog_keeps_title_status_and_state():
+    import pandas as pd
+    from src.config import PROCESSED_DIR
+    catalog = pd.read_pickle(PROCESSED_DIR / "recommendation_catalog.pkl")
+    assert {"title_status", "state"} <= set(catalog.columns)
+    assert {"clean", "rebuilt", "salvage"} <= set(catalog["title_status"])
+
+
+def test_backend_estimates_a_usual_price_for_every_recommended_car():
+    from backend.app_service import get_app_service
+
+    result = get_app_service().analyze({"manufacturer": "gmc", "model_base": "acadia", "year": 2018,
+                                        "odometer": 60_000, "budget_max_usd": 20_000})
+    cards = result.top_matches + result.similar_price
+    assert all(card.title_status for card in cards)
+    assert sum(card.fair_price is not None for card in cards) >= len(cards) - 1
+    rebuilt = [card for card in cards if card.title_status == "rebuilt"]
+    for card in rebuilt:              # the model prices a rebuilt car lower than the clean estimate of the page
+        assert card.fair_price < result.price.predicted_price
+
+
+def test_predict_prices_skips_a_bad_row_only():
+    from src.prediction.predict import predict_prices
+    good = {"manufacturer": "toyota", "model_base": "camry", "year": 2015, "odometer": 90_000, "budget_max_usd": 10_000}
+    prices = predict_prices([good, {**good, "model_base": "not-a-model"}, good])
+    assert prices[0] and prices[2] and prices[1] is None and prices[0] == prices[2]
+
+
+def test_card_shows_title_and_low_price():
+    from desktop_app.widgets.vehicle_card import carDetails, isLowPrice, titleWarning
+    from tests.test_e03_results import _card
+
+    card = _card(1, price=14_900)
+    card.title_status, card.state, card.fair_price = "rebuilt", "tx", 18_458
+    assert titleWarning(card) == "Rebuilt title" and not isLowPrice(card)
+    rows = dict(carDetails(card, rank=1)[3])
+    assert rows["Title status"].startswith("Rebuilt") and rows["Listed in"] == "TX (U.S. state)"
+    assert rows["Usual price for this car"].startswith("About $18,458")
+    assert "clean title" in rows["Warning"]
+
+    card.title_status, card.fair_price = "clean", 27_000
+    assert titleWarning(card) == "" and isLowPrice(card)
+    assert "45% below the usual price" in dict(carDetails(card, rank=1)[3])["Warning"]
+
+    card.title_status, card.state, card.fair_price = None, None, None        # old catalog: nothing extra
+    rows = dict(carDetails(card, rank=1)[3])
+    assert rows["Title status"] == "Not listed" and "Warning" not in rows and "Usual price for this car" not in rows
+
+
+def test_card_labels_carry_the_warnings():
+    from tests.test_e03_results import _card, _setup, _result, VEHICLE
+
+    card = _card(1, price=14_900)
+    card.title_status, card.fair_price = "rebuilt", 30_000
+    ui, controller, _, _ = _setup(_result(top_matches=[card]))
+    controller.show(VEHICLE, _result(top_matches=[card]))
+    assert ui.labelTopCar1Detail.content == "70,000 mi · Good · Rebuilt title"
+    assert ui.labelTopCar1Match.content == "90% MATCH · LOW PRICE"
+
+
+# --------------------------------------------------------------------- no welcome page
+def test_app_opens_on_the_vehicle_form_with_two_steps(main_window):
+    from desktop_app.controllers import PAGE_VEHICLE
+    for name in ("pageWelcome", "lineEditFullName", "lineEditDisplayName", "pushButtonStart",
+                 "pushButtonBackWelcome", "labelStep3"):
+        assert not hasattr(main_window, name)
+    pages = main_window.stackedWidgetMain
+    assert pages.count() == 2 and pages.widget(PAGE_VEHICLE) is main_window.pageVehicle
+    assert (main_window.labelStep1.text(), main_window.labelStep2.text()) == ("01  VEHICLE", "02  RESULTS")
+    assert main_window.labelVehicleTitle.text() == "Which car do you have in mind?"      # no account in this test
+
+
+def test_greeting_uses_the_name_of_the_account():
+    pytest.importorskip("PyQt6")
+    import os
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt6.QtWidgets import QApplication, QMainWindow
+    from desktop_app.UI.AutoWiseMainWindowEx import AutoWiseMainWindowEx
+    from desktop_app.models.user import User
+
+    app = QApplication.instance() or QApplication([])
+    ui = AutoWiseMainWindowEx(User(full_name="Phuong Anh", username="phuonganh"), None)
+    window = QMainWindow()
+    ui.setupUi(window)
+    assert ui.labelHeaderUser.text() == "Signed in as Phuong Anh"
+    assert ui.labelVehicleTitle.text() == "Phuong Anh, which car do you have in mind?"
+    assert ui.userName() == "Phuong Anh"
+    assert ui.stackedWidgetMain.currentWidget() is ui.pageVehicle          # straight to the form after sign-in
+    window.close()
+
+
+def test_typing_part_of_a_model_fills_in_the_rest(main_window):
+    make, model = main_window.comboBoxManufacturer, main_window.comboBoxModel
+    make.setCurrentIndex(make.findData("toyota"))
+    box = model.lineEdit()
+    box.setProperty("typedLength", 0)
+    box.setText("cam")
+    main_window.completeTypedText(model, "cam")
+    assert box.text() == "Camry" and box.selectedText() == "ry"          # "ry" is the grey suggestion
+    assert model.currentData() == "camry"                                # chosen at once, summary follows
+    assert "Camry" in main_window.labelSummaryTitle.text()
+    box.setText("Cam")
+    main_window.completeTypedText(model, "Cam")                          # Backspace: nothing filled in again
+    assert box.text() == "Cam" and model.currentData() == "camry"
+    main_window.matchTypedText(model)                                    # leaving the box shows the full name
+    assert model.currentData() == "camry" and box.text() == "Camry"
+    box.setText("Camzz")
+    main_window.completeTypedText(model, "Camzz")                        # starts no name: nothing chosen
+    assert model.currentData() is None and box.text() == "Camzz"
+
+
+def test_hint_text_is_grey(main_window):
+    from PyQt6.QtGui import QPalette
+    from desktop_app.UI.AutoWiseMainWindowEx import HINT_COLOR
+    for combo in (main_window.comboBoxManufacturer, main_window.comboBoxModel):
+        color = combo.lineEdit().palette().color(QPalette.ColorRole.PlaceholderText)
+        assert color.name() == HINT_COLOR.lower()
+
+
+def test_wide_photo_does_not_make_its_card_wider(main_window, tmp_path):
+    from PyQt6.QtGui import QColor, QImage
+    from PyQt6.QtWidgets import QSizePolicy
+    from desktop_app.widgets.vehicle_card import setCardImage
+    from tests.test_e03_results import _card
+
+    path = tmp_path / "wide.png"
+    image = QImage(1200, 300, QImage.Format.Format_RGB32)
+    image.fill(QColor("#335577"))
+    image.save(str(path))
+    card = _card(1)
+    card.image_path = str(path)
+    label = main_window.labelTopCar1Image
+    setCardImage(label, card)
+    assert label.pixmap().width() == label.width() and label.pixmap().height() == label.maximumHeight()
+    for widget in main_window.resultsController.topCards:
+        assert widget.labelImage.sizePolicy().horizontalPolicy() == QSizePolicy.Policy.Ignored
+        assert main_window.horizontalLayoutTopMatches.stretch(
+            main_window.horizontalLayoutTopMatches.indexOf(widget.frame)) == 1
+
+
+def test_advanced_options_are_always_shown(main_window):
+    assert not hasattr(main_window, "pushButtonToggleAdvanced")
+    assert not main_window.widgetAdvancedFields.isHidden()
+    assert main_window.labelAdvancedCardTitle.text() == "Advanced options (optional)"
+    for combo in main_window.optionalCombos().values():
+        assert combo.itemText(0) == "Not sure" and combo.itemData(0) is None

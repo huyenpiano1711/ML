@@ -229,6 +229,14 @@ def test_failing_warm_up_is_not_fatal():
     assert not controller.warmThread.is_alive()
 
 
+def test_subtitle_skips_choices_left_not_sure():
+    vehicle = VehicleInput.from_dict({"manufacturer": "ford", "model_base": "f150", "year": 2015,
+                                      "odometer": 60_000, "budget_max_usd": 25_000})
+    ui, controller, _, _ = _setup(_result())
+    controller.show(vehicle, _result())
+    assert ui.labelSelectedVehicle.content == "Ford F150 2015 · 60,000 mi"
+
+
 # --------------------------------------------------------------------- price and budget
 def test_full_result_is_shown_on_screen_3():
     ui, images = _show(_result())
@@ -236,10 +244,10 @@ def test_full_result_is_shown_on_screen_3():
     assert ui.pages == [PAGE_RESULTS, "settled"]
     assert ui.warnings == []
     assert ui.labelResultsTitle.content == "Results for Duy"
-    assert ui.labelSelectedVehicle.content == "Ford F150 2015 · 60,000 mi · Good · Gasoline · Automatic"
+    assert ui.labelSelectedVehicle.content == "Ford F150 2015 · 60,000 mi · Pickup · Good · Gasoline · Automatic"
     assert ui.labelPredictedPrice.content == "$20,000"
-    assert ui.labelPriceRange.content == "Reference range: $18,000 – $22,000"
-    assert "TestModel" in ui.labelPriceNote.content and "MAE" in ui.labelPriceNote.content
+    assert ui.labelPriceRange.content == "Likely price: $18,000 – $22,000"
+    assert "2021" in ui.labelPriceNote.content and "off by about $2,000" in ui.labelPriceNote.content
     assert ui.scrollAreaResults.bar.position == 0
     assert len(images) == TOP_K + MAX_ALTERNATIVES
 
@@ -249,7 +257,7 @@ def test_price_without_range_does_not_mention_it():
 
     assert ui.labelPredictedPrice.content == "$20,000"
     assert ui.labelPriceRange.content == ""
-    assert "MAE" not in ui.labelPriceNote.content
+    assert "range" not in ui.labelPriceNote.content
 
 
 def test_within_budget():
@@ -262,13 +270,14 @@ def test_within_budget():
     assert ui.repolished == [ui.labelBudgetVerdict]
 
 
-def test_over_budget_shows_the_warning_of_the_backend_once():
+def test_over_budget_shows_the_gap_and_what_to_do():
     price = PriceResult(predicted_price=28_832)
     ui, _ = _show(_result(price=price, warnings=[OVER_BUDGET]))
 
-    assert ui.labelBudgetVerdict.content == "OVER BUDGET"
+    assert ui.labelBudgetVerdict.content == "OVER BY $3,832"
     assert ui.labelBudgetVerdict.properties["state"] == "over"
-    assert ui.labelBudgetNote.content == "The estimated price ($28,832) is above your maximum budget ($25,000)."
+    assert ui.labelBudgetNote.content == ("This car usually costs more than you plan to spend. "
+                                          "The Top 5 below are cars within your budget.")
     assert ui.warnings == []
 
 
@@ -632,3 +641,30 @@ def test_same_make_warnings_are_translated_to_the_top_section():
         "Only 1 GMC car is priced at or under $20,000; the other places show the closest cars from other makes.", TOP)
     assert describeMessage(MSG_NO_SAME_MAKE.format(make="Tesla", budget="20.000")) == (
         "No Tesla is priced at or under $20,000, so the closest cars from other makes are shown.", TOP)
+
+
+# --------------------------------------------------------------------- details window (click on a card)
+def test_details_of_a_top_card_list_every_field_and_both_comparisons():
+    ui, controller, _, _ = _setup(_result())
+    controller.show(VEHICLE, _result())
+    badge, title, price, rows = controller.detailsOf(controller.topCards[0])
+    values = dict(rows)
+    assert badge == "#1 BEST MATCH · 90% MATCH" and title == "Ford F150 2014" and price == "$19,000"
+    assert values["Mileage"] == "70,000 mi" and values["Body type"] == "Pickup" and values["Condition"] == "Good"
+    assert values["Fuel"] == "Gasoline" and values["Transmission"] == "Automatic" and values["Listing ID"] == "1"
+    assert values["Match with your car"] == "90%"
+    assert values["Vs. the car you entered"] == "$1,000 below its estimate of $20,000"
+    assert values["Vs. your budget"] == "$6,000 under your budget"
+
+
+def test_details_of_a_same_price_card_and_missing_values():
+    card = _card(10, price=26_000, score=None)
+    card.condition = "unknown"
+    ui, controller, _, _ = _setup(_result(similar_price=[card]))
+    controller.show(VEHICLE, _result(similar_price=[card]))
+    badge, _, _, rows = controller.detailsOf(controller.similarCards[0])
+    values = dict(rows)
+    assert badge == "SAME PRICE RANGE · +30.0% VS. ESTIMATE"
+    assert values["Condition"] == "Not listed" and "Match with your car" not in values
+    assert values["Vs. your budget"] == "$1,000 over your budget"
+    assert controller.detailsOf(controller.similarCards[1]) is None          # hidden card: nothing to open
