@@ -57,8 +57,8 @@ class CardClicks(QObject):
         return False
 
 
-HINT_COLOR = "#6B6B74"          # grey of the "Type or pick…" hint, darker than typed text (#EDEDEF)
-SUGGESTION_STYLE = ("QListView { background-color: #141417; border: 1px solid #2A2A30; color: #EDEDEF; "
+HINT_COLOR = "#A1A1AA"          # grey of the "Type or pick…" hint, lighter than typed text (#18181B)
+SUGGESTION_STYLE = ("QListView { background-color: #FFFFFF; border: 1px solid #E4E4E9; color: #18181B; "
                     "font-size: 13px; padding: 4px; outline: none; } "
                     "QListView::item { padding: 6px 10px; } "
                     "QListView::item:selected { background-color: #D7263D; color: #FFFFFF; }")
@@ -187,10 +187,11 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         completer.popup().setStyleSheet(SUGGESTION_STYLE)       # the list under the box while typing
         # the filled-in end of a name ("Cam" + "ry") looks like a grey suggestion, not a red selection
-        combo.setStyleSheet("QComboBox { selection-background-color: #26262C; selection-color: #8A8A93; }")
+        combo.setStyleSheet("QComboBox { selection-background-color: #EEEEF1; selection-color: #A1A1AA; }")
         palette = combo.lineEdit().palette()                     # after setStyleSheet, which resets the palette
         palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(HINT_COLOR))
         combo.lineEdit().setPalette(palette)
+        combo.lineEdit().textChanged.connect(lambda text: self.dropHintText(combo, text))
         combo.lineEdit().textEdited.connect(lambda text: self.completeTypedText(combo, text))
         combo.lineEdit().editingFinished.connect(lambda: self.matchTypedText(combo))
         combo.currentIndexChanged.connect(lambda index: self.showHint(combo, index))
@@ -203,6 +204,14 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
             combo.lineEdit().setPlaceholderText(combo.itemText(0))
             if not combo.lineEdit().property("typing"):          # keep what the user is typing
                 combo.lineEdit().clear()
+
+    @staticmethod
+    def dropHintText(combo, text):
+        """Qt writes the text of item 0 into the box in some cases (Enter on a name that is not in the list,
+        reset). The hint must stay a grey placeholder, never text to delete, so it is taken out again."""
+        hint = combo.itemText(0)
+        if combo.currentIndex() <= 0 and hint and text.startswith(hint):
+            combo.lineEdit().setText(text[len(hint):])
 
     @staticmethod
     def completeTypedText(combo, text):

@@ -394,3 +394,15 @@ def test_advanced_options_are_always_shown(main_window):
     assert main_window.labelAdvancedCardTitle.text() == "Advanced options (optional)"
     for combo in main_window.optionalCombos().values():
         assert combo.itemText(0) == "Not sure" and combo.itemData(0) is None
+
+
+def test_hint_never_becomes_text_in_the_box(main_window):
+    make = main_window.comboBoxManufacturer
+    make.setCurrentIndex(0)
+    box = make.lineEdit()
+    box.setText("Type or pick a make…")             # what Qt writes after Enter on a name not in the list
+    assert box.text() == "" and box.placeholderText() == "Type or pick a make…"
+    box.setText("Type or pick a make…ho")
+    assert box.text() == "ho"
+    main_window.vehicleController.reset()
+    assert box.text() == "" and make.currentIndex() == 0

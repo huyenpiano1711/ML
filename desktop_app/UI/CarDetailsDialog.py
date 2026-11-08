@@ -13,22 +13,22 @@ class Ui_CarDetailsDialog(object):
     def setupUi(self, CarDetailsDialog):
         CarDetailsDialog.setObjectName("CarDetailsDialog")
         CarDetailsDialog.resize(820, 500)
-        CarDetailsDialog.setStyleSheet("QDialog#CarDetailsDialog { background-color: #141417; }\n"
-"QWidget { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-size: 13px; color: #EDEDEF; }\n"
+        CarDetailsDialog.setStyleSheet("QDialog#CarDetailsDialog { background-color: #FFFFFF; }\n"
+"QWidget { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-size: 13px; color: #18181B; }\n"
 "QLabel { background: transparent; }\n"
-"QLabel#labelImage { border-radius: 10px; color: #3A3A42; font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 18px; letter-spacing: 4px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1D1D22, stop:1 #111114); }\n"
-"QLabel#labelBadge { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 2px; }\n"
-"QLabel#labelTitle { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 26px; color: #FFFFFF; }\n"
-"QLabel#labelPrice { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 34px; color: #FFFFFF; }\n"
-"QFrame#frameDetails { background-color: #0F0F12; border: 1px solid #1F1F23; border-radius: 10px; }\n"
-"QLabel[role=\"field\"] { color: #9A9AA3; font-size: 11px; font-weight: 600; letter-spacing: 1px; }\n"
-"QLabel[role=\"value\"] { color: #EDEDEF; font-size: 13px; }\n"
-"QLabel#labelWarning { color: #F87171; font-size: 13px; font-weight: 600; padding: 8px 10px;\n"
-"    background-color: rgba(215,38,61,0.10); border: 1px solid rgba(248,113,113,0.30); border-radius: 8px; }\n"
-"QPushButton { background-color: transparent; border: 1px solid #2F2F36; color: #E4E4E7; border-radius: 9px;\n"
+"QLabel#labelImage { border-radius: 10px; color: #A1A1AA; font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 18px; letter-spacing: 4px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }\n"
+"QLabel#labelBadge { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 2px; }\n"
+"QLabel#labelTitle { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 26px; color: #18181B; }\n"
+"QLabel#labelPrice { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 34px; color: #18181B; }\n"
+"QFrame#frameDetails { background-color: #F7F7F9; border: 1px solid #E4E4E9; border-radius: 10px; }\n"
+"QLabel[role=\"field\"] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; }\n"
+"QLabel[role=\"value\"] { color: #18181B; font-size: 13px; }\n"
+"QLabel#labelWarning { color: #B91C1C; font-size: 13px; font-weight: 600; padding: 8px 10px;\n"
+"    background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; }\n"
+"QPushButton { background-color: #FFFFFF; border: 1px solid #D4D4DA; color: #27272A; border-radius: 9px;\n"
 "              padding: 11px 26px; font-weight: 700; font-size: 12px; letter-spacing: 2px; }\n"
-"QPushButton:hover { border-color: #D7263D; color: #FFFFFF; }")
+"QPushButton:hover { border-color: #D7263D; color: #D7263D; }")
         self.horizontalLayoutDialog = QtWidgets.QHBoxLayout(CarDetailsDialog)
         self.horizontalLayoutDialog.setContentsMargins(24, 24, 24, 24)
         self.horizontalLayoutDialog.setSpacing(24)

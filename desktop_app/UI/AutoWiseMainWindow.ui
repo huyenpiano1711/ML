@@ -22,74 +22,80 @@
   <property name="styleSheet">
    <string>
 * { font-family: "Inter", "Segoe UI", "Arial"; }
-QMainWindow, QWidget#centralwidget { background-color: #0B0B0D; }
-QWidget#pageLogin, QWidget#pageRegister, QWidget#pageWelcome, QWidget#pageVehicle, QWidget#pageResults,
+QMainWindow, QWidget#centralwidget { background-color: #F5F5F7; }
+QWidget#pageLogin, QWidget#pageRegister, QWidget#pageVehicle, QWidget#pageResults,
 QWidget#scrollAreaVehicleContents, QWidget#scrollAreaResultsContents,
-QWidget#widgetTopMatches, QWidget#widgetSimilarPrice { background-color: #0B0B0D; }
+QWidget#widgetTopMatches, QWidget#widgetSimilarPrice { background-color: #F5F5F7; }
 QWidget#widgetAdvancedFields { background: transparent; }
-QWidget { color: #EDEDEF; font-size: 13px; }
-QToolTip { background-color: #1C1C21; color: #EDEDEF; border: 1px solid #2A2A30; padding: 6px; }
+QWidget { color: #18181B; font-size: 13px; }
+QToolTip { background-color: #18181B; color: #FFFFFF; border: none; padding: 6px; }
 
 /* ---------- Header ---------- */
-QFrame#frameHeader { background-color: #0B0B0D; border: none; border-bottom: 1px solid #1F1F23; }
-QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #FFFFFF; letter-spacing: 5px; background: transparent; }
-QLabel#labelTagline, QLabel#labelLoginTagline { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
-QLabel[step="true"] { color: #55555E; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+QFrame#frameHeader { background-color: #FFFFFF; border: none; border-bottom: 1px solid #E4E4E9; }
+QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }
+QLabel#labelTagline, QLabel#labelLoginTagline { color: #8A8A93; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
+QLabel[step="true"] { color: #A1A1AA; font-size: 11px; font-weight: 700; letter-spacing: 2px;
                       padding: 8px 2px; border-bottom: 2px solid transparent; }
-QLabel[step="true"][done="true"] { color: #A1A1AA; }
-QLabel[step="true"][active="true"] { color: #FFFFFF; border-bottom: 2px solid #D7263D; }
-QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #2E2E35; }
+QLabel[step="true"][done="true"] { color: #52525B; }
+QLabel[step="true"][active="true"] { color: #18181B; border-bottom: 2px solid #D7263D; }
+QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #D4D4DA; }
 
 /* ---------- Typography ---------- */
-QLabel[role="eyebrow"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
-QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #FFFFFF; background: transparent; }
-QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
-QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #FFFFFF; background: transparent; }
-QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #FFFFFF; background: transparent; }
-QLabel[role="lead"] { color: #B4B4BC; font-size: 15px; background: transparent; }
-QLabel[role="muted"] { color: #8B8B94; background: transparent; }
-QLabel[role="field"] { color: #9A9AA3; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
-QLabel[role="chip"] { background-color: rgba(255,255,255,0.04); border: 1px solid #2A2A30; border-radius: 13px;
-                      padding: 5px 12px; color: #C4C4CC; font-size: 11px; font-weight: 500; }
+QLabel[role="eyebrow"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
+QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #18181B; background: transparent; }
+QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
+QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #18181B; background: transparent; }
+QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #18181B; background: transparent; }
+QLabel[role="lead"] { color: #52525B; font-size: 15px; background: transparent; }
+QLabel[role="muted"] { color: #6B6B74; background: transparent; }
+QLabel[role="field"] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
+QLabel[role="chip"] { background-color: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 13px;
+                      padding: 5px 12px; color: #3F3F46; font-size: 11px; font-weight: 500; }
 QLabel[role="stepNumber"] { font-family: "Playfair Display", "Georgia", serif; font-size: 16px; color: #D7263D; background: transparent; }
-QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #FFFFFF; background: transparent; }
-QLabel[role="statLabel"] { color: #8B8B94; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
-QLabel[role="error"] { color: #F87171; background-color: rgba(215,38,61,0.10); border: 1px solid rgba(248,113,113,0.30);
+QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #18181B; background: transparent; }
+QLabel[role="statLabel"] { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
+QLabel[role="error"] { color: #B91C1C; background-color: #FEF2F2; border: 1px solid #FECACA;
                        border-radius: 8px; padding: 9px 12px; }
-QLabel[role="success"] { color: #4ADE80; background-color: rgba(34,197,94,0.10); border: 1px solid rgba(74,222,128,0.30);
+QLabel[role="success"] { color: #15803D; background-color: #F0FDF4; border: 1px solid #BBF7D0;
                          border-radius: 8px; padding: 9px 12px; }
 
+/* ---------- Login picture panel: photo with a dark shade, so its text stays white ---------- */
+QFrame#frameLoginVisual { border: none; border-radius: 20px;
+                   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2A1118, stop:1 #7A1D2B); }
+QFrame#frameLoginVisual QLabel { color: #FFFFFF; }
+QFrame#frameLoginVisual QLabel#labelLoginTagline, QFrame#frameLoginVisual QLabel[role="statLabel"] { color: #D4D4D8; }
+QFrame#frameLoginVisual QLabel[role="lead"] { color: #E4E4E7; }
+QFrame#frameLoginVisual QLabel[role="eyebrow"] { color: #FF8A99; }
+
 /* ---------- Cards ---------- */
-QFrame[card="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
-QFrame#frameHero, QFrame#frameLoginVisual { border: 1px solid #1F1F23; border-radius: 20px;
-                   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #141418, stop:1 #0B0B0D); }
-QFrame#framePriceCard { border: 1px solid #4A1D25;
-                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #22101A, stop:0.6 #151216, stop:1 #141417); }
-QFrame#frameSummary { background-color: #0F0F12; border: 1px solid #1F1F23; border-radius: 10px; }
-QFrame[divider="true"] { background-color: #232328; border: none; max-height: 1px; min-height: 1px; }
+QFrame[card="true"] { background-color: #FFFFFF; border: 1px solid #E4E4E9; border-radius: 14px; }
+QFrame#framePriceCard { border: 1px solid #F5C2CA;
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #FFEEF1, stop:0.6 #FFF8F9, stop:1 #FFFFFF); }
+QFrame#frameSummary { background-color: #F7F7F9; border: 1px solid #E4E4E9; border-radius: 10px; }
+QFrame[divider="true"] { background-color: #E4E4E9; border: none; max-height: 1px; min-height: 1px; }
 
 /* ---------- Inputs ---------- */
 QLineEdit, QComboBox, QSpinBox {
-    background-color: #0E0E11; border: 1px solid #2A2A30; border-radius: 9px;
-    padding: 10px 12px; color: #F4F4F5; min-height: 20px;
+    background-color: #FAFAFB; border: 1px solid #D9D9DF; border-radius: 9px;
+    padding: 10px 12px; color: #18181B; min-height: 20px;
     selection-background-color: #D7263D; selection-color: #FFFFFF;
 }
-QLineEdit:hover, QComboBox:hover, QSpinBox:hover { border-color: #3A3A42; }
-QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #D7263D; }
-QLineEdit[lineEditState="error"] { border-color: #F87171; }
-QComboBox:disabled { color: #55555E; border-color: #1F1F23; }
+QLineEdit:hover, QComboBox:hover, QSpinBox:hover { border-color: #B4B4BC; }
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border-color: #D7263D; background-color: #FFFFFF; }
+QLineEdit[lineEditState="error"] { border-color: #DC2626; }
+QComboBox:disabled { color: #A1A1AA; border-color: #E9E9ED; background-color: #F4F4F5; }
 QComboBox QLineEdit { background: transparent; border: none; padding: 0px; min-height: 0px; }
 QComboBox::drop-down { border: none; width: 30px; }
 QComboBox::down-arrow { image: url(../images/ic_chevron_down.png); width: 12px; height: 8px; margin-right: 12px; }
-QComboBox QAbstractItemView { background-color: #141417; border: 1px solid #2A2A30; color: #EDEDEF;
+QComboBox QAbstractItemView { background-color: #FFFFFF; border: 1px solid #E4E4E9; color: #18181B;
     selection-background-color: #D7263D; selection-color: #FFFFFF; outline: 0; padding: 4px; }
 QSpinBox::up-button, QSpinBox::down-button { width: 0px; border: none; }
-QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #FFFFFF; }
-QSlider::groove:horizontal { height: 4px; background: #2A2A30; border-radius: 2px; }
+QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #18181B; }
+QSlider::groove:horizontal { height: 4px; background: #E4E4E7; border-radius: 2px; }
 QSlider::sub-page:horizontal { background: #D7263D; border-radius: 2px; }
-QSlider::handle:horizontal { background: #FFFFFF; width: 16px; height: 16px; margin: -6px 0; border-radius: 8px; }
-QCheckBox { color: #B4B4BC; spacing: 9px; background: transparent; }
-QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #3A3A42; border-radius: 4px; background-color: #0E0E11; }
+QSlider::handle:horizontal { background: #FFFFFF; border: 2px solid #D7263D; width: 14px; height: 14px; margin: -7px 0; border-radius: 9px; }
+QCheckBox { color: #3F3F46; spacing: 9px; background: transparent; }
+QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #C4C4CC; border-radius: 4px; background-color: #FFFFFF; }
 QCheckBox::indicator:hover { border-color: #D7263D; }
 QCheckBox::indicator:checked { background-color: #D7263D; border-color: #D7263D; image: url(../images/ic_check.png); }
 
@@ -98,52 +104,52 @@ QPushButton { background-color: #D7263D; color: #FFFFFF; border: none; border-ra
               padding: 13px 26px; font-weight: 700; font-size: 12px; letter-spacing: 2px; }
 QPushButton:hover { background-color: #E63950; }
 QPushButton:pressed { background-color: #B51F33; }
-QPushButton:disabled { background-color: #3A1A20; color: #7A7A82; }
-QPushButton[variant="ghost"] { background-color: transparent; border: 1px solid #2F2F36; color: #E4E4E7; }
-QPushButton[variant="ghost"]:hover { border-color: #D7263D; color: #FFFFFF; }
-QPushButton[variant="link"] { background-color: transparent; color: #A1A1AA; padding: 4px 0px;
+QPushButton:disabled { background-color: #F1C2C9; color: #FFFFFF; }
+QPushButton[variant="ghost"] { background-color: #FFFFFF; border: 1px solid #D4D4DA; color: #27272A; }
+QPushButton[variant="ghost"]:hover { border-color: #D7263D; color: #D7263D; }
+QPushButton[variant="link"] { background-color: transparent; color: #52525B; padding: 4px 0px;
                               text-align: left; letter-spacing: 1px; font-size: 12px; }
-QPushButton[variant="link"]:hover { color: #FFFFFF; }
-QPushButton[variant="inlineLink"] { background-color: transparent; color: #E0475B; padding: 2px 0px;
+QPushButton[variant="link"]:hover { color: #18181B; }
+QPushButton[variant="inlineLink"] { background-color: transparent; color: #D7263D; padding: 2px 0px;
                                     letter-spacing: 0px; font-size: 13px; font-weight: 600; }
-QPushButton[variant="inlineLink"]:hover { color: #FF6B7D; }
-QPushButton[variant="icon"] { background-color: transparent; border: 1px solid #2A2A30; border-radius: 9px; padding: 8px; }
+QPushButton[variant="inlineLink"]:hover { color: #B51F33; }
+QPushButton[variant="icon"] { background-color: #FFFFFF; border: 1px solid #D9D9DF; border-radius: 9px; padding: 8px; }
 QPushButton[variant="icon"]:hover { border-color: #D7263D; }
 
 /* ---------- Scroll ---------- */
 QScrollArea { background: transparent; border: none; }
 QScrollArea &gt; QWidget &gt; QWidget { background: transparent; }
 QScrollBar:vertical { background: transparent; width: 10px; margin: 6px 2px; }
-QScrollBar::handle:vertical { background: #2A2A30; border-radius: 3px; min-height: 40px; }
-QScrollBar::handle:vertical:hover { background: #3F3F46; }
+QScrollBar::handle:vertical { background: #D4D4DA; border-radius: 3px; min-height: 40px; }
+QScrollBar::handle:vertical:hover { background: #A1A1AA; }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
 
 /* ---------- Results ---------- */
-QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 48px; color: #FFFFFF; background: transparent; }
-QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 30px; color: #FFFFFF; background: transparent; }
+QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 48px; color: #18181B; background: transparent; }
+QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 30px; color: #18181B; background: transparent; }
 QLabel#labelBudgetVerdict { border-radius: 12px; padding: 5px 12px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
-QLabel#labelBudgetVerdict[state="ok"] { background-color: rgba(34,197,94,0.12); color: #4ADE80; border: 1px solid rgba(74,222,128,0.35); }
-QLabel#labelBudgetVerdict[state="over"] { background-color: rgba(215,38,61,0.14); color: #F87171; border: 1px solid rgba(248,113,113,0.35); }
+QLabel#labelBudgetVerdict[state="ok"] { background-color: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+QLabel#labelBudgetVerdict[state="over"] { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FCA5A5; }
 
 /* ---------- Car cards (Top 5 + same price range) ---------- */
-QFrame[carCard="true"] { background-color: #141417; border: 1px solid #232328; border-radius: 14px; }
+QFrame[carCard="true"] { background-color: #FFFFFF; border: 1px solid #E4E4E9; border-radius: 14px; }
 QFrame[carCard="true"]:hover { border-color: #D7263D; }
-QFrame#frameTopCar1 { border-color: #4A1D25;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1A1114, stop:1 #141417); }
-QLabel[role="carImage"] { border-radius: 10px; color: #3A3A42; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1D1D22, stop:1 #111114); }
+QFrame#frameTopCar1 { border-color: #F5C2CA;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFF1F3, stop:1 #FFFFFF); }
+QLabel[role="carImage"] { border-radius: 10px; color: #A1A1AA; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }
 QLabel[role="carRank"] { background-color: #D7263D; color: #FFFFFF; border-radius: 10px; padding: 3px 9px;
                          font-size: 11px; font-weight: 700; }
-QLabel[role="carMatch"] { color: #E0475B; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
-QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #FFFFFF; background: transparent; }
-QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #FFFFFF; background: transparent; }
-QLabel[role="carDetail"] { color: #8B8B94; font-size: 12px; background: transparent; }
-QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #FFFFFF; background: transparent; }
-QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #FFFFFF; background: transparent; }
+QLabel[role="carMatch"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
+QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #18181B; background: transparent; }
+QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #18181B; background: transparent; }
+QLabel[role="carDetail"] { color: #6B6B74; font-size: 12px; background: transparent; }
+QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #18181B; background: transparent; }
+QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
 
-QMessageBox { background-color: #141417; }
-QMessageBox QLabel { color: #EDEDEF; }
+QMessageBox { background-color: #FFFFFF; }
+QMessageBox QLabel { color: #18181B; }
 QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
 </string>
   </property>
