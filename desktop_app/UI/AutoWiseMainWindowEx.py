@@ -124,6 +124,8 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.comboBoxModel.currentIndexChanged.connect(self.vehicleController.applyModelConstraints)
         self.spinBoxBudget.valueChanged.connect(self.horizontalSliderBudget.setValue)
         self.horizontalSliderBudget.valueChanged.connect(self.spinBoxBudget.setValue)
+        self.spinBoxYear.valueChanged.connect(self.horizontalSliderYear.setValue)
+        self.horizontalSliderYear.valueChanged.connect(self.spinBoxYear.setValue)
         for combo in self.requiredCombos().values():
             combo.currentIndexChanged.connect(self.updateSummary)
         for box in (self.spinBoxYear, self.spinBoxOdometer, self.spinBoxBudget):
@@ -269,7 +271,17 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.MainWindow.close()
 
     # ------------------------------------------------------------------ form
+    def syncYearSlider(self):
+        """The year slider and its end labels follow the year box, whose range narrows to the years the data
+        has for the chosen model (applyModelConstraints)."""
+        low, high = self.spinBoxYear.minimum(), self.spinBoxYear.maximum()
+        self.horizontalSliderYear.setRange(low, high)
+        self.horizontalSliderYear.setValue(self.spinBoxYear.value())
+        self.labelYearMin.setText(str(low))
+        self.labelYearMax.setText(str(high))
+
     def updateSummary(self):
+        self.syncYearSlider()
         make = self.comboBoxManufacturer.currentData()
         model = self.comboBoxModel.currentData()
         if make is None:

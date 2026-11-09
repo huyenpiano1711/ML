@@ -37,6 +37,7 @@ REPORT_DIR = config.REPORT_DIR / "recommendation"
 IMAGE_REL_DIR = "assets/car_images_unique"          # đường dẫn tương đối so với gốc repo
 REMOVED_IMAGES = config.PROJECT_DIR / "assets" / "removed_images.csv"   # ảnh sai đã xóa
 IMAGE_ALIASES = config.PROJECT_DIR / "assets" / "image_aliases.csv"
+OUTLIERS_CSV = config.REPORT_DIR / "removed_group_outliers.csv"   # tạo bởi scripts/12_split_data.py
 
 # Cột đầu ra của catalog
 CATALOG_COLUMNS = ["id", "manufacturer", "model_base", "make_model", "year", "car_age",
@@ -218,6 +219,11 @@ def main():
     if not FILLED_PKL.exists():
         sys.exit(f"Không thấy {FILLED_PKL}. Tải autowise_data_processed.zip ở Release data-v1 (xem README).")
     df = pd.read_pickle(FILLED_PKL)
+    # Tin giá ngoại lai (giá trả góp, gõ sai số 0...) do 12_split_data.py tìm ra: không gợi ý cho người dùng
+    if OUTLIERS_CSV.exists():
+        outlier_ids = set(pd.read_csv(OUTLIERS_CSV, usecols=["id"])["id"])
+        df = df[~df["id"].isin(outlier_ids)]
+        print(f"Bỏ {len(outlier_ids):,} tin giá ngoại lai ({OUTLIERS_CSV.name})")
     image_dir = config.IMAGE_DIR if config.IMAGE_DIR.is_dir() else None
     if image_dir is None:
         print("CẢNH BÁO: chưa có assets/car_images_unique -> image_path để trống.")

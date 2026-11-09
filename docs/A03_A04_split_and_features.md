@@ -11,7 +11,7 @@ python 13_build_feature_schema.py  # A04 -> src/features/feature_schema.json
 python 14_feature_check.py         # A04 -> reports/feature_selection.csv (khoảng 15 giây)
 ```
 
-Kết quả cố định: `random_state = 42`, chạy lại cho ra đúng các file id như cũ.
+Kết quả cố định: `random_state = 42`, chạy lại trên cùng dữ liệu cho ra đúng các file id như cũ.
 
 ---
 
@@ -19,21 +19,24 @@ Kết quả cố định: `random_state = 42`, chạy lại cho ra đúng các f
 
 | Tập | Số dòng | Tỷ lệ | Dùng cho |
 |---|---|---|---|
-| train | 138.959 | 70% | Huấn luyện (B02); fit `GroupModeImputer`, encoder, scaler |
-| val | 29.777 | 15% | So sánh mô hình, chỉnh tham số (B03) |
-| test | 29.778 | 15% | Báo cáo kết quả cuối, **chỉ dùng một lần** (B04) |
+| train | 138.656 | 70% | Huấn luyện (B02); fit `GroupModeImputer`, encoder, scaler; học ngưỡng ngoại lai giá |
+| val | 29.593 | 15% | So sánh mô hình, chỉnh tham số (B03), tính khoảng giá tham khảo (B06) |
+| test | 29.707 | 15% | Báo cáo kết quả cuối, **chỉ dùng một lần** (B04) |
 
-**Cách chia.** Chia hai lần bằng `train_test_split`, phân tầng (stratify) theo 10 khoảng phân vị của `log_price`. Lần đầu tách 15% làm test. Lần thứ hai tách 0,15 / 0,85 ≈ 17,6% phần còn lại làm val. Mỗi file chỉ lưu cột `id`, tổng khoảng 2 MB nên đưa được lên git.
+**Cách chia (cập nhật 09/11/2026 sau review).**
+
+1. **Chia theo nhóm tin đăng lại** bằng `GroupShuffleSplit`. Cùng một chiếc xe hay được đăng lại ở nhiều khu vực với thông số y hệt. Ở cách chia cũ (`train_test_split` ngẫu nhiên từng dòng), khoảng 10% xe test có một tin cùng hãng, dòng xe, năm và số dặm nằm trong train, nên mô hình "gặp lại đề cũ" và MAE thấp giả. Nay các tin cùng hãng + dòng xe + năm + số dặm được gom thành một nhóm và luôn nằm cùng một tập. Lần đầu tách 15% làm test, lần hai tách 0,15 / 0,85 ≈ 17,6% phần còn lại làm val.
+2. **Loại giá ngoại lai sau khi chia** (bước G1, trước đây nằm trong `03_preprocess.py`). Trung vị và MAD của log giá theo hãng + dòng + năm **chỉ học từ train**, rồi dùng chung ngưỡng |robust z| > 3,5 cho cả ba tập. Lần chạy này loại 345 tin ở train, 97 ở val, 116 ở test; danh sách ở `reports/removed_group_outliers.csv` (cột `tap`). Tập test không góp giá của chính nó vào ngưỡng lọc.
+
+Mỗi file chỉ lưu cột `id`, tổng khoảng 2 MB nên đưa được lên git.
 
 **Kiểm tra (`reports/split_summary.csv`).**
 
-- Ba tập không trùng `id` và không thiếu dòng nào.
-- Giá trung vị của cả ba tập đều là 11.997 USD.
-- Giá trung bình lệch nhau dưới 0,5% (16.017 – 16.090 USD).
-- Năm trung vị đều là 2012.
-- Số dặm trung vị lệch dưới 1% (104.000 – 104.764 dặm).
-- Tỷ lệ tin đại lý nằm trong khoảng 68,4 – 68,7%.
-- Chỉ 0,58% xe ở val và 0,63% ở test thuộc dòng xe không có trong train. Mô hình xử lý trường hợp này bằng nhóm "infrequent" của encoder.
+- Ba tập không trùng `id`, không thiếu dòng, và **không nhóm tin đăng lại nào nằm ở hai tập** (`check_split` dừng chương trình nếu sai).
+- Giá trung vị của ba tập: 11.999 / 12.000 / 11.995 USD; giá trung bình lệch nhau dưới 0,3% (16.055 – 16.098 USD).
+- Năm trung vị đều là 2012; số dặm trung vị lệch dưới 0,4% (103.970 – 104.318 dặm).
+- Tỷ lệ tin đại lý nằm trong khoảng 68,4 – 69,1%.
+- 0,59% xe ở val và ở test thuộc dòng xe không có trong train. Mô hình xử lý trường hợp này bằng nhóm "infrequent" của encoder.
 
 **Cách dùng:**
 
@@ -44,7 +47,7 @@ ids = {k: pd.read_csv(f"data/splits/{k}_ids.csv")["id"] for k in ("train", "val"
 train, val, test = (df[df["id"].isin(ids[k])] for k in ("train", "val", "test"))
 ```
 
-**Hạn chế cần ghi trong báo cáo.** Bước G1 (loại 2.920 tin, chiếm 0,68%, có giá lệch |robust z| > 3,5 so với xe cùng hãng + dòng + năm) đã chạy trên toàn bộ dữ liệu trước khi chia tập. Vì vậy tập val và test cũng đã được làm sạch nhờ thông tin của toàn bộ dữ liệu. Phần lớn tin bị loại là lỗi nhãn, chẳng hạn giá trả góp hằng tháng ghi thành giá bán. Do đó kết quả trên test có thể lạc quan hơn một chút so với dữ liệu thực tế chưa làm sạch, nhưng mức ảnh hưởng nhỏ.
+**Hạn chế còn lại.** File `vehicles_filled.pkl` hiện có vẫn là bản cũ, đã bị bước G1 cũ (chạy trên toàn bộ dữ liệu) loại 2.920 tin trước khi chia. Code đã sửa (`03_preprocess.py` không còn lọc G1), nhưng muốn bỏ hẳn ảnh hưởng này phải chạy lại từ dữ liệu gốc `data/raw/vehicles.csv`: `03_preprocess.py` → `07`/`08` → `12_split_data.py` → huấn luyện lại. Ảnh hưởng còn lại nhỏ vì phần lớn 2.920 tin đó là lỗi nhãn (giá trả góp, gõ thiếu số 0), sẽ bị bước G1 mới loại tương tự.
 
 ---
 
@@ -71,7 +74,7 @@ train, val, test = (df[df["id"].isin(ids[k])] for k in ("train", "val", "test"))
 | Tình trạng giấy tờ | `title_status` | Không | Có | | `clean` |
 | Bang tại Mỹ | `state` | Không | Có | | `ca` |
 
-Cập nhật 07/11/2026: bỏ ba ô Hệ dẫn động, Số xi-lanh, Màu xe khỏi form vì dữ liệu thiếu 27–35% (và màu không khớp ảnh minh họa); Backend luôn gửi `unknown` cho ba cột này. Kiểu dáng, Tình trạng, Nhiên liệu, Hộp số không còn bắt buộc. Mô hình không đổi; trên tập test, gửi `unknown` cho ba cột đã bỏ làm MAE tăng từ 2.259 lên 2.590 USD.
+Cập nhật 07/11/2026: bỏ ba ô Hệ dẫn động, Số xi-lanh, Màu xe khỏi form vì dữ liệu thiếu 27–35% (và màu không khớp ảnh minh họa); Backend luôn gửi `unknown` cho ba cột này. Kiểu dáng, Tình trạng, Nhiên liệu, Hộp số không còn bắt buộc. Với mô hình cũ, gửi `unknown` cho ba cột đã bỏ làm MAE test tăng từ 2.259 lên 2.590 USD. Cập nhật 09/11/2026: mô hình được huấn luyện và đánh giá đúng với dữ liệu app gửi (`GroupModeImputer(blank_cols=APP_UNASKED_COLS)`), MAE test mới 2.411 USD (xem `docs/B02_B07_price_prediction.md`).
 
 Hệ thống tự tính: `car_age`, `log_odometer`, `miles_per_year`, `cylinders_num`, `condition_rank`, `brand_tier`, `make_model`. Công thức giống `add_features()` trong `src/features/preprocessing.py`.
 

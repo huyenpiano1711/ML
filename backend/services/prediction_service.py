@@ -7,19 +7,20 @@ from typing import Mapping
 
 from backend.schemas.result_schema import CarCard, PriceResult
 from backend.schemas.vehicle_input import VehicleInput
-from src.prediction.predict import DEFAULT_MODEL_PATH, predict_price, predict_prices
+from src.prediction.predict import DEFAULT_MODEL_PATH, predict_price, predict_prices, price_interval
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 METRICS_PATH = PROJECT_DIR / "models" / "price_prediction" / "metrics.json"
 
 
-def _test_mae(metrics_path: str | Path = METRICS_PATH) -> float | None:
+def _interval_bands(metrics_path: str | Path = METRICS_PATH) -> list[dict] | None:
+    """Band table of the reference range (quantiles of actual/predicted on the validation set, by
+    predicted price), written by src/prediction/evaluate.py. None when the file or the table is missing."""
     path = Path(metrics_path)
     if not path.is_file():
         return None
     data = json.loads(path.read_text(encoding="utf-8"))
-    value = data.get("test_metrics", {}).get("mae_usd")
-    return None if value is None else float(value)
+    return data.get("price_interval", {}).get("bands") or None
 
 
 def predict_vehicle_price(
@@ -27,13 +28,15 @@ def predict_vehicle_price(
     model_path: str | Path = DEFAULT_MODEL_PATH,
     metrics_path: str | Path = METRICS_PATH,
 ) -> PriceResult:
-    """Return the frontend contract, with a test-MAE reference interval when available."""
+    """Return the frontend contract. The range is where about 80% of real listings fell around such a
+    prediction on the validation set (wider in USD for dearer cars), not a fixed +/- MAE."""
     predicted = predict_price(vehicle, model_path=model_path)
-    mae = _test_mae(metrics_path)
+    bands = _interval_bands(metrics_path)
+    low, high = (None, None) if bands is None else price_interval(predicted, bands)
     return PriceResult(
         predicted_price=round(predicted, 2),
-        price_low=None if mae is None else round(max(100.0, predicted - mae), 2),
-        price_high=None if mae is None else round(predicted + mae, 2),
+        price_low=None if low is None else round(low, 2),
+        price_high=None if high is None else round(high, 2),
         model_name="HistGradientBoostingRegressor",
     )
 

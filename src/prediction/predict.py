@@ -24,6 +24,15 @@ from backend.schemas.vehicle_input import VehicleInput
 DEFAULT_MODEL_PATH = PROJECT_DIR / "models" / "price_prediction" / "final_pipeline.joblib"
 
 
+def price_interval(pred: float, bands: list[dict]) -> tuple[float, float]:
+    """(low, high) USD for one prediction, from the band table that evaluate.py stores in metrics.json
+    (price_interval.bands: quantiles of actual/predicted on the validation set, by predicted price)."""
+    for band in bands:
+        if band["max_pred"] is None or pred < band["max_pred"]:
+            return max(100.0, pred * band["low_ratio"]), pred * band["high_ratio"]
+    raise ValueError("The price interval table is empty.")
+
+
 @lru_cache(maxsize=4)
 def load_pipeline(model_path: str | Path = DEFAULT_MODEL_PATH):
     """Load and cache a fitted pipeline; never trains during inference."""

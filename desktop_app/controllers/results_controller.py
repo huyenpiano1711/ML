@@ -223,11 +223,11 @@ class ResultsController:
             self.ui.labelPriceNote.setText("The price estimate is unavailable for this analysis.")
             return
         self.ui.labelPredictedPrice.setText(money(price.predicted_price))
-        note = "Based on U.S. used-car listings from 2021, not today's prices."
+        note = "Estimated asking price in U.S. used-car listings from 2021, not today's market price."
         if price.price_low is not None and price.price_high is not None:
-            self.ui.labelPriceRange.setText(f"Likely price: {money(price.price_low)} – {money(price.price_high)}")
-            note += (f" On average the estimate is off by about {money(price.price_high - price.predicted_price)}, "
-                     "which gives this range.")
+            self.ui.labelPriceRange.setText(f"Likely 2021 asking price: {money(price.price_low)} – "
+                                            f"{money(price.price_high)}")
+            note += " In our checks, about 8 in 10 real listings were priced inside this range."
         else:
             self.ui.labelPriceRange.setText("")
         self.ui.labelPriceNote.setText(note)

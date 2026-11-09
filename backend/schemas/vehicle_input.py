@@ -27,6 +27,12 @@ REQUIRED_FIELDS = [n for n, f in FEATURES.items() if f["required"]]
 OPTIONAL_FIELDS = [n for n, f in FEATURES.items() if not f["required"]]
 NUMERIC_FIELDS = ["year", "odometer", "budget_max_usd"]
 
+# Số miles phải hợp với tuổi xe và tình trạng (dữ liệu: 99,9% tin đăng chạy dưới ~53.000 miles/năm).
+# Kiểm tra ở Backend, không chỉ ở form: gọi thẳng Backend với xe vô lý cũng bị chặn.
+SCRAPE_YEAR = 2021               # = src.config.SCRAPE_YEAR: dữ liệu đăng năm 2021, tuổi xe = 2021 - năm
+MAX_MILES_PER_YEAR = 50_000
+MAX_MILES_NEW = 10_000
+
 
 def _fmt(x, name):
     """2022 -> '2022' (năm không có dấu chấm); 400000 -> '400.000' (kiểu Việt Nam)."""
@@ -123,6 +129,22 @@ class VehicleInput:
         if self.manufacturer and self.model_base:
             if self.model_base not in MODELS_BY_MAKE.get(self.manufacturer, []):
                 errors.append(f"Dòng xe {self.model_base!r} không thuộc hãng {self.manufacturer!r}.")
+        # (e) Số miles phải hợp với năm sản xuất và tình trạng (chỉ khi năm và số miles đã hợp lệ)
+        if not errors:
+            errors += self.mileage_errors()
+        return errors
+
+    def mileage_errors(self) -> list[str]:
+        """Lỗi khi số miles không hợp với tuổi xe (tối đa MAX_MILES_PER_YEAR mỗi năm) hoặc với tình trạng 'new'."""
+        errors = []
+        age = max(SCRAPE_YEAR - self.year, 1)
+        limit = MAX_MILES_PER_YEAR * age
+        if self.odometer > limit:
+            errors.append(f"Số miles {_fmt(self.odometer, 'odometer')} quá lớn cho xe đời {self.year}: tối đa "
+                          f"{_fmt(limit, 'odometer')} miles ({_fmt(MAX_MILES_PER_YEAR, 'odometer')} miles/năm).")
+        if self.condition == "new" and self.odometer > MAX_MILES_NEW:
+            errors.append(f"Xe tình trạng 'new' có tối đa {_fmt(MAX_MILES_NEW, 'odometer')} miles, "
+                          f"xe này có {_fmt(self.odometer, 'odometer')} miles.")
         return errors
 
     def check(self) -> "VehicleInput":

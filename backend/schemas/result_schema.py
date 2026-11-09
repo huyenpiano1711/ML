@@ -75,7 +75,7 @@ class CarCard:
 class PriceResult:
     """Phần 1 của Màn hình 3: giá dự đoán."""
     predicted_price: float           # USD, đã đổi ngược từ log_price bằng np.expm1
-    price_low: Optional[float] = None    # khoảng tham khảo (vd giá ± MAE) - do B04/B06 quyết định
+    price_low: Optional[float] = None    # khoảng tham khảo ~80% (phân vị sai số trên validation, B06)
     price_high: Optional[float] = None
     currency: str = CURRENCY
     model_name: str = ""             # vd "HistGradientBoosting" - để hiển thị/ghi báo cáo
@@ -100,4 +100,4 @@ class AnalysisResult:
 
     def to_dict(self) -> dict:
         """Chuyển sang dict thuần (dùng để in, lưu JSON, viết test)."""
-        return asdict(self)
+        return asdict(self)

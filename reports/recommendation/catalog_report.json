@@ -1,33 +1,35 @@
 {
-  "rows_input": 198514,
+  "rows_input": 197956,
   "dropped_missing_core": 0,
-  "dropped_duplicate_listings": 7318,
+  "dropped_duplicate_listings": 7311,
   "removed_image_files": 362,
-  "dropped_wrong_image": 6329,
-  "image_dir_found": false,
+  "dropped_wrong_image": 6315,
+  "image_dir_found": true,
   "image_match_counts": {
-    "none": 184867
+    "exact": 156282,
+    "nearest_year": 26130,
+    "none": 1918
   },
-  "rows_output": 184867,
-  "unique_ids": 184867,
+  "rows_output": 184330,
+  "unique_ids": 184330,
   "n_manufacturers": 53,
   "n_make_models": 2295,
   "share_unknown_pct": {
-    "type": 10.35,
-    "condition": 37.46,
+    "type": 10.33,
+    "condition": 37.48,
     "fuel": 0.01,
     "transmission": 0.09,
-    "drive": 9.34,
+    "drive": 9.32,
     "title_status": 1.31
   },
   "title_status_counts": {
-    "clean": 173731,
-    "rebuilt": 4858,
-    "salvage": 2503,
-    "unknown": 2427,
-    "lien": 1191,
-    "missing": 115,
-    "parts only": 42
+    "clean": 173256,
+    "rebuilt": 4843,
+    "salvage": 2476,
+    "unknown": 2421,
+    "lien": 1186,
+    "missing": 110,
+    "parts only": 38
   },
   "problems": []
 }

@@ -32,7 +32,7 @@ QToolTip { background-color: #18181B; color: #FFFFFF; border: none; padding: 6px
 
 /* ---------- Header ---------- */
 QFrame#frameHeader { background-color: #FFFFFF; border: none; border-bottom: 1px solid #E4E4E9; }
-QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Playfair Display", "Georgia", serif; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }
+QLabel#labelBrand, QLabel#labelLoginBrand { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }
 QLabel#labelTagline, QLabel#labelLoginTagline { color: #8A8A93; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }
 QLabel[step="true"] { color: #A1A1AA; font-size: 11px; font-weight: 700; letter-spacing: 2px;
                       padding: 8px 2px; border-bottom: 2px solid transparent; }
@@ -42,17 +42,17 @@ QLabel#labelStepSep1, QLabel#labelStepSep2 { color: #D4D4DA; }
 
 /* ---------- Typography ---------- */
 QLabel[role="eyebrow"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }
-QLabel[role="display"] { font-family: "Playfair Display", "Georgia", serif; font-size: 54px; color: #18181B; background: transparent; }
-QLabel[role="title"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
-QLabel[role="section"] { font-family: "Playfair Display", "Georgia", serif; font-size: 23px; color: #18181B; background: transparent; }
-QLabel[role="cardTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 19px; color: #18181B; background: transparent; }
+QLabel[role="display"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 54px; color: #18181B; background: transparent; }
+QLabel[role="title"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 34px; color: #18181B; background: transparent; }
+QLabel[role="section"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 23px; color: #18181B; background: transparent; }
+QLabel[role="cardTitle"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 19px; color: #18181B; background: transparent; }
 QLabel[role="lead"] { color: #52525B; font-size: 15px; background: transparent; }
 QLabel[role="muted"] { color: #6B6B74; background: transparent; }
 QLabel[role="field"] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }
 QLabel[role="chip"] { background-color: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 13px;
                       padding: 5px 12px; color: #3F3F46; font-size: 11px; font-weight: 500; }
-QLabel[role="stepNumber"] { font-family: "Playfair Display", "Georgia", serif; font-size: 16px; color: #D7263D; background: transparent; }
-QLabel[role="statValue"] { font-family: "Playfair Display", "Georgia", serif; font-size: 28px; color: #18181B; background: transparent; }
+QLabel[role="stepNumber"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 16px; color: #D7263D; background: transparent; }
+QLabel[role="statValue"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 28px; color: #18181B; background: transparent; }
 QLabel[role="statLabel"] { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }
 QLabel[role="error"] { color: #B91C1C; background-color: #FEF2F2; border: 1px solid #FECACA;
                        border-radius: 8px; padding: 9px 12px; }
@@ -90,7 +90,14 @@ QComboBox::down-arrow { image: url(../images/ic_chevron_down.png); width: 12px; 
 QComboBox QAbstractItemView { background-color: #FFFFFF; border: 1px solid #E4E4E9; color: #18181B;
     selection-background-color: #D7263D; selection-color: #FFFFFF; outline: 0; padding: 4px; }
 QSpinBox::up-button, QSpinBox::down-button { width: 0px; border: none; }
-QSpinBox#spinBoxBudget { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; padding: 8px 14px; color: #18181B; }
+/* Year and mileage: up/down buttons to step the value */
+QSpinBox#spinBoxYear, QSpinBox#spinBoxOdometer { padding-right: 36px; }
+QSpinBox#spinBoxYear::up-button, QSpinBox#spinBoxOdometer::up-button { subcontrol-origin: border; subcontrol-position: top right; width: 30px; border: none; border-left: 1px solid #E4E4E9; border-top-right-radius: 9px; background: transparent; }
+QSpinBox#spinBoxYear::down-button, QSpinBox#spinBoxOdometer::down-button { subcontrol-origin: border; subcontrol-position: bottom right; width: 30px; border: none; border-left: 1px solid #E4E4E9; border-bottom-right-radius: 9px; background: transparent; }
+QSpinBox#spinBoxYear::up-button:hover, QSpinBox#spinBoxYear::down-button:hover, QSpinBox#spinBoxOdometer::up-button:hover, QSpinBox#spinBoxOdometer::down-button:hover { background-color: #F1F1F4; }
+QSpinBox#spinBoxYear::up-arrow, QSpinBox#spinBoxOdometer::up-arrow { image: url(../images/ic_chevron_up.png); width: 10px; height: 7px; }
+QSpinBox#spinBoxYear::down-arrow, QSpinBox#spinBoxOdometer::down-arrow { image: url(../images/ic_chevron_down.png); width: 10px; height: 7px; }
+QSpinBox#spinBoxBudget { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 26px; padding: 8px 14px; color: #18181B; }
 QSlider::groove:horizontal { height: 4px; background: #E4E4E7; border-radius: 2px; }
 QSlider::sub-page:horizontal { background: #D7263D; border-radius: 2px; }
 QSlider::handle:horizontal { background: #FFFFFF; border: 2px solid #D7263D; width: 14px; height: 14px; margin: -7px 0; border-radius: 9px; }
@@ -126,8 +133,8 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
 
 /* ---------- Results ---------- */
-QLabel#labelPredictedPrice { font-family: "Playfair Display", "Georgia", serif; font-size: 48px; color: #18181B; background: transparent; }
-QLabel#labelBudgetValue { font-family: "Playfair Display", "Georgia", serif; font-size: 30px; color: #18181B; background: transparent; }
+QLabel#labelPredictedPrice { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 48px; color: #18181B; background: transparent; }
+QLabel#labelBudgetValue { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 30px; color: #18181B; background: transparent; }
 QLabel#labelBudgetVerdict { border-radius: 12px; padding: 5px 12px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
 QLabel#labelBudgetVerdict[state="ok"] { background-color: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
 QLabel#labelBudgetVerdict[state="over"] { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FCA5A5; }
@@ -137,16 +144,16 @@ QFrame[carCard="true"] { background-color: #FFFFFF; border: 1px solid #E4E4E9; b
 QFrame[carCard="true"]:hover { border-color: #D7263D; }
 QFrame#frameTopCar1 { border-color: #F5C2CA;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFF1F3, stop:1 #FFFFFF); }
-QLabel[role="carImage"] { border-radius: 10px; color: #A1A1AA; font-family: "Playfair Display", "Georgia", serif; font-size: 18px; letter-spacing: 4px;
+QLabel[role="carImage"] { border-radius: 10px; color: #A1A1AA; font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 4px;
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }
 QLabel[role="carRank"] { background-color: #D7263D; color: #FFFFFF; border-radius: 10px; padding: 3px 9px;
                          font-size: 11px; font-weight: 700; }
 QLabel[role="carMatch"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }
-QLabel[role="carTitle"] { font-family: "Playfair Display", "Georgia", serif; font-size: 17px; color: #18181B; background: transparent; }
-QLabel[role="carTitleLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 26px; color: #18181B; background: transparent; }
+QLabel[role="carTitle"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 17px; color: #18181B; background: transparent; }
+QLabel[role="carTitleLarge"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 26px; color: #18181B; background: transparent; }
 QLabel[role="carDetail"] { color: #6B6B74; font-size: 12px; background: transparent; }
 QLabel[role="carPrice"] { font-size: 18px; font-weight: 700; color: #18181B; background: transparent; }
-QLabel[role="carPriceLarge"] { font-family: "Playfair Display", "Georgia", serif; font-size: 34px; color: #18181B; background: transparent; }
+QLabel[role="carPriceLarge"] { font-family: "Inter", "Segoe UI", sans-serif; font-weight: 600; font-size: 34px; color: #18181B; background: transparent; }
 
 QMessageBox { background-color: #FFFFFF; }
 QMessageBox QLabel { color: #18181B; }

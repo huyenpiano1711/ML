@@ -7,15 +7,12 @@ translates its messages, because the interface is in English.
 """
 import re
 
-from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
+from backend.schemas.vehicle_input import (VehicleInput, FEATURES, MODELS_BY_MAKE,  # noqa: F401
+                                           MAX_MILES_NEW, MAX_MILES_PER_YEAR)
 from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.widgets.vehicle_card import labelOf, modelLabel, vehicleTitle
 from src.config import SCRAPE_YEAR
 from src.features.model_constraints import CATEGORICAL, constraints_for, violations
-
-# Mileage that does not fit the car (data: 99.9% of listings drive under ~53,000 mi a year).
-MAX_MILES_PER_YEAR = 50_000
-MAX_MILES_NEW = 10_000
 
 # Body type, condition, fuel and transmission are optional: the first item means "not chosen"
 # (the model then receives 'unknown', as for listings that did not give the value).
@@ -36,6 +33,8 @@ NOT_A_NUMBER = re.compile(r"'(.+)' phải là số\.")
 OUT_OF_RANGE = re.compile(r"'(.+)' phải từ (\S+) đến (\S+)\.")
 INVALID_VALUE = re.compile(r"'(.+)' không hợp lệ: (.+)\.")
 WRONG_MAKE = re.compile(r"Dòng xe (.+) không thuộc hãng (.+)\.")
+TOO_MANY_MILES = re.compile(r"Số miles (\S+) quá lớn cho xe đời (\d+): tối đa (\S+) miles \((\S+) miles/năm\)\.")
+NEW_TOO_MANY_MILES = re.compile(r"Xe tình trạng 'new' có tối đa (\S+) miles, xe này có (\S+) miles\.")
 
 
 def translateError(error):
@@ -51,6 +50,14 @@ def translateError(error):
         return f"{ENGLISH_LABELS[match[1]]} has an invalid value: {match[2]}."
     if match := WRONG_MAKE.fullmatch(error):
         return f"Model {match[1]} does not belong to make {match[2]}."
+    if match := TOO_MANY_MILES.fullmatch(error):
+        miles, limit, per_year = (match[n].replace(".", ",") for n in (1, 3, 4))
+        return (f"{miles} mi is too much for a {match[2]} car (data from {SCRAPE_YEAR}): "
+                f"at most {limit} mi ({per_year} mi a year). Please check the mileage or the year.")
+    if match := NEW_TOO_MANY_MILES.fullmatch(error):
+        limit, miles = match[1].replace(".", ","), match[2].replace(".", ",")
+        return (f"A new car has at most {limit} mi. With {miles} mi, "
+                "please pick another condition (for example Like new or Excellent).")
     return error
 
 
@@ -64,17 +71,9 @@ def constraintMessage(vehicle, name, allowed):
 
 
 def mileageMessages(vehicle):
-    """English messages when the mileage does not fit the year or the condition (same car age as the model)."""
-    messages = []
-    age = max(SCRAPE_YEAR - vehicle.year, 1)
-    if vehicle.odometer > MAX_MILES_PER_YEAR * age:
-        messages.append(f"{vehicle.odometer:,.0f} mi is too much for a {vehicle.year} car (data from {SCRAPE_YEAR}): "
-                        f"at most {MAX_MILES_PER_YEAR * age:,} mi ({MAX_MILES_PER_YEAR:,} mi a year). "
-                        "Please check the mileage or the year.")
-    if vehicle.condition == "new" and vehicle.odometer > MAX_MILES_NEW:
-        messages.append(f"A new car has at most {MAX_MILES_NEW:,} mi. With {vehicle.odometer:,.0f} mi, "
-                        "please pick another condition (for example Like new or Excellent).")
-    return messages
+    """English messages when the mileage does not fit the year or the condition. The rule itself is
+    VehicleInput.mileage_errors() (Backend), so a direct Backend call is checked the same way."""
+    return [translateError(error) for error in vehicle.mileage_errors()]
 
 
 def modelOptions(make):
@@ -139,10 +138,9 @@ class VehicleController:
     def validatedInput(self):
         """The VehicleInput to send to the Backend, or None after showing every error."""
         vehicle = self.collectInput()
-        messages = [translateError(error) for error in vehicle.validate()]
+        messages = [translateError(error) for error in vehicle.validate()]     # includes the mileage rules
         if not messages:                                 # the model exists: check it against the data
             messages = [constraintMessage(vehicle, name, allowed) for name, allowed in violations(vehicle)]
-            messages += mileageMessages(vehicle)
         if messages:
             self.ui.showWarning("Please check your information", "\n".join(f"• {m}" for m in messages))
             return None

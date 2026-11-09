@@ -285,16 +285,16 @@ def test_card_shows_title_and_low_price():
     assert titleWarning(card) == "Rebuilt title" and not isLowPrice(card)
     rows = dict(carDetails(card, rank=1)[3])
     assert rows["Title status"].startswith("Rebuilt") and rows["Listed in"] == "TX (U.S. state)"
-    assert rows["Usual price for this car"].startswith("About $18,458")
+    assert rows["Typical 2021 asking price"].startswith("About $18,458")
     assert "clean title" in rows["Warning"]
 
     card.title_status, card.fair_price = "clean", 27_000
     assert titleWarning(card) == "" and isLowPrice(card)
-    assert "45% below the usual price" in dict(carDetails(card, rank=1)[3])["Warning"]
+    assert "45% below the typical 2021 asking price" in dict(carDetails(card, rank=1)[3])["Warning"]
 
     card.title_status, card.state, card.fair_price = None, None, None        # old catalog: nothing extra
     rows = dict(carDetails(card, rank=1)[3])
-    assert rows["Title status"] == "Not listed" and "Warning" not in rows and "Usual price for this car" not in rows
+    assert rows["Title status"] == "Not listed" and "Warning" not in rows and "Typical 2021 asking price" not in rows
 
 
 def test_card_labels_carry_the_warnings():

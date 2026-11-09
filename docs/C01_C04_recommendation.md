@@ -79,12 +79,21 @@ So `knn`, `cosine` với hai baseline cùng bộ lọc ngân sách: `baseline_ra
 |---|---|
 | `hard_constraint_rate_pct` | % xe trả về có giá ≤ ngân sách (kiểm tra độc lập trên catalog), phải = 100 |
 | `coverage_5_pct` | % truy vấn trả đủ 5 xe |
-| `precision_at_5_proxy_pct` | % xe cùng dòng xe và lệch năm ≤ 2 so với tin gốc (chỉ `from_listing`) |
+| `precision_at_5_proxy_pct` | % xe cùng dòng xe và lệch năm ≤ 2 so với tin gốc (bộ `from_listing` và `hidden_model`) |
 | `mean_score_common` | điểm KNN 0–1 tính cùng một công thức cho mọi phương pháp |
 | `mean_distinct_models` | số dòng xe khác nhau trong Top 5 |
 | `latency_mean_ms`, `latency_p95_ms` | thời gian trả kết quả |
 
-**Hạn chế phải ghi trong báo cáo:** `precision_at_5_proxy` không dựa trên nhãn ưa thích của người dùng thật, nó đo mức nhất quán với yêu cầu đầu vào. Vì bộ trọng số ưu tiên đúng dòng xe nên chỉ số này nghiêng về KNN/Cosine so với baseline; không nên diễn giải như "độ hài lòng".
+**Precision@5 – sửa sau review (09/11/2026).** Ở bộ `from_listing`, truy vấn có sẵn dòng xe và năm của tin gốc, mà điểm KNN cũng xếp hạng theo đúng dòng xe và năm, nên "cùng dòng + năm ±2" là tiêu chí hệ gợi ý tự chấm cho chính nó: con số 73–76% chỉ là kiểm tra nhất quán, **không dùng làm kết quả đánh giá**. Bộ mới `hidden_model` dùng cùng các tin gốc và ngân sách nhưng **bỏ dòng xe khỏi truy vấn** (chỉ còn hãng, năm, kiểu dáng, số dặm...). Đây là con số báo cáo:
+
+| Bộ truy vấn | KNN | Cosine | Ngẫu nhiên | Sát ngân sách |
+|---|---:|---:|---:|---:|
+| `hidden_model` (báo cáo) | **39,73%** | 39,07% | 0,40% | 0,33% |
+| `from_listing` (kiểm tra nhất quán) | 73,40% | 73,13% | 0,27% | 0,33% |
+
+(catalog 184.330 xe, 300 truy vấn mỗi bộ, seed 42; `reports/recommendation/evaluation_results.csv`)
+
+**Hạn chế phải ghi trong báo cáo:** `precision_at_5_proxy` không dựa trên nhãn ưa thích của người dùng thật; kể cả ở `hidden_model` nó chỉ đo việc tìm lại được dòng xe từ các thông tin khác, không nên diễn giải như "độ hài lòng".
 
 ## Việc cần làm tiếp
 

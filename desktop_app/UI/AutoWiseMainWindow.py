@@ -230,6 +230,32 @@ class Ui_MainWindow(object):
         self.spinBoxYear.setSingleStep(1)
         self.spinBoxYear.setObjectName("spinBoxYear")
         self.gridLayoutBasic.addWidget(self.spinBoxYear, 3, 0, 1, 1)
+        self.verticalLayoutYearSlider = QtWidgets.QVBoxLayout()
+        self.verticalLayoutYearSlider.setContentsMargins(-1, 6, -1, -1)
+        self.verticalLayoutYearSlider.setSpacing(4)
+        self.verticalLayoutYearSlider.setObjectName("verticalLayoutYearSlider")
+        self.horizontalSliderYear = QtWidgets.QSlider(parent=self.frameBasicCard)
+        self.horizontalSliderYear.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.horizontalSliderYear.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        self.horizontalSliderYear.setMinimum(1990)
+        self.horizontalSliderYear.setMaximum(2022)
+        self.horizontalSliderYear.setSingleStep(1)
+        self.horizontalSliderYear.setPageStep(5)
+        self.horizontalSliderYear.setProperty("value", 2018)
+        self.horizontalSliderYear.setObjectName("horizontalSliderYear")
+        self.verticalLayoutYearSlider.addWidget(self.horizontalSliderYear)
+        self.horizontalLayoutYearRange = QtWidgets.QHBoxLayout()
+        self.horizontalLayoutYearRange.setObjectName("horizontalLayoutYearRange")
+        self.labelYearMin = QtWidgets.QLabel(parent=self.frameBasicCard)
+        self.labelYearMin.setObjectName("labelYearMin")
+        self.horizontalLayoutYearRange.addWidget(self.labelYearMin)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutYearRange.addItem(spacerItem5)
+        self.labelYearMax = QtWidgets.QLabel(parent=self.frameBasicCard)
+        self.labelYearMax.setObjectName("labelYearMax")
+        self.horizontalLayoutYearRange.addWidget(self.labelYearMax)
+        self.verticalLayoutYearSlider.addLayout(self.horizontalLayoutYearRange)
+        self.gridLayoutBasic.addLayout(self.verticalLayoutYearSlider, 4, 0, 1, 1)
         self.labelType = QtWidgets.QLabel(parent=self.frameBasicCard)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -241,6 +267,8 @@ class Ui_MainWindow(object):
         self.comboBoxType = QtWidgets.QComboBox(parent=self.frameBasicCard)
         self.comboBoxType.setObjectName("comboBoxType")
         self.gridLayoutBasic.addWidget(self.comboBoxType, 3, 1, 1, 1)
+        self.gridLayoutBasic.setColumnStretch(0, 1)
+        self.gridLayoutBasic.setColumnStretch(1, 1)
         self.verticalLayout_frameBasicCard.addLayout(self.gridLayoutBasic)
         self.verticalLayoutVehicleContents.addWidget(self.frameBasicCard)
         self.frameSpecsCard = QtWidgets.QFrame(parent=self.scrollAreaVehicleContents)
@@ -271,8 +299,8 @@ class Ui_MainWindow(object):
         self.labelSpecsCardTitle.setSizePolicy(sizePolicy)
         self.labelSpecsCardTitle.setObjectName("labelSpecsCardTitle")
         self.horizontalLayoutTitle_frameSpecsCard.addWidget(self.labelSpecsCardTitle)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTitle_frameSpecsCard.addItem(spacerItem5)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTitle_frameSpecsCard.addItem(spacerItem6)
         self.verticalLayout_frameSpecsCard.addLayout(self.horizontalLayoutTitle_frameSpecsCard)
         self.gridLayoutSpecs = QtWidgets.QGridLayout()
         self.gridLayoutSpecs.setContentsMargins(0, 0, 0, 0)
@@ -358,8 +386,8 @@ class Ui_MainWindow(object):
         self.labelAdvancedCardTitle.setSizePolicy(sizePolicy)
         self.labelAdvancedCardTitle.setObjectName("labelAdvancedCardTitle")
         self.horizontalLayoutAdvancedTitle.addWidget(self.labelAdvancedCardTitle)
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutAdvancedTitle.addItem(spacerItem6)
+        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutAdvancedTitle.addItem(spacerItem7)
         self.verticalLayoutAdvanced.addLayout(self.horizontalLayoutAdvancedTitle)
         self.widgetAdvancedFields = QtWidgets.QWidget(parent=self.frameAdvancedCard)
         self.widgetAdvancedFields.setObjectName("widgetAdvancedFields")
@@ -394,8 +422,8 @@ class Ui_MainWindow(object):
         self.gridLayoutAdvanced.setColumnStretch(1, 1)
         self.verticalLayoutAdvanced.addWidget(self.widgetAdvancedFields)
         self.verticalLayoutVehicleContents.addWidget(self.frameAdvancedCard)
-        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutVehicleContents.addItem(spacerItem7)
+        spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutVehicleContents.addItem(spacerItem8)
         self.scrollAreaVehicle.setWidget(self.scrollAreaVehicleContents)
         self.horizontalLayoutVehiclePage.addWidget(self.scrollAreaVehicle)
         self.verticalLayoutSidePanel = QtWidgets.QVBoxLayout()
@@ -449,8 +477,8 @@ class Ui_MainWindow(object):
         self.labelBudgetMin.setSizePolicy(sizePolicy)
         self.labelBudgetMin.setObjectName("labelBudgetMin")
         self.horizontalLayoutBudgetRange.addWidget(self.labelBudgetMin)
-        spacerItem8 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutBudgetRange.addItem(spacerItem8)
+        spacerItem9 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutBudgetRange.addItem(spacerItem9)
         self.labelBudgetMax = QtWidgets.QLabel(parent=self.frameBudgetCard)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -490,8 +518,8 @@ class Ui_MainWindow(object):
         self.labelSummaryDetail.setObjectName("labelSummaryDetail")
         self.verticalLayoutSummary.addWidget(self.labelSummaryDetail)
         self.verticalLayoutBudgetCard.addWidget(self.frameSummary)
-        spacerItem9 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutBudgetCard.addItem(spacerItem9)
+        spacerItem10 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutBudgetCard.addItem(spacerItem10)
         self.pushButtonAnalyze = QtWidgets.QPushButton(parent=self.frameBudgetCard)
         self.pushButtonAnalyze.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.pushButtonAnalyze.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
@@ -502,8 +530,8 @@ class Ui_MainWindow(object):
         self.pushButtonAnalyze.setObjectName("pushButtonAnalyze")
         self.verticalLayoutBudgetCard.addWidget(self.pushButtonAnalyze)
         self.verticalLayoutSidePanel.addWidget(self.frameBudgetCard)
-        spacerItem10 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutSidePanel.addItem(spacerItem10)
+        spacerItem11 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutSidePanel.addItem(spacerItem11)
         self.horizontalLayoutVehiclePage.addLayout(self.verticalLayoutSidePanel)
         self.stackedWidgetMain.addWidget(self.pageVehicle)
         self.pageResults = QtWidgets.QWidget()
@@ -556,14 +584,14 @@ class Ui_MainWindow(object):
         self.labelSelectedVehicle.setObjectName("labelSelectedVehicle")
         self.verticalLayoutResultsHeadText.addWidget(self.labelSelectedVehicle)
         self.horizontalLayoutResultsHead.addLayout(self.verticalLayoutResultsHeadText)
-        spacerItem11 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutResultsHead.addItem(spacerItem11)
+        spacerItem12 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutResultsHead.addItem(spacerItem12)
         self.verticalLayoutResultsButtons = QtWidgets.QVBoxLayout()
         self.verticalLayoutResultsButtons.setContentsMargins(0, 0, 0, 0)
         self.verticalLayoutResultsButtons.setSpacing(8)
         self.verticalLayoutResultsButtons.setObjectName("verticalLayoutResultsButtons")
-        spacerItem12 = QtWidgets.QSpacerItem(10, 26, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
-        self.verticalLayoutResultsButtons.addItem(spacerItem12)
+        spacerItem13 = QtWidgets.QSpacerItem(10, 26, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        self.verticalLayoutResultsButtons.addItem(spacerItem13)
         self.horizontalLayoutResultsButtons = QtWidgets.QHBoxLayout()
         self.horizontalLayoutResultsButtons.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayoutResultsButtons.setSpacing(10)
@@ -661,8 +689,8 @@ class Ui_MainWindow(object):
         self.labelBudgetVerdict.setSizePolicy(sizePolicy)
         self.labelBudgetVerdict.setObjectName("labelBudgetVerdict")
         self.horizontalLayoutVerdict.addWidget(self.labelBudgetVerdict)
-        spacerItem13 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutVerdict.addItem(spacerItem13)
+        spacerItem14 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutVerdict.addItem(spacerItem14)
         self.verticalLayoutBudgetCompare.addLayout(self.horizontalLayoutVerdict)
         self.labelBudgetNote = QtWidgets.QLabel(parent=self.frameBudgetCompareCard)
         self.labelBudgetNote.setWordWrap(True)
@@ -728,8 +756,8 @@ class Ui_MainWindow(object):
         self.labelTopCar1Match.setSizePolicy(sizePolicy)
         self.labelTopCar1Match.setObjectName("labelTopCar1Match")
         self.horizontalLayoutTopCar1Badges.addWidget(self.labelTopCar1Match)
-        spacerItem14 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTopCar1Badges.addItem(spacerItem14)
+        spacerItem15 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTopCar1Badges.addItem(spacerItem15)
         self.verticalLayoutTopCar1.addLayout(self.horizontalLayoutTopCar1Badges)
         self.labelTopCar1Title = QtWidgets.QLabel(parent=self.frameTopCar1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -756,8 +784,8 @@ class Ui_MainWindow(object):
         self.labelTopCar1Specs.setSizePolicy(sizePolicy)
         self.labelTopCar1Specs.setObjectName("labelTopCar1Specs")
         self.verticalLayoutTopCar1.addWidget(self.labelTopCar1Specs)
-        spacerItem15 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutTopCar1.addItem(spacerItem15)
+        spacerItem16 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutTopCar1.addItem(spacerItem16)
         self.labelTopCar1Price = QtWidgets.QLabel(parent=self.frameTopCar1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -802,8 +830,8 @@ class Ui_MainWindow(object):
         self.labelTopCar2Match.setSizePolicy(sizePolicy)
         self.labelTopCar2Match.setObjectName("labelTopCar2Match")
         self.horizontalLayoutTopCar2Badges.addWidget(self.labelTopCar2Match)
-        spacerItem16 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTopCar2Badges.addItem(spacerItem16)
+        spacerItem17 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTopCar2Badges.addItem(spacerItem17)
         self.verticalLayoutTopCar2.addLayout(self.horizontalLayoutTopCar2Badges)
         self.labelTopCar2Title = QtWidgets.QLabel(parent=self.frameTopCar2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -830,8 +858,8 @@ class Ui_MainWindow(object):
         self.labelTopCar2Specs.setSizePolicy(sizePolicy)
         self.labelTopCar2Specs.setObjectName("labelTopCar2Specs")
         self.verticalLayoutTopCar2.addWidget(self.labelTopCar2Specs)
-        spacerItem17 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutTopCar2.addItem(spacerItem17)
+        spacerItem18 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutTopCar2.addItem(spacerItem18)
         self.labelTopCar2Price = QtWidgets.QLabel(parent=self.frameTopCar2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -876,8 +904,8 @@ class Ui_MainWindow(object):
         self.labelTopCar3Match.setSizePolicy(sizePolicy)
         self.labelTopCar3Match.setObjectName("labelTopCar3Match")
         self.horizontalLayoutTopCar3Badges.addWidget(self.labelTopCar3Match)
-        spacerItem18 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTopCar3Badges.addItem(spacerItem18)
+        spacerItem19 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTopCar3Badges.addItem(spacerItem19)
         self.verticalLayoutTopCar3.addLayout(self.horizontalLayoutTopCar3Badges)
         self.labelTopCar3Title = QtWidgets.QLabel(parent=self.frameTopCar3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -904,8 +932,8 @@ class Ui_MainWindow(object):
         self.labelTopCar3Specs.setSizePolicy(sizePolicy)
         self.labelTopCar3Specs.setObjectName("labelTopCar3Specs")
         self.verticalLayoutTopCar3.addWidget(self.labelTopCar3Specs)
-        spacerItem19 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutTopCar3.addItem(spacerItem19)
+        spacerItem20 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutTopCar3.addItem(spacerItem20)
         self.labelTopCar3Price = QtWidgets.QLabel(parent=self.frameTopCar3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -950,8 +978,8 @@ class Ui_MainWindow(object):
         self.labelTopCar4Match.setSizePolicy(sizePolicy)
         self.labelTopCar4Match.setObjectName("labelTopCar4Match")
         self.horizontalLayoutTopCar4Badges.addWidget(self.labelTopCar4Match)
-        spacerItem20 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTopCar4Badges.addItem(spacerItem20)
+        spacerItem21 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTopCar4Badges.addItem(spacerItem21)
         self.verticalLayoutTopCar4.addLayout(self.horizontalLayoutTopCar4Badges)
         self.labelTopCar4Title = QtWidgets.QLabel(parent=self.frameTopCar4)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -978,8 +1006,8 @@ class Ui_MainWindow(object):
         self.labelTopCar4Specs.setSizePolicy(sizePolicy)
         self.labelTopCar4Specs.setObjectName("labelTopCar4Specs")
         self.verticalLayoutTopCar4.addWidget(self.labelTopCar4Specs)
-        spacerItem21 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutTopCar4.addItem(spacerItem21)
+        spacerItem22 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutTopCar4.addItem(spacerItem22)
         self.labelTopCar4Price = QtWidgets.QLabel(parent=self.frameTopCar4)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -1024,8 +1052,8 @@ class Ui_MainWindow(object):
         self.labelTopCar5Match.setSizePolicy(sizePolicy)
         self.labelTopCar5Match.setObjectName("labelTopCar5Match")
         self.horizontalLayoutTopCar5Badges.addWidget(self.labelTopCar5Match)
-        spacerItem22 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.horizontalLayoutTopCar5Badges.addItem(spacerItem22)
+        spacerItem23 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.horizontalLayoutTopCar5Badges.addItem(spacerItem23)
         self.verticalLayoutTopCar5.addLayout(self.horizontalLayoutTopCar5Badges)
         self.labelTopCar5Title = QtWidgets.QLabel(parent=self.frameTopCar5)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
@@ -1052,8 +1080,8 @@ class Ui_MainWindow(object):
         self.labelTopCar5Specs.setSizePolicy(sizePolicy)
         self.labelTopCar5Specs.setObjectName("labelTopCar5Specs")
         self.verticalLayoutTopCar5.addWidget(self.labelTopCar5Specs)
-        spacerItem23 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutTopCar5.addItem(spacerItem23)
+        spacerItem24 = QtWidgets.QSpacerItem(10, 4, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutTopCar5.addItem(spacerItem24)
         self.labelTopCar5Price = QtWidgets.QLabel(parent=self.frameTopCar5)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -1416,8 +1444,8 @@ class Ui_MainWindow(object):
         self.labelSimilarEmpty.setSizePolicy(sizePolicy)
         self.labelSimilarEmpty.setObjectName("labelSimilarEmpty")
         self.verticalLayoutResultsContents.addWidget(self.labelSimilarEmpty)
-        spacerItem24 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayoutResultsContents.addItem(spacerItem24)
+        spacerItem25 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayoutResultsContents.addItem(spacerItem25)
         self.scrollAreaResults.setWidget(self.scrollAreaResultsContents)
         self.verticalLayoutResultsPage.addWidget(self.scrollAreaResults)
         self.stackedWidgetMain.addWidget(self.pageResults)
@@ -1443,7 +1471,7 @@ class Ui_MainWindow(object):
 "\n"
 "/* ---------- Header ---------- */\n"
 "QFrame#frameHeader { background-color: #FFFFFF; border: none; border-bottom: 1px solid #E4E4E9; }\n"
-"QLabel#labelBrand, QLabel#labelLoginBrand { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }\n"
+"QLabel#labelBrand, QLabel#labelLoginBrand { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 21px; font-weight: 600; color: #18181B; letter-spacing: 5px; background: transparent; }\n"
 "QLabel#labelTagline, QLabel#labelLoginTagline { color: #8A8A93; font-size: 10px; font-weight: 600; letter-spacing: 3px; background: transparent; }\n"
 "QLabel[step=\"true\"] { color: #A1A1AA; font-size: 11px; font-weight: 700; letter-spacing: 2px;\n"
 "                      padding: 8px 2px; border-bottom: 2px solid transparent; }\n"
@@ -1453,17 +1481,17 @@ class Ui_MainWindow(object):
 "\n"
 "/* ---------- Typography ---------- */\n"
 "QLabel[role=\"eyebrow\"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 3px; background: transparent; }\n"
-"QLabel[role=\"display\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 54px; color: #18181B; background: transparent; }\n"
-"QLabel[role=\"title\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 34px; color: #18181B; background: transparent; }\n"
-"QLabel[role=\"section\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 23px; color: #18181B; background: transparent; }\n"
-"QLabel[role=\"cardTitle\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 19px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"display\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 54px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"title\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 34px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"section\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 23px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"cardTitle\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 19px; color: #18181B; background: transparent; }\n"
 "QLabel[role=\"lead\"] { color: #52525B; font-size: 15px; background: transparent; }\n"
 "QLabel[role=\"muted\"] { color: #6B6B74; background: transparent; }\n"
 "QLabel[role=\"field\"] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; background: transparent; }\n"
 "QLabel[role=\"chip\"] { background-color: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 13px;\n"
 "                      padding: 5px 12px; color: #3F3F46; font-size: 11px; font-weight: 500; }\n"
-"QLabel[role=\"stepNumber\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 16px; color: #D7263D; background: transparent; }\n"
-"QLabel[role=\"statValue\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 28px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"stepNumber\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 16px; color: #D7263D; background: transparent; }\n"
+"QLabel[role=\"statValue\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 28px; color: #18181B; background: transparent; }\n"
 "QLabel[role=\"statLabel\"] { color: #6B6B74; font-size: 10px; font-weight: 600; letter-spacing: 2px; background: transparent; }\n"
 "QLabel[role=\"error\"] { color: #B91C1C; background-color: #FEF2F2; border: 1px solid #FECACA;\n"
 "                       border-radius: 8px; padding: 9px 12px; }\n"
@@ -1501,7 +1529,14 @@ class Ui_MainWindow(object):
 "QComboBox QAbstractItemView { background-color: #FFFFFF; border: 1px solid #E4E4E9; color: #18181B;\n"
 "    selection-background-color: #D7263D; selection-color: #FFFFFF; outline: 0; padding: 4px; }\n"
 "QSpinBox::up-button, QSpinBox::down-button { width: 0px; border: none; }\n"
-"QSpinBox#spinBoxBudget { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 26px; padding: 8px 14px; color: #18181B; }\n"
+"/* Year and mileage: up/down buttons to step the value */\n"
+"QSpinBox#spinBoxYear, QSpinBox#spinBoxOdometer { padding-right: 36px; }\n"
+"QSpinBox#spinBoxYear::up-button, QSpinBox#spinBoxOdometer::up-button { subcontrol-origin: border; subcontrol-position: top right; width: 30px; border: none; border-left: 1px solid #E4E4E9; border-top-right-radius: 9px; background: transparent; }\n"
+"QSpinBox#spinBoxYear::down-button, QSpinBox#spinBoxOdometer::down-button { subcontrol-origin: border; subcontrol-position: bottom right; width: 30px; border: none; border-left: 1px solid #E4E4E9; border-bottom-right-radius: 9px; background: transparent; }\n"
+"QSpinBox#spinBoxYear::up-button:hover, QSpinBox#spinBoxYear::down-button:hover, QSpinBox#spinBoxOdometer::up-button:hover, QSpinBox#spinBoxOdometer::down-button:hover { background-color: #F1F1F4; }\n"
+"QSpinBox#spinBoxYear::up-arrow, QSpinBox#spinBoxOdometer::up-arrow { image: url(../images/ic_chevron_up.png); width: 10px; height: 7px; }\n"
+"QSpinBox#spinBoxYear::down-arrow, QSpinBox#spinBoxOdometer::down-arrow { image: url(../images/ic_chevron_down.png); width: 10px; height: 7px; }\n"
+"QSpinBox#spinBoxBudget { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 26px; padding: 8px 14px; color: #18181B; }\n"
 "QSlider::groove:horizontal { height: 4px; background: #E4E4E7; border-radius: 2px; }\n"
 "QSlider::sub-page:horizontal { background: #D7263D; border-radius: 2px; }\n"
 "QSlider::handle:horizontal { background: #FFFFFF; border: 2px solid #D7263D; width: 14px; height: 14px; margin: -7px 0; border-radius: 9px; }\n"
@@ -1537,8 +1572,8 @@ class Ui_MainWindow(object):
 "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }\n"
 "\n"
 "/* ---------- Results ---------- */\n"
-"QLabel#labelPredictedPrice { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 48px; color: #18181B; background: transparent; }\n"
-"QLabel#labelBudgetValue { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 30px; color: #18181B; background: transparent; }\n"
+"QLabel#labelPredictedPrice { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 48px; color: #18181B; background: transparent; }\n"
+"QLabel#labelBudgetValue { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 30px; color: #18181B; background: transparent; }\n"
 "QLabel#labelBudgetVerdict { border-radius: 12px; padding: 5px 12px; font-size: 11px; font-weight: 700; letter-spacing: 1px; }\n"
 "QLabel#labelBudgetVerdict[state=\"ok\"] { background-color: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }\n"
 "QLabel#labelBudgetVerdict[state=\"over\"] { background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FCA5A5; }\n"
@@ -1548,16 +1583,16 @@ class Ui_MainWindow(object):
 "QFrame[carCard=\"true\"]:hover { border-color: #D7263D; }\n"
 "QFrame#frameTopCar1 { border-color: #F5C2CA;\n"
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFF1F3, stop:1 #FFFFFF); }\n"
-"QLabel[role=\"carImage\"] { border-radius: 10px; color: #A1A1AA; font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 18px; letter-spacing: 4px;\n"
+"QLabel[role=\"carImage\"] { border-radius: 10px; color: #A1A1AA; font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 4px;\n"
 "    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }\n"
 "QLabel[role=\"carRank\"] { background-color: #D7263D; color: #FFFFFF; border-radius: 10px; padding: 3px 9px;\n"
 "                         font-size: 11px; font-weight: 700; }\n"
 "QLabel[role=\"carMatch\"] { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 1px; background: transparent; }\n"
-"QLabel[role=\"carTitle\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 17px; color: #18181B; background: transparent; }\n"
-"QLabel[role=\"carTitleLarge\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 26px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"carTitle\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 17px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"carTitleLarge\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 26px; color: #18181B; background: transparent; }\n"
 "QLabel[role=\"carDetail\"] { color: #6B6B74; font-size: 12px; background: transparent; }\n"
 "QLabel[role=\"carPrice\"] { font-size: 18px; font-weight: 700; color: #18181B; background: transparent; }\n"
-"QLabel[role=\"carPriceLarge\"] { font-family: \"Playfair Display\", \"Georgia\", serif; font-size: 34px; color: #18181B; background: transparent; }\n"
+"QLabel[role=\"carPriceLarge\"] { font-family: \"Inter\", \"Segoe UI\", sans-serif; font-weight: 600; font-size: 34px; color: #18181B; background: transparent; }\n"
 "\n"
 "QMessageBox { background-color: #FFFFFF; }\n"
 "QMessageBox QLabel { color: #18181B; }\n"
@@ -1589,6 +1624,10 @@ class Ui_MainWindow(object):
         self.labelModel.setProperty("role", _translate("MainWindow", "field"))
         self.labelYear.setText(_translate("MainWindow", "YEAR *"))
         self.labelYear.setProperty("role", _translate("MainWindow", "field"))
+        self.labelYearMin.setText(_translate("MainWindow", "1990"))
+        self.labelYearMin.setProperty("role", _translate("MainWindow", "muted"))
+        self.labelYearMax.setText(_translate("MainWindow", "2022"))
+        self.labelYearMax.setProperty("role", _translate("MainWindow", "muted"))
         self.labelType.setText(_translate("MainWindow", "BODY TYPE"))
         self.labelType.setProperty("role", _translate("MainWindow", "field"))
         self.labelSpecsCardNo.setText(_translate("MainWindow", "02"))
@@ -1640,9 +1679,9 @@ class Ui_MainWindow(object):
         self.labelPriceEyebrow.setText(_translate("MainWindow", "ESTIMATED PRICE OF YOUR CAR"))
         self.labelPriceEyebrow.setProperty("role", _translate("MainWindow", "eyebrow"))
         self.labelPredictedPrice.setText(_translate("MainWindow", "$24,696"))
-        self.labelPriceRange.setText(_translate("MainWindow", "Likely price: $22,436 – $26,955"))
+        self.labelPriceRange.setText(_translate("MainWindow", "Likely 2021 asking price: $22,436 – $26,955"))
         self.labelPriceRange.setProperty("role", _translate("MainWindow", "lead"))
-        self.labelPriceNote.setText(_translate("MainWindow", "Based on U.S. used-car listings from 2021, not today\'s prices."))
+        self.labelPriceNote.setText(_translate("MainWindow", "Estimated asking price in U.S. used-car listings from 2021, not today\'s market price."))
         self.labelPriceNote.setProperty("role", _translate("MainWindow", "muted"))
         self.labelCompareEyebrow.setText(_translate("MainWindow", "YOUR BUDGET"))
         self.labelCompareEyebrow.setProperty("role", _translate("MainWindow", "eyebrow"))

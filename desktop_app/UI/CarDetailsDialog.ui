@@ -17,11 +17,11 @@
    <string notr="true">QDialog#CarDetailsDialog { background-color: #FFFFFF; }
 QWidget { font-family: &quot;Inter&quot;, &quot;Segoe UI&quot;, sans-serif; font-size: 13px; color: #18181B; }
 QLabel { background: transparent; }
-QLabel#labelImage { border-radius: 10px; color: #A1A1AA; font-family: &quot;Playfair Display&quot;, &quot;Georgia&quot;, serif; font-size: 18px; letter-spacing: 4px;
+QLabel#labelImage { border-radius: 10px; color: #A1A1AA; font-family: &quot;Inter&quot;, &quot;Segoe UI&quot;, sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 4px;
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #F1F1F4, stop:1 #E6E6EA); }
 QLabel#labelBadge { color: #C81E35; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
-QLabel#labelTitle { font-family: &quot;Playfair Display&quot;, &quot;Georgia&quot;, serif; font-size: 26px; color: #18181B; }
-QLabel#labelPrice { font-family: &quot;Playfair Display&quot;, &quot;Georgia&quot;, serif; font-size: 34px; color: #18181B; }
+QLabel#labelTitle { font-family: &quot;Inter&quot;, &quot;Segoe UI&quot;, sans-serif; font-weight: 600; font-size: 26px; color: #18181B; }
+QLabel#labelPrice { font-family: &quot;Inter&quot;, &quot;Segoe UI&quot;, sans-serif; font-weight: 600; font-size: 34px; color: #18181B; }
 QFrame#frameDetails { background-color: #F7F7F9; border: 1px solid #E4E4E9; border-radius: 10px; }
 QLabel[role=&quot;field&quot;] { color: #6B6B74; font-size: 11px; font-weight: 600; letter-spacing: 1px; }
 QLabel[role=&quot;value&quot;] { color: #18181B; font-size: 13px; }
