@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 
 from backend.app_service import STAGES, AppService
-from backend.schemas.vehicle_input import MODELS_BY_MAKE
+from backend.schemas.vehicle_input import MAX_MILES_NEW, MAX_MILES_PER_YEAR, MODELS_BY_MAKE
 from src import config
 from src.prediction.predict import load_pipeline
 
@@ -48,6 +48,9 @@ def valid_forms(n: int, rng: np.random.Generator) -> list[dict]:
     # và chỉ chọn được những dòng xe có trong danh sách dòng xe theo hãng của form
     on_form = [m in MODELS_BY_MAKE.get(mk, ()) for mk, m in zip(df["manufacturer"], df["model_base"])]
     df = df[on_form]
+    # và số dặm hợp lý với năm / tình trạng (quy tắc của VehicleInput: form không cho gửi xe vô lý)
+    age = (config.SCRAPE_YEAR - df["year"]).clip(lower=1)
+    df = df[(df["odometer"] <= MAX_MILES_PER_YEAR * age) & ~((df["condition"] == "new") & (df["odometer"] > MAX_MILES_NEW))]
     rows = df.sample(n=n, random_state=config.RANDOM_STATE)
     forms = []
     for _, r in rows.iterrows():

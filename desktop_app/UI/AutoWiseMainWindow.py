@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'D:\AutoWise\desktop_app\UI\AutoWiseMainWindow.ui'
+# Form implementation generated from reading ui file 'UI/AutoWiseMainWindow.ui'
 #
 # Created by: PyQt6 UI code generator 6.12.0
 #
@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.labelBrandMark.setText("")
         self.labelBrandMark.setMinimumSize(QtCore.QSize(8, 22))
         self.labelBrandMark.setMaximumSize(QtCore.QSize(8, 22))
-        self.labelBrandMark.setPixmap(QtGui.QPixmap("desktop_app/UI/../images/ic_logo.png"))
+        self.labelBrandMark.setPixmap(QtGui.QPixmap("UI/../images/ic_logo.png"))
         self.labelBrandMark.setObjectName("labelBrandMark")
         self.horizontalLayoutHeader.addWidget(self.labelBrandMark)
         self.verticalLayoutBrand = QtWidgets.QVBoxLayout()
@@ -95,6 +95,26 @@ class Ui_MainWindow(object):
         self.horizontalLayoutHeader.addWidget(self.labelStep2)
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayoutHeader.addItem(spacerItem3)
+        self.pushButtonNavSearch = QtWidgets.QPushButton(parent=self.frameHeader)
+        self.pushButtonNavSearch.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonNavSearch.setObjectName("pushButtonNavSearch")
+        self.horizontalLayoutHeader.addWidget(self.pushButtonNavSearch)
+        self.pushButtonNavHistory = QtWidgets.QPushButton(parent=self.frameHeader)
+        self.pushButtonNavHistory.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonNavHistory.setObjectName("pushButtonNavHistory")
+        self.horizontalLayoutHeader.addWidget(self.pushButtonNavHistory)
+        self.pushButtonNavFavorites = QtWidgets.QPushButton(parent=self.frameHeader)
+        self.pushButtonNavFavorites.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonNavFavorites.setObjectName("pushButtonNavFavorites")
+        self.horizontalLayoutHeader.addWidget(self.pushButtonNavFavorites)
+        self.pushButtonNavAccount = QtWidgets.QPushButton(parent=self.frameHeader)
+        self.pushButtonNavAccount.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonNavAccount.setObjectName("pushButtonNavAccount")
+        self.horizontalLayoutHeader.addWidget(self.pushButtonNavAccount)
+        self.pushButtonNavAdmin = QtWidgets.QPushButton(parent=self.frameHeader)
+        self.pushButtonNavAdmin.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonNavAdmin.setObjectName("pushButtonNavAdmin")
+        self.horizontalLayoutHeader.addWidget(self.pushButtonNavAdmin)
         self.labelHeaderUser = QtWidgets.QLabel(parent=self.frameHeader)
         self.labelHeaderUser.setText("")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
@@ -108,7 +128,7 @@ class Ui_MainWindow(object):
         self.pushButtonLogout.setText("")
         self.pushButtonLogout.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("desktop_app/UI/../images/ic_logout.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("UI/../images/ic_logout.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButtonLogout.setIcon(icon)
         self.pushButtonLogout.setIconSize(QtCore.QSize(16, 16))
         self.pushButtonLogout.setObjectName("pushButtonLogout")
@@ -496,7 +516,7 @@ class Ui_MainWindow(object):
         self.pushButtonAnalyze.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.pushButtonAnalyze.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("desktop_app/UI/../images/ic_arrow_right.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("UI/../images/ic_arrow_right.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButtonAnalyze.setIcon(icon1)
         self.pushButtonAnalyze.setIconSize(QtCore.QSize(16, 16))
         self.pushButtonAnalyze.setObjectName("pushButtonAnalyze")
@@ -568,10 +588,14 @@ class Ui_MainWindow(object):
         self.horizontalLayoutResultsButtons.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayoutResultsButtons.setSpacing(10)
         self.horizontalLayoutResultsButtons.setObjectName("horizontalLayoutResultsButtons")
+        self.pushButtonExportPdf = QtWidgets.QPushButton(parent=self.scrollAreaResultsContents)
+        self.pushButtonExportPdf.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.pushButtonExportPdf.setObjectName("pushButtonExportPdf")
+        self.horizontalLayoutResultsButtons.addWidget(self.pushButtonExportPdf)
         self.pushButtonBackVehicle = QtWidgets.QPushButton(parent=self.scrollAreaResultsContents)
         self.pushButtonBackVehicle.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("desktop_app/UI/../images/ic_arrow_left.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("UI/../images/ic_arrow_left.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.pushButtonBackVehicle.setIcon(icon2)
         self.pushButtonBackVehicle.setIconSize(QtCore.QSize(16, 16))
         self.pushButtonBackVehicle.setObjectName("pushButtonBackVehicle")
@@ -1524,6 +1548,10 @@ class Ui_MainWindow(object):
 "QPushButton[variant=\"inlineLink\"] { background-color: transparent; color: #D7263D; padding: 2px 0px;\n"
 "                                    letter-spacing: 0px; font-size: 13px; font-weight: 600; }\n"
 "QPushButton[variant=\"inlineLink\"]:hover { color: #B51F33; }\n"
+"QPushButton[variant=\"nav\"] { background-color: transparent; color: #52525B; border: none; border-bottom: 2px solid transparent;\n"
+"                            border-radius: 0px; padding: 8px 4px; margin: 0px 8px; font-size: 11px; letter-spacing: 2px; }\n"
+"QPushButton[variant=\"nav\"]:hover { color: #18181B; }\n"
+"QPushButton[variant=\"nav\"][active=\"true\"] { color: #18181B; border-bottom: 2px solid #D7263D; }\n"
 "QPushButton[variant=\"icon\"] { background-color: #FFFFFF; border: 1px solid #D9D9DF; border-radius: 9px; padding: 8px; }\n"
 "QPushButton[variant=\"icon\"]:hover { border-color: #D7263D; }\n"
 "\n"
@@ -1569,6 +1597,21 @@ class Ui_MainWindow(object):
         self.labelStep1.setText(_translate("MainWindow", "01  VEHICLE"))
         self.labelStepSep1.setText(_translate("MainWindow", "———"))
         self.labelStep2.setText(_translate("MainWindow", "02  RESULTS"))
+        self.pushButtonNavSearch.setText(_translate("MainWindow", "SEARCH"))
+        self.pushButtonNavSearch.setProperty("variant", _translate("MainWindow", "nav"))
+        self.pushButtonNavSearch.setToolTip(_translate("MainWindow", "Estimate a price and find cars"))
+        self.pushButtonNavHistory.setText(_translate("MainWindow", "HISTORY"))
+        self.pushButtonNavHistory.setProperty("variant", _translate("MainWindow", "nav"))
+        self.pushButtonNavHistory.setToolTip(_translate("MainWindow", "Your past analyses"))
+        self.pushButtonNavFavorites.setText(_translate("MainWindow", "SAVED CARS"))
+        self.pushButtonNavFavorites.setProperty("variant", _translate("MainWindow", "nav"))
+        self.pushButtonNavFavorites.setToolTip(_translate("MainWindow", "Cars you saved, compare them side by side"))
+        self.pushButtonNavAccount.setText(_translate("MainWindow", "ACCOUNT"))
+        self.pushButtonNavAccount.setProperty("variant", _translate("MainWindow", "nav"))
+        self.pushButtonNavAccount.setToolTip(_translate("MainWindow", "Your profile and password"))
+        self.pushButtonNavAdmin.setText(_translate("MainWindow", "ADMIN PANEL"))
+        self.pushButtonNavAdmin.setProperty("variant", _translate("MainWindow", "nav"))
+        self.pushButtonNavAdmin.setToolTip(_translate("MainWindow", "Back to the admin panel"))
         self.labelHeaderUser.setProperty("role", _translate("MainWindow", "muted"))
         self.pushButtonLogout.setProperty("variant", _translate("MainWindow", "icon"))
         self.pushButtonLogout.setToolTip(_translate("MainWindow", "Sign out"))
@@ -1633,6 +1676,9 @@ class Ui_MainWindow(object):
         self.labelResultsTitle.setProperty("role", _translate("MainWindow", "title"))
         self.labelSelectedVehicle.setText(_translate("MainWindow", "Ford F150 2015 · 90,000 mi · Good · Gasoline · Automatic"))
         self.labelSelectedVehicle.setProperty("role", _translate("MainWindow", "lead"))
+        self.pushButtonExportPdf.setText(_translate("MainWindow", "EXPORT PDF"))
+        self.pushButtonExportPdf.setProperty("variant", _translate("MainWindow", "ghost"))
+        self.pushButtonExportPdf.setToolTip(_translate("MainWindow", "Save this result as a PDF file"))
         self.pushButtonBackVehicle.setText(_translate("MainWindow", "  EDIT DETAILS"))
         self.pushButtonBackVehicle.setProperty("variant", _translate("MainWindow", "ghost"))
         self.pushButtonBackVehicle.setProperty("iconName", _translate("MainWindow", "arrow_left"))

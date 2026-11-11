@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'D:\AutoWise\desktop_app\UI\CarDetailsDialog.ui'
+# Form implementation generated from reading ui file 'UI/CarDetailsDialog.ui'
 #
 # Created by: PyQt6 UI code generator 6.12.0
 #
@@ -71,6 +71,9 @@ class Ui_CarDetailsDialog(object):
         self.horizontalLayoutButtons.setObjectName("horizontalLayoutButtons")
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayoutButtons.addItem(spacerItem1)
+        self.pushButtonSaveCar = QtWidgets.QPushButton(parent=CarDetailsDialog)
+        self.pushButtonSaveCar.setObjectName("pushButtonSaveCar")
+        self.horizontalLayoutButtons.addWidget(self.pushButtonSaveCar)
         self.pushButtonClose = QtWidgets.QPushButton(parent=CarDetailsDialog)
         self.pushButtonClose.setObjectName("pushButtonClose")
         self.horizontalLayoutButtons.addWidget(self.pushButtonClose)
@@ -88,4 +91,7 @@ class Ui_CarDetailsDialog(object):
         self.labelTitle.setText(_translate("CarDetailsDialog", "Porsche Cayenne 2013"))
         self.labelPrice.setText(_translate("CarDetailsDialog", "$17,500"))
         self.labelWarning.setText(_translate("CarDetailsDialog", "This car does not have a clean title. Check its repair history before buying."))
+        self.pushButtonSaveCar.setText(_translate("CarDetailsDialog", "SAVE TO MY CARS"))
+        self.pushButtonSaveCar.setProperty("variant", _translate("CarDetailsDialog", "ghost"))
+        self.pushButtonSaveCar.setToolTip(_translate("CarDetailsDialog", "Keep this car in Saved cars to compare it later"))
         self.pushButtonClose.setText(_translate("CarDetailsDialog", "CLOSE"))

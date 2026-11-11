@@ -150,7 +150,7 @@ def carDetails(card, rank=None, gap=None, budget=None, estimate=None):
              and card.state != "unknown" else NOT_LISTED)]
     fair = getattr(card, "fair_price", None)
     if fair is not None:
-        rows.append(("Usual price for this car", f"About {money(fair)}"))
+        rows.append(("Model estimate (asking price)", f"About {money(fair)}"))
     if isLowPrice(card):
         rows.insert(0, (WARNING, f"The asking price is {(1 - card.price / fair) * 100:.0f}% below the usual price "
                                  f"of such a car ({money(fair)}, AutoWise estimate for its year, mileage and title). "

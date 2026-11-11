@@ -58,19 +58,40 @@ def test_too_long_email_is_rejected(temp_db):
     assert "Please enter a valid email address." in UserDao.validateRegister("Duy Le", "duy_le", email, "autowise2021", "autowise2021")
 
 
-def test_login_is_locked_after_five_wrong_passwords(tmp_path):
+def test_app_closes_after_three_failed_sign_ins(temp_db, monkeypatch):
+    """Đề của thầy: đăng nhập sai 3 lần thì thoát ứng dụng. Khóa tài khoản 5 phút nằm trong CSDL
+    (tests/test_accounts_admin.py), không còn ở QSettings của máy."""
     pytest.importorskip("PyQt6")
-    from PyQt6.QtCore import QSettings
-    from desktop_app.UI.LoginMainWindowEx import LOCK_SECONDS, MAX_FAILED_LOGINS, LoginMainWindowEx
+    import desktop_app.UI.LoginMainWindowEx as lw
+    from desktop_app.dal.user_dao import MAX_FAILED_LOGINS
 
-    login = LoginMainWindowEx.__new__(LoginMainWindowEx)          # no window: only the lock logic
-    login.settings = QSettings(str(tmp_path / "settings.ini"), QSettings.Format.IniFormat)
-    assert login.lockedMinutes("duy") == 0
-    results = [login.recordFailedLogin("Duy") for _ in range(MAX_FAILED_LOGINS)]
-    assert results == [False] * (MAX_FAILED_LOGINS - 1) + [True]
-    assert login.lockedMinutes("duy") == LOCK_SECONDS // 60       # same username, any letter case
-    login.clearFailedLogins("duy")
-    assert login.lockedMinutes("duy") == 0
+    class Box:
+        def __init__(self):
+            self.value = ""
+        def text(self):
+            return self.value
+        def setText(self, v):
+            self.value = v
+        def selectAll(self):
+            pass
+        def setFocus(self):
+            pass
+
+    shown, closed = [], []
+    monkeypatch.setattr(lw.QMessageBox, "critical", lambda *a, **k: shown.append(a[2]))
+    monkeypatch.setattr(lw.QApplication, "quit", lambda: None)
+    monkeypatch.setattr(lw.sys, "exit", lambda code=0: closed.append(code))
+    UserDao.register("Duy Le", "duy_le", "", "autowise2021")
+    login = lw.LoginMainWindowEx()
+    login.MainWindow = None
+    login.lineEditUserName, login.lineEditPassword = Box(), Box()
+    login.showMessage = lambda label, text, success=False: shown.append(text)
+    login.labelLoginMessage = None
+    login.lineEditUserName.setText("duy_le")
+    for n in range(MAX_FAILED_LOGINS):
+        login.lineEditPassword.setText(f"wrong{n}xxx")
+        login.processLogin()
+    assert closed == [0] and any("3 times in a row" in text for text in shown)
 
 
 # --------------------------------------------------------------------- mileage
@@ -216,7 +237,7 @@ def test_click_on_a_car_card_opens_its_details(main_window, monkeypatch):
     from tests.test_e03_results import VEHICLE, _result
 
     opened = []
-    monkeypatch.setattr(mw, "openCarDetails", lambda parent, card, details: opened.append((card, details)))
+    monkeypatch.setattr(mw, "openCarDetails", lambda parent, card, details, user=None: opened.append((card, details)))
     main_window.resultsController.show(VEHICLE, _result())
     frame = main_window.frameTopCar2
     assert frame.cursor().shape() == Qt.CursorShape.PointingHandCursor
@@ -285,7 +306,7 @@ def test_card_shows_title_and_low_price():
     assert titleWarning(card) == "Rebuilt title" and not isLowPrice(card)
     rows = dict(carDetails(card, rank=1)[3])
     assert rows["Title status"].startswith("Rebuilt") and rows["Listed in"] == "TX (U.S. state)"
-    assert rows["Usual price for this car"].startswith("About $18,458")
+    assert rows["Model estimate (asking price)"].startswith("About $18,458")
     assert "clean title" in rows["Warning"]
 
     card.title_status, card.fair_price = "clean", 27_000

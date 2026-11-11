@@ -133,6 +133,15 @@ def defaultService():
     return get_app_service()
 
 
+def appMae():
+    """Average error users get (MAE on the test set, app input path) from metrics.json, or None."""
+    try:
+        from backend.services.prediction_service import _test_mae
+        return _test_mae()
+    except Exception:                                   # noqa: BLE001
+        return None
+
+
 class ResultsController:
     def __init__(self, ui, getService=defaultService, setImage=setCardImage):
         self.ui = ui
@@ -223,11 +232,12 @@ class ResultsController:
             self.ui.labelPriceNote.setText("The price estimate is unavailable for this analysis.")
             return
         self.ui.labelPredictedPrice.setText(money(price.predicted_price))
-        note = "Based on U.S. used-car listings from 2021, not today's prices."
+        note = "Estimated asking price, learned from U.S. used-car listings of 2021 (not today's market price)."
         if price.price_low is not None and price.price_high is not None:
-            self.ui.labelPriceRange.setText(f"Likely price: {money(price.price_low)} – {money(price.price_high)}")
-            note += (f" On average the estimate is off by about {money(price.price_high - price.predicted_price)}, "
-                     "which gives this range.")
+            self.ui.labelPriceRange.setText(f"8 in 10 similar listings: {money(price.price_low)} – {money(price.price_high)}")
+            mae = appMae()
+            note += (" The range is wider for expensive cars because their prices vary more."
+                     + (f" Average error on unseen test cars: about {money(mae)}." if mae else ""))
         else:
             self.ui.labelPriceRange.setText("")
         self.ui.labelPriceNote.setText(note)

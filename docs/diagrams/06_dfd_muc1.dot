@@ -1,0 +1,62 @@
+digraph DFD1 {
+  rankdir=TB; nodesep=0.5; ranksep=0.6;
+  graph [fontname="Inter", fontsize=12, bgcolor="white", pad=0.3, nodesep=0.35, ranksep=0.5];
+  node  [fontname="Inter", fontsize=11, color="#18181B", fontcolor="#18181B"];
+  edge  [fontname="Inter", fontsize=9, color="#6B6B74", fontcolor="#6B6B74", arrowsize=0.7];
+  node [shape=box, style="rounded,filled", fillcolor="#FDE8EB", color="#D7263D", width=1.9, height=0.75];
+  P1 [label="1.0
+Xác thực và
+quản lý tài khoản"];
+  P2 [label="2.0
+Tiền xử lý và
+chia dữ liệu"];
+  P3 [label="3.0
+Huấn luyện và
+quản lý mô hình"];
+  P4 [label="4.0
+Dự đoán giá"];
+  P5 [label="5.0
+Gợi ý xe"];
+  P6 [label="6.0
+Lưu lịch sử, xe yêu thích,
+xuất PDF"];
+  P7 [label="7.0
+Thống kê và
+phân khúc K-Means"];
+  node [shape=record, style=filled, fillcolor="white", color="#18181B", height=0.4];
+  D1 [label="D1 | users"];
+  D2 [label="D2 | login_history"];
+  D3 [label="D3 | vehicles_filled + splits"];
+  D4 [label="D4 | registry + final_pipeline"];
+  D5 [label="D5 | recommendation_catalog"];
+  D6 [label="D6 | searches"];
+  D7 [label="D7 | favorites"];
+  D8 [label="D8 | audit_log"];
+  node [shape=box, style=filled, fillcolor="#F5F5F7", color="#18181B", width=1.4];
+  U [label="Người dùng"]; A [label="Quản trị viên"]; K [label="Nguồn dữ liệu\n(Kaggle, NHTSA, Wikimedia)"];
+  U -> P1 [label="đăng ký/đăng nhập"];
+  A -> P1 [label="đăng nhập, quản lý user"];
+  P1 -> D1 [label="tài khoản"];
+  P1 -> D2 [label="lần đăng nhập"];
+  P1 -> D8 [label="thao tác admin"];
+  K -> P2 [label="tin đăng, VIN, ảnh"];
+  P2 -> D3 [label="dữ liệu sạch, train/val/test"];
+  P2 -> D5 [label="danh mục xe + ảnh"];
+  D3 -> P3 [label="train/val"];
+  A -> P3 [label="thuật toán, tham số"];
+  P3 -> D4 [label="phiên bản, mô hình đang dùng"];
+  U -> P4 [label="thông số xe"];
+  D4 -> P4 [label="pipeline"];
+  P4 -> P5 [label="giá ước tính"];
+  U -> P5 [label="ngân sách, sở thích"];
+  D5 -> P5 [label="xe ứng viên"];
+  P5 -> P6 [label="kết quả phân tích"];
+  P6 -> D6 [label="phân tích"];
+  P6 -> D7 [label="xe đã lưu"];
+  P6 -> U [label="kết quả, PDF"];
+  D6 -> P7 [label="lịch sử"];
+  D1 -> P7 [label="người dùng"];
+  D3 -> P7 [label="tin đăng"];
+  P7 -> A [label="dashboard, phân khúc"];
+  {rank=same; U; A; K;}
+}

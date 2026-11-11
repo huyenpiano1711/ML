@@ -113,6 +113,10 @@ QPushButton[variant="link"]:hover { color: #18181B; }
 QPushButton[variant="inlineLink"] { background-color: transparent; color: #D7263D; padding: 2px 0px;
                                     letter-spacing: 0px; font-size: 13px; font-weight: 600; }
 QPushButton[variant="inlineLink"]:hover { color: #B51F33; }
+QPushButton[variant="nav"] { background-color: transparent; color: #52525B; border: none; border-bottom: 2px solid transparent;
+                            border-radius: 0px; padding: 8px 4px; margin: 0px 8px; font-size: 11px; letter-spacing: 2px; }
+QPushButton[variant="nav"]:hover { color: #18181B; }
+QPushButton[variant="nav"][active="true"] { color: #18181B; border-bottom: 2px solid #D7263D; }
 QPushButton[variant="icon"] { background-color: #FFFFFF; border: 1px solid #D9D9DF; border-radius: 9px; padding: 8px; }
 QPushButton[variant="icon"]:hover { border-color: #D7263D; }
 
@@ -381,6 +385,86 @@ QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonNavSearch">
+         <property name="text">
+          <string>SEARCH</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>nav</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Estimate a price and find cars</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonNavHistory">
+         <property name="text">
+          <string>HISTORY</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>nav</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Your past analyses</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonNavFavorites">
+         <property name="text">
+          <string>SAVED CARS</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>nav</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Cars you saved, compare them side by side</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonNavAccount">
+         <property name="text">
+          <string>ACCOUNT</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>nav</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Your profile and password</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonNavAdmin">
+         <property name="text">
+          <string>ADMIN PANEL</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>nav</string>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Back to the admin panel</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="labelHeaderUser">
@@ -1618,6 +1702,22 @@ QMessageBox QPushButton { min-width: 90px; padding: 9px 18px; }
                   <property name="bottomMargin">
                    <number>0</number>
                   </property>
+                  <item>
+                   <widget class="QPushButton" name="pushButtonExportPdf">
+                    <property name="text">
+                     <string>EXPORT PDF</string>
+                    </property>
+                    <property name="variant" stdset="0">
+                     <string>ghost</string>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="toolTip">
+                     <string>Save this result as a PDF file</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QPushButton" name="pushButtonBackVehicle">
                     <property name="text">

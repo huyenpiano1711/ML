@@ -1,0 +1,52 @@
+digraph BpmnModel {
+  rankdir=LR; newrank=true; compound=true;
+  graph [fontname="Inter", fontsize=12, bgcolor="white", pad=0.3, nodesep=0.35, ranksep=0.5];
+  node  [fontname="Inter", fontsize=11, color="#18181B", fontcolor="#18181B"];
+  edge  [fontname="Inter", fontsize=9, color="#6B6B74", fontcolor="#6B6B74", arrowsize=0.7];
+  label=<<B>BPMN 3 – Huấn luyện lại và triển khai mô hình giá</B>>; labelloc=t; fontsize=14;
+  subgraph cluster_A { label=<<B>Quản trị viên</B>>; labeljust=l; style="filled"; fillcolor="#F5F5F7"; color="#D4D4DA";
+    s [shape=circle, width=0.35, label="", style=filled, fillcolor="white", penwidth=1.5];
+    a1 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Chọn thuật toán,
+tham số, tỷ lệ che"];
+    a2 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="TRAIN AND
+VALIDATE"];
+    a3 [shape=diamond, style=filled, fillcolor="#FDE8EB", color="#D7263D", width=0.55, height=0.55, fixedsize=true, fontsize=14, label="×"];
+    a4 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Ghi chú, SAVE VERSION"];
+    a5 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="So sánh các phiên bản,
+USE THIS VERSION"];
+    e [shape=doublecircle, width=0.3, label="", style=filled, fillcolor="#18181B"];
+  }
+  subgraph cluster_S { label=<<B>Admin console</B>>; labeljust=l; style="filled"; fillcolor="#F5F5F7"; color="#D4D4DA";
+    s1 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Nạp train/val
+(chia theo nhóm xe)"];
+    s2 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Huấn luyện pipeline
+trên train (luồng nền)"];
+    s3 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Đánh giá trên validation:
+MAE app / đủ TT, R²,
+độ phủ khoảng giá"];
+  }
+  subgraph cluster_M { label=<<B>Kho mô hình / Ứng dụng</B>>; labeljust=l; style="filled"; fillcolor="#F5F5F7"; color="#D4D4DA";
+    m1 [shape=cylinder, style=filled, fillcolor="#F5F5F7", width=1.1, label="registry/
+<version>.joblib"];
+    m2 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Chép thành
+final_pipeline.joblib,
+cập nhật metrics.json"];
+    m3 [shape=box, style="rounded,filled", fillcolor="white", width=1.7, height=0.6, label="Xóa bộ đệm mô hình →
+dự đoán mới dùng ngay"];
+    m4 [shape=cylinder, style=filled, fillcolor="#F5F5F7", width=1.1, label="audit_log"];
+  }
+  s -> a1;
+  a1 -> a2;
+  a2 -> s1;
+  s1 -> s2;
+  s2 -> s3;
+  s3 -> a3;
+  a3 -> a1 [label="chưa tốt"];
+  a3 -> a4 [label="tốt hơn"];
+  a4 -> m1 [style=dashed];
+  m1 -> a5 [style=dashed];
+  a5 -> m2;
+  m2 -> m3;
+  m2 -> m4 [style=dashed];
+  m3 -> e;
+}

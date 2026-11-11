@@ -12,15 +12,40 @@ from desktop_app.widgets.vehicle_card import WARNING, setCardImage
 
 
 class CarDetailsDialogEx(Ui_CarDetailsDialog):
+    def __init__(self, user=None):
+        self.user = user                 # signed-in User: can save the car; None = button hidden
+        self.card = None
+
     def setupUi(self, Dialog):
         super().setupUi(Dialog)
         self.Dialog = Dialog
         UIUtil.loadFonts()
         self.pushButtonClose.clicked.connect(Dialog.accept)
+        self.pushButtonSaveCar.clicked.connect(self.toggleSaved)
+        self.pushButtonSaveCar.setVisible(self.user is not None)
+
+    def toggleSaved(self):
+        """Save the car to (or remove it from) Saved cars of the signed-in user."""
+        from desktop_app.dal.history_dao import FavoriteDao
+        if self.user is None or self.card is None:
+            return
+        if FavoriteDao.isSaved(self.user.id, self.card.id):
+            FavoriteDao.remove(self.user.id, self.card.id)
+        else:
+            FavoriteDao.add(self.user.id, self.card)
+        self.updateSaveButton()
+
+    def updateSaveButton(self):
+        from desktop_app.dal.history_dao import FavoriteDao
+        if self.user is not None and self.card is not None:
+            saved = FavoriteDao.isSaved(self.user.id, self.card.id)
+            self.pushButtonSaveCar.setText("SAVED ✓  (REMOVE)" if saved else "SAVE TO MY CARS")
 
     def showCar(self, card, details):
         """card: the CarCard (for the photo); details: (badge, title, price, rows) of carDetails()."""
         badge, title, price, rows = details
+        self.card = card
+        self.updateSaveButton()
         self.Dialog.setWindowTitle(f"Car details - {title}")
         self.labelBadge.setText(badge)
         self.labelTitle.setText(title)
@@ -42,9 +67,9 @@ class CarDetailsDialogEx(Ui_CarDetailsDialog):
         setCardImage(self.labelImage, card)
 
 
-def openCarDetails(parent, card, details):
+def openCarDetails(parent, card, details, user=None):
     dialog = QDialog(parent)
-    ui = CarDetailsDialogEx()
+    ui = CarDetailsDialogEx(user)
     ui.setupUi(dialog)
     ui.showCar(card, details)
     dialog.exec()

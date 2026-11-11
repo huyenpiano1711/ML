@@ -1,7 +1,7 @@
-﻿model,target,configuration,mae_usd,rmse_usd,medae_usd,r2_usd,r2_log,mape_pct,fit_time_sec
-DummyRegressor,Direct USD,strategy='median',9439.62,14073.37,6498.0,-0.0924,-0.0009,88.35,0.15
-Ridge Regression,Direct USD,"alpha=10.0, OneHotEncoder",3856.02,6115.76,2616.82,0.7937,-0.3764,38.08,6.96
-Ridge Regression,Log-Price (log1p),"alpha=10.0, OneHotEncoder, expm1 inverse",3137.71,5685.42,1687.45,0.8217,0.8574,23.7,6.45
-HistGradientBoosting,Direct USD,"max_iter=300, lr=0.1, max_leaf_nodes=63, native categorical",2308.35,4043.5,1390.08,0.9098,0.8926,20.29,29.7
-HistGradientBoosting,Log-Price (log1p),"max_iter=300, lr=0.1, max_leaf_nodes=63, expm1 inverse",2330.03,4296.88,1336.4,0.8982,0.9029,18.96,34.3
-RandomForestRegressor,Log-Price (log1p),"n_estimators=100, max_depth=22, min_samples_leaf=4, expm1 inverse",2624.98,4624.97,1552.46,0.882,0.8746,21.73,53.71
+﻿cau_hinh,thuat_toan,log_target,augment_frac,tham_so,val_mae_app,val_mae_day_du,val_rmse_app,val_r2_app,val_mape_app,fit_giay
+Dummy (median),Dummy (median baseline),False,0.5,{},9466.37,9466.37,14071.89,-0.0865,94.22,1.82
+Ridge - USD,Ridge Regression,False,0.5,"{""alpha"": 10.0}",3999.51,3990.68,6563.46,0.7636,43.12,2.43
+Ridge - log1p,Ridge Regression,True,0.5,"{""alpha"": 10.0}",3305.36,3249.23,6198.47,0.7892,28.23,2.48
+RandomForest - log1p,RandomForest,True,0.5,"{""n_estimators"": 100, ""max_depth"": 22, ""min_samples_leaf"": 4}",3011.64,2940.7,5614.3,0.827,27.37,30.19
+HGB - USD,HistGradientBoosting,False,0.5,"{""learning_rate"": 0.1, ""max_iter"": 300, ""max_leaf_nodes"": 63, ""min_samples_leaf"": 20, ""l2_regularization"": 0.0}",2683.82,2558.21,5007.98,0.8624,26.33,4.6
+HGB - log1p,HistGradientBoosting,True,0.5,"{""learning_rate"": 0.1, ""max_iter"": 300, ""max_leaf_nodes"": 63, ""min_samples_leaf"": 20, ""l2_regularization"": 0.0}",2662.39,2524.68,5080.45,0.8584,24.2,5.15

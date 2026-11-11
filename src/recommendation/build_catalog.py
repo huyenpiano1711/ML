@@ -214,10 +214,26 @@ def build_catalog(df: pd.DataFrame, image_dir: Path | None = None,
     return cat, report
 
 
+def drop_price_outliers(df):
+    """Không gợi ý tin có giá bất thường (giá trả góp, gõ sai...): bỏ các tin bị loại khỏi train và các tin
+    val/test vượt ngưỡng ngoại lai học trên train (scripts/12_split_data.py). Đây là lọc chất lượng danh mục,
+    không ảnh hưởng tới việc đánh giá mô hình giá."""
+    ids = set()
+    for name, col in (("removed_group_outliers.csv", None), ("eval_outlier_flags.csv", "is_outlier")):
+        path = config.REPORT_DIR / name
+        if path.is_file():
+            t = pd.read_csv(path)
+            ids |= set(t["id"] if col is None else t.loc[t[col] == 1, "id"])
+    if ids:
+        print(f"Bỏ {df['id'].isin(ids).sum():,} tin có giá bất thường khỏi danh mục gợi ý")
+    return df[~df["id"].isin(ids)]
+
+
 def main():
     if not FILLED_PKL.exists():
         sys.exit(f"Không thấy {FILLED_PKL}. Tải autowise_data_processed.zip ở Release data-v1 (xem README).")
     df = pd.read_pickle(FILLED_PKL)
+    df = drop_price_outliers(df)
     image_dir = config.IMAGE_DIR if config.IMAGE_DIR.is_dir() else None
     if image_dir is None:
         print("CẢNH BÁO: chưa có assets/car_images_unique -> image_path để trống.")

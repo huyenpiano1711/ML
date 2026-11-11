@@ -1,22 +1,102 @@
 {
-  "model_name": "HistGradientBoostingRegressor",
-  "pipeline_file": "final_pipeline.joblib",
+  "model_name": "HistGradientBoosting",
+  "active_version": "20261111_114832_hgb",
+  "selection_metric": "MAE (USD) trên validation theo đường của ứng dụng",
   "test_metrics": {
-    "mae_usd": 2259.49,
-    "rmse_usd": 3975.01,
-    "medae_usd": 1313.34,
-    "p90_usd": 5119.73,
-    "r2_usd": 0.9094,
-    "r2_log": 0.9073,
-    "mape_pct": 18.11,
-    "sample_size": 29778,
-    "pred_time_sec": 1.25,
-    "ms_per_car": 0.042
+    "mae_usd": 2498.46,
+    "rmse_usd": 4958.24,
+    "medae_usd": 1378.92,
+    "p90_usd": 5536.1,
+    "r2_usd": 0.8647,
+    "r2_log": 0.865,
+    "mape_pct": 23.47,
+    "sample_size": 28777
   },
+  "test_metrics_app_path": {
+    "mae_usd": 2638.88,
+    "rmse_usd": 5147.52,
+    "medae_usd": 1440.46,
+    "p90_usd": 5883.83,
+    "r2_usd": 0.8542,
+    "r2_log": 0.8585,
+    "mape_pct": 24.04,
+    "sample_size": 28777
+  },
+  "test_metrics_app_path_without_flagged_outliers": {
+    "mae_usd": 2502.68,
+    "rmse_usd": 4634.43,
+    "medae_usd": 1411.55,
+    "p90_usd": 5640.19,
+    "r2_usd": 0.8788,
+    "r2_log": 0.8953,
+    "mape_pct": 19.24,
+    "sample_size": 28279
+  },
+  "validation_metrics_app_path": {
+    "mae_usd": 2644.08,
+    "rmse_usd": 5068.64,
+    "medae_usd": 1460.0,
+    "p90_usd": 5960.65,
+    "r2_usd": 0.859,
+    "r2_log": 0.8583,
+    "mape_pct": 24.06,
+    "sample_size": 28777
+  },
+  "validation_metrics_full_info": {
+    "mae_usd": 2512.31,
+    "rmse_usd": 4848.76,
+    "medae_usd": 1403.2,
+    "p90_usd": 5588.38,
+    "r2_usd": 0.871,
+    "r2_log": 0.8638,
+    "mape_pct": 23.51,
+    "sample_size": 28777
+  },
+  "interval": {
+    "coverage": 0.8,
+    "bins": [
+      {
+        "upper_pred_usd": 5637.68,
+        "low_ratio": 0.6198,
+        "high_ratio": 1.4968,
+        "n": 5756
+      },
+      {
+        "upper_pred_usd": 9220.47,
+        "low_ratio": 0.7282,
+        "high_ratio": 1.3477,
+        "n": 5755
+      },
+      {
+        "upper_pred_usd": 14688.16,
+        "low_ratio": 0.749,
+        "high_ratio": 1.2938,
+        "n": 5755
+      },
+      {
+        "upper_pred_usd": 24159.19,
+        "low_ratio": 0.8095,
+        "high_ratio": 1.2541,
+        "n": 5755
+      },
+      {
+        "upper_pred_usd": null,
+        "low_ratio": 0.8099,
+        "high_ratio": 1.2334,
+        "n": 5756
+      }
+    ]
+  },
+  "interval_test_coverage_pct": 79.89,
+  "interval_test_median_width_usd": 6365.47,
+  "app_mae_usd": 2638.88,
+  "app_mae_source": "test",
   "evaluation_notes": {
-    "r2_calculation": "R² được tính trực tiếp trên giá USD thật theo công thức 1 - SS_res/SS_tot",
-    "log_target_inverse": "Target huấn luyện là log1p(price), khi suy luận tự động chuyển ngược bằng expm1",
-    "g1_outlier_impact": "Bước G1 loại bỏ 0.68% ngoại lai trước khi split nên kết quả test có thể lạc quan nhẹ nhưng phản ánh chính xác phân khúc xe phổ thông",
-    "evaluated_at": "2026-10-26 21:35:02"
+    "split": "StratifiedGroupKFold theo nhóm hãng+dòng+năm+số dặm (tin đăng lại nằm chung một tập)",
+    "outliers": "Ngưỡng ngoại lai học trên train, chỉ loại khỏi train; val/test giữ nguyên",
+    "app_path": "drive, cylinders, paint_color = unknown như khi người dùng để trống",
+    "interval": "Khoảng 80% từ phân vị tỷ lệ giá thật/giá dự đoán trên validation, 5 mức giá",
+    "test_used_once": true,
+    "evaluated_at": "2026-11-11 11:48:33"
   }
 }

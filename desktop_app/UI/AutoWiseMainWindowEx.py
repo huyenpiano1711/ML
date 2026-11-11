@@ -29,8 +29,10 @@ from desktop_app.utils.UIUtil import UIUtil
 from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.controllers.results_controller import ResultsController
 from desktop_app.controllers.vehicle_controller import VehicleController, NOT_SURE
-from desktop_app.widgets.vehicle_card import labelOf, money
-from backend.schemas.vehicle_input import FEATURES
+from desktop_app.widgets.vehicle_card import carDetails, labelOf, money
+from desktop_app.dal.history_dao import SearchDao
+from backend.schemas.vehicle_input import FEATURES, VehicleInput
+from backend.schemas.result_schema import AnalysisResult, CarCard, PriceResult
 
 
 class BackendProblems(QObject):
@@ -65,9 +67,11 @@ SUGGESTION_STYLE = ("QListView { background-color: #FFFFFF; border: 1px solid #E
 
 
 class AutoWiseMainWindowEx(Ui_MainWindow):
-    def __init__(self, user=None, loginUi=None):
+    def __init__(self, user=None, loginUi=None, adminUi=None):
         self.user = user                      # signed-in User (from LoginMainWindowEx); None = guest
         self.loginUi = loginUi
+        self.adminUi = adminUi                # set when an admin opened the advisor from the admin console
+        self.lastSearchId = None              # analysis on Screen 3 (saved in history), for EXPORT PDF
 
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
@@ -82,7 +86,12 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         UIUtil.setupWindow(MainWindow)
         self.labelTopEmpty.hide()
         self.labelSimilarEmpty.hide()
-        self.pushButtonLogout.setVisible(self.loginUi is not None)
+        self.pushButtonLogout.setVisible(self.loginUi is not None or self.adminUi is not None)
+        signedIn = self.user is not None
+        for button in (self.pushButtonNavSearch, self.pushButtonNavHistory, self.pushButtonNavFavorites,
+                       self.pushButtonNavAccount, self.pushButtonExportPdf):
+            button.setVisible(signedIn)
+        self.pushButtonNavAdmin.setVisible(self.adminUi is not None)
         self.setupInputLimits()
         self.setupSpinBoxes()
         self.loadOptions()
@@ -120,6 +129,12 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
         self.pushButtonBackVehicle.clicked.connect(lambda: self.goToPage(PAGE_VEHICLE))
         self.pushButtonReset.clicked.connect(self.vehicleController.reset)
         self.pushButtonLogout.clicked.connect(self.processLogout)
+        self.pushButtonNavSearch.clicked.connect(lambda: self.goToPage(PAGE_VEHICLE))
+        self.pushButtonNavHistory.clicked.connect(self.openHistory)
+        self.pushButtonNavFavorites.clicked.connect(self.openFavorites)
+        self.pushButtonNavAccount.clicked.connect(self.openAccount)
+        self.pushButtonNavAdmin.clicked.connect(self.processLogout)
+        self.pushButtonExportPdf.clicked.connect(self.exportPdf)
         self.comboBoxManufacturer.currentIndexChanged.connect(self.vehicleController.refreshModels)
         self.comboBoxModel.currentIndexChanged.connect(self.vehicleController.applyModelConstraints)
         self.spinBoxBudget.valueChanged.connect(self.horizontalSliderBudget.setValue)
@@ -258,15 +273,63 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
     # ------------------------------------------------------------------ navigation
     def goToPage(self, index):
         self.stackedWidgetMain.setCurrentIndex(index)
+        self.pushButtonNavSearch.setProperty("active", True)
+        UIUtil.repolish(self.pushButtonNavSearch)
         for i, step in enumerate((self.labelStep1, self.labelStep2)):
             step.setProperty("active", i == index)
             step.setProperty("done", i < index)
             UIUtil.repolish(step)
 
     def processLogout(self):
-        if self.loginUi is not None:
+        """Sign out (back to the sign-in window), or back to the admin console when an admin opened the advisor."""
+        if self.adminUi is not None:
+            self.adminUi.backFromUserApp()
+        elif self.loginUi is not None:
             self.loginUi.backFromMainWindow()
         self.MainWindow.close()
+
+    # ------------------------------------------------------------------ account, history, saved cars
+    def openAccount(self):
+        from desktop_app.UI.UserDialogsEx import AccountDialogEx, openDialog
+        openDialog(self.MainWindow, AccountDialogEx, self.user, self.userChanged)
+
+    def userChanged(self, user):
+        self.user = user
+        self.labelHeaderUser.setText(f"Signed in as {self.userName()}")
+
+    def openHistory(self):
+        from desktop_app.UI.UserDialogsEx import HistoryDialogEx, openDialog
+        openDialog(self.MainWindow, HistoryDialogEx, self.user, self.showSavedAnalysis)
+
+    def openFavorites(self):
+        from desktop_app.UI.UserDialogsEx import FavoritesDialogEx, openDialog
+        openDialog(self.MainWindow, FavoritesDialogEx, self.user, self.showSavedCar)
+
+    def showSavedCar(self, parent, car):
+        fields = {k: car.get(k) for k in CarCard.__dataclass_fields__ if k in car}
+        card = CarCard(**fields)
+        openCarDetails(parent, card, carDetails(card), self.user)
+
+    def showSavedAnalysis(self, record):
+        """Show an analysis from the history on Screen 3 again (no new prediction is made)."""
+        import json
+        vehicle = VehicleInput.from_dict(json.loads(record["input_json"]))
+        payload = json.loads(record["result_json"] or "{}")
+        cards = lambda key: [CarCard(**c) for c in payload.get(key, [])]
+        result = AnalysisResult(success=True, vehicle_title=payload.get("vehicle_title", ""),
+                                price=PriceResult(**payload["price"]) if payload.get("price") else None,
+                                top_matches=cards("top_matches"), similar_price=cards("similar_price"),
+                                warnings=payload.get("warnings", []))
+        self.lastSearchId = int(record["id"])
+        self.resultsController.show(vehicle, result)
+
+    def exportPdf(self):
+        from desktop_app.UI.UserDialogsEx import exportSearchPdf
+        record = SearchDao.get(self.lastSearchId, self.user.id) if self.lastSearchId and self.user else None
+        if record is None:
+            self.showWarning("Export PDF", "Run an analysis first.")
+            return
+        exportSearchPdf(self.MainWindow, self.user, record)
 
     # ------------------------------------------------------------------ form
     def updateSummary(self):
@@ -299,7 +362,19 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
             self.pushButtonAnalyze.setEnabled(True)
             self.pushButtonAnalyze.setText("ANALYZE && FIND CARS  ")
             QApplication.restoreOverrideCursor()
+        self.saveSearch(vehicle, result)
         self.resultsController.show(vehicle, result)
+
+    def saveSearch(self, vehicle, result):
+        """Every analysis with a result goes to the user's history (and the admin statistics)."""
+        self.lastSearchId = None
+        if self.user is None or (result.price is None and not result.top_matches):
+            return
+        try:
+            self.lastSearchId = SearchDao.save(self.user.id, vehicle, result)
+        except Exception:                                   # noqa: BLE001 - history must never stop the analysis
+            import logging
+            logging.getLogger(__name__).exception("Could not save the analysis to history")
 
     # ------------------------------------------------------------------ utils
     def repolish(self, widget):
@@ -316,7 +391,7 @@ class AutoWiseMainWindowEx(Ui_MainWindow):
     def showCarDetails(self, vehicleCard):
         details = self.resultsController.detailsOf(vehicleCard)
         if details is not None:
-            openCarDetails(self.MainWindow, vehicleCard.card, details)
+            openCarDetails(self.MainWindow, vehicleCard.card, details, self.user)
 
     def showWarning(self, title, text):
         box = QMessageBox(self.MainWindow)
