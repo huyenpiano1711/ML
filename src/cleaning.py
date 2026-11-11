@@ -363,6 +363,31 @@ def drop_group_outliers(df, log):
     return df.drop(columns="price_robust_z"), out
 
 
+def fit_group_outliers(train_df):
+    """Học trung vị và MAD của log giá theo nhóm hãng + dòng + năm, CHỈ từ tập train.
+    Trả về bảng thống kê dùng cho flag_group_outliers() (không nhìn giá của val/test)."""
+    keys = config.OUTLIER_GROUP_COLS
+    d = train_df[keys].copy()
+    d["lp"] = np.log(train_df["price"].to_numpy())
+    med = d.groupby(keys, observed=True)["lp"].median().rename("med")
+    d = d.join(med, on=keys)
+    stats = (d.assign(dev=(d["lp"] - d["med"]).abs())
+              .groupby(keys, observed=True)
+              .agg(n=("lp", "size"), med=("med", "first"), mad=("dev", "median"))
+              .reset_index())
+    return stats[stats["n"] >= config.OUTLIER_MIN_GROUP_SIZE]
+
+
+def flag_group_outliers(df, stats):
+    """robust z của từng xe so với thống kê nhóm đã học trên train; NaN khi nhóm quá nhỏ."""
+    keys = config.OUTLIER_GROUP_COLS
+    m = df[keys].merge(stats, on=keys, how="left")
+    z = 0.6745 * (np.log(df["price"].to_numpy()) - m["med"].to_numpy()) / \
+        np.clip(m["mad"].to_numpy(), config.OUTLIER_MAD_FLOOR, None)
+    z = pd.Series(z, index=df.index, name="price_robust_z")
+    return z, z.abs() > config.OUTLIER_Z_THRESHOLD
+
+
 # ---------------------------------------------------------------------------
 # G. XỬ LÝ GIÁ TRỊ THIẾU CÒN LẠI (không loại dòng)
 # ---------------------------------------------------------------------------

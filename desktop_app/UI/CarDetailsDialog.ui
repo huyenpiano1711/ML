@@ -164,6 +164,19 @@ QPushButton:hover { border-color: #D7263D; color: #D7263D; }</string>
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButtonSaveCar">
+         <property name="text">
+          <string>SAVE TO MY CARS</string>
+         </property>
+         <property name="variant" stdset="0">
+          <string>ghost</string>
+         </property>
+         <property name="toolTip">
+          <string>Keep this car in Saved cars to compare it later</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButtonClose">
          <property name="text">
           <string>CLOSE</string>

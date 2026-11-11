@@ -57,6 +57,26 @@ def test_invalid_ui_input_is_rejected(valid_form):
 def test_metrics_match_independent_test_contract():
     metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
     test_metrics = metrics["test_metrics"]
-    assert test_metrics["sample_size"] == 29778
+    test_ids = pd.read_csv(PROJECT_DIR / "data" / "splits" / "test_ids.csv")["id"]
+    assert test_metrics["sample_size"] == len(test_ids)
+    assert metrics["test_metrics_app_path"]["sample_size"] == len(test_ids)
+    assert metrics["interval"]["bins"] and metrics["app_mae_usd"] >= test_metrics["mae_usd"] * 0.9
     assert all(test_metrics[key] >= 0 for key in ("mae_usd", "rmse_usd", "medae_usd"))
     assert -1 <= test_metrics["r2_usd"] <= 1
+
+
+def test_backend_rejects_impossible_mileage(valid_form):
+    """Quy tắc số dặm nằm ở VehicleInput.validate() (không chỉ ở giao diện) - review ML-07."""
+    errors = VehicleInput.from_dict({**valid_form, "year": 2021, "odometer": 400_000}).validate()
+    assert any(e.startswith("Số dặm ") for e in errors)
+    errors = VehicleInput.from_dict({**valid_form, "condition": "new", "odometer": 150_000, "year": 2015}).validate()
+    assert any(e.startswith("Xe tình trạng 'new'") for e in errors)
+
+
+def test_price_range_depends_on_price_level(valid_form):
+    """Khoảng giá lấy từ bảng phân vị theo mức giá (review ML-05): xe đắt có khoảng rộng hơn xe rẻ."""
+    from backend.services.prediction_service import price_interval
+    low_lo, low_hi = price_interval(5_000)
+    high_lo, high_hi = price_interval(60_000)
+    assert low_lo < 5_000 < low_hi and high_lo < 60_000 < high_hi
+    assert (high_hi - high_lo) > (low_hi - low_lo)

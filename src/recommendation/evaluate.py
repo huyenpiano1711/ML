@@ -21,6 +21,9 @@ Cả bốn dùng cùng bộ lọc bắt buộc (price <= ngân sách) để so s
 Hai bộ truy vấn:
     from_listing  truy vấn lấy từ một tin đăng thật (bỏ chính tin đó ra khỏi ứng viên);
                   ngân sách = giá x U(1.0, 1.5). Dùng để đo độ phù hợp (precision proxy).
+    from_listing_no_model  như from_listing nhưng BỎ dòng xe khỏi truy vấn. Vì dòng xe là tín hiệu có trọng số
+                  cao nhất của KNN, precision ở bộ from_listing gần như "tự chấm điểm"; bộ này đo khả năng
+                  tìm đúng loại xe từ các thông tin còn lại (hãng, năm, kiểu, số dặm, ngân sách) - độc lập hơn.
     random_form   tổ hợp ngẫu nhiên các ô trên form, gồm cả tổ hợp hiếm/không có thật.
                   Dùng để đo độ phủ (có tìm đủ 5 xe không) và thời gian.
 
@@ -115,7 +118,13 @@ def run_method(rec: Recommender, method: str, q: dict, k: int, exclude, rng) -> 
 def evaluate(rec: Recommender, n: int = 300, k: int = TOP_K, seed: int = 42, verbose: bool = True):
     rng = np.random.default_rng(seed)
     cat = rec.catalog
-    sets = {"from_listing": make_listing_queries(cat, n, rng), "random_form": make_form_queries(cat, n, rng)}
+    listing = make_listing_queries(cat, n, rng)
+    # Bộ kiểm chứng độc lập (sửa theo review): bỏ dòng xe khỏi truy vấn. Hệ gợi ý không còn được biết dòng xe
+    # nên "cùng dòng xe, lệch năm <= 2" không còn là chính tín hiệu xếp hạng -> precision không tự chấm điểm.
+    no_model = [dict(q, query={"budget_max_usd": q["query"]["budget_max_usd"],
+                               "preferences": {f: v for f, v in q["query"]["preferences"].items() if f != "model_base"}})
+                for q in listing]
+    sets = {"from_listing": listing, "from_listing_no_model": no_model, "random_form": make_form_queries(cat, n, rng)}
     price_of = dict(zip(cat["id"].astype(int), cat["price"]))      # kiểm tra độc lập với Recommender
     mm, yr = cat["make_model"].to_numpy(), cat["year"].to_numpy()
     for _ in range(3):                                              # khởi động bộ nhớ đệm, không tính thời gian

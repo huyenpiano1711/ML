@@ -11,11 +11,10 @@ from backend.schemas.vehicle_input import VehicleInput, FEATURES, MODELS_BY_MAKE
 from desktop_app.controllers import PAGE_VEHICLE
 from desktop_app.widgets.vehicle_card import labelOf, modelLabel, vehicleTitle
 from src.config import SCRAPE_YEAR
+from backend.schemas.vehicle_input import MAX_MILES_NEW, MAX_MILES_PER_YEAR  # cùng quy tắc với Backend
 from src.features.model_constraints import CATEGORICAL, constraints_for, violations
 
 # Mileage that does not fit the car (data: 99.9% of listings drive under ~53,000 mi a year).
-MAX_MILES_PER_YEAR = 50_000
-MAX_MILES_NEW = 10_000
 
 # Body type, condition, fuel and transmission are optional: the first item means "not chosen"
 # (the model then receives 'unknown', as for listings that did not give the value).
@@ -52,6 +51,11 @@ def translateError(error):
     if match := WRONG_MAKE.fullmatch(error):
         return f"Model {match[1]} does not belong to make {match[2]}."
     return error
+
+
+def isMileageError(error):
+    """True for the mileage messages of VehicleInput.validate() (rule (e))."""
+    return error.startswith(("Số dặm ", "Xe tình trạng 'new'"))
 
 
 def constraintMessage(vehicle, name, allowed):
@@ -139,7 +143,9 @@ class VehicleController:
     def validatedInput(self):
         """The VehicleInput to send to the Backend, or None after showing every error."""
         vehicle = self.collectInput()
-        messages = [translateError(error) for error in vehicle.validate()]
+        # The Backend also checks mileage against year/condition (same rule); the page shows its own English
+        # version of those messages below, with the exact limits.
+        messages = [translateError(error) for error in vehicle.validate() if not isMileageError(error)]
         if not messages:                                 # the model exists: check it against the data
             messages = [constraintMessage(vehicle, name, allowed) for name, allowed in violations(vehicle)]
             messages += mileageMessages(vehicle)

@@ -8,7 +8,7 @@ Thứ tự các bước (xem chi tiết lý do trong src/config.py và src/clean
   D. Loại dòng thiếu thông tin cốt lõi + xe ngoài phạm vi (xe máy, xe tải thương mại)
   E. Loại giá trị vô lý (giá, năm, số dặm, giá trả góp của xe mới)
   F. Khử trùng lặp (theo VIN, rồi theo nội dung)
-  G. Loại giá ngoại lai theo nhóm hãng + dòng + năm
+  G. (Đã chuyển sang 12_split_data.py: ngoại lai theo nhóm chỉ học trên tập train)
   H. Điền thiếu còn lại, tạo đặc trưng mới, ghép đặc trưng văn bản
   I. Lưu dữ liệu sạch + nhật ký làm sạch + từ điển dữ liệu
 
@@ -57,11 +57,9 @@ def main():
     # F. Trùng lặp ------------------------------------------------------------------
     df = cl.drop_duplicates(df, log)
 
-    # G. Ngoại lai theo nhóm --------------------------------------------------------
-    df, outliers = cl.drop_group_outliers(df, log)
-    outliers[["id", "manufacturer", "model", "year", "odometer", "price", "price_robust_z", "seller_type"]] \
-        .sort_values("price_robust_z").to_csv(config.REPORT_DIR / "removed_group_outliers.csv",
-                                              index=False, encoding="utf-8-sig")
+    # G. Ngoại lai theo nhóm: KHÔNG làm ở đây nữa.
+    #    Ngưỡng ngoại lai học từ giá nên phải tính SAU khi chia tập và CHỈ trên tập train
+    #    (tránh rò rỉ dữ liệu) -> xem scripts/12_split_data.py và src/cleaning.fit_group_outliers().
 
     # H. Điền thiếu + đặc trưng ------------------------------------------------------
     df = cl.handle_remaining_missing(df)

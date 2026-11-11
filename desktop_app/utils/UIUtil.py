@@ -5,6 +5,7 @@ UIUtil.py - Shared helpers for every AutoWise window:
     - resolve image paths ("../images/...") written in the .ui files to absolute paths,
       so icons work no matter which folder the app is started from.
 """
+import re
 from pathlib import Path
 
 from PyQt6.QtCore import Qt, QEvent, QObject, QRectF
@@ -35,7 +36,10 @@ class UIUtil:
     def applyStyleSheet(widget: QWidget):
         """pyuic6 sets styleSheet before the dynamic properties, so set it again.
         Relative 'url(../images/x.png)' in the .ui style sheet becomes an absolute path."""
-        style = widget.styleSheet().replace("url(../images/", f"url({IMAGE_DIR.as_posix()}/")
+        # The path is quoted: a project folder with spaces or accents (D:/Đồ Án Machine Learning/...) breaks an
+        # unquoted url(...) and Qt then drops every rule after it (buttons lost their red background on Windows).
+        style = re.sub(r'url\(\s*["\']?\.\./images/([^)"\']+)["\']?\s*\)',
+                       lambda m: f'url("{(IMAGE_DIR / m.group(1)).as_posix()}")', widget.styleSheet())
         widget.setStyleSheet(style)
 
     @staticmethod

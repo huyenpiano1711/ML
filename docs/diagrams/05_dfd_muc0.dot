@@ -1,0 +1,18 @@
+digraph DFD0 {
+  rankdir=LR;
+  graph [fontname="Inter", fontsize=12, bgcolor="white", pad=0.3, nodesep=0.35, ranksep=0.5];
+  node  [fontname="Inter", fontsize=11, color="#18181B", fontcolor="#18181B"];
+  edge  [fontname="Inter", fontsize=9, color="#6B6B74", fontcolor="#6B6B74", arrowsize=0.7];
+  P0 [label="0\nHệ thống\nAutoWise AI", shape=circle, style=filled, fillcolor="#FDE8EB", color="#D7263D", penwidth=2, width=1.9, fixedsize=true];
+  node [shape=box, style=filled, fillcolor="#F5F5F7", width=1.6];
+  U [label="Người dùng"]; A [label="Quản trị viên"]; K [label="Kaggle Craigslist\n(dữ liệu gốc)"]; N [label="NHTSA vPIC\n(giải mã VIN)"]; W [label="Wikimedia Commons\n(ảnh minh họa)"];
+  U -> P0 [label="thông tin tài khoản, thông số xe, ngân sách"];
+  P0 -> U [label="giá ước tính, khoảng giá, Top 5, xe cùng giá, PDF"];
+  A -> P0 [label="thao tác quản trị, tham số huấn luyện"];
+  P0 -> A [label="thống kê, danh sách người dùng, kết quả đánh giá, nhật ký"];
+  K -> P0 [label="426.880 tin đăng"];
+  N -> P0 [label="thông số theo VIN"];
+  W -> P0 [label="ảnh dòng xe"];
+  {rank=same; U; A;}
+  {rank=same; K; N; W;}
+}

@@ -1,0 +1,179 @@
+{
+  "active": "20261111_114832_hgb",
+  "models": [
+    {
+      "algorithm": "hgb",
+      "label": "HistGradientBoosting",
+      "params": {
+        "learning_rate": 0.06,
+        "max_iter": 600,
+        "max_leaf_nodes": 80,
+        "min_samples_leaf": 25,
+        "l2_regularization": 0.5
+      },
+      "log_target": true,
+      "augment_frac": 0.5,
+      "fit_seconds": 7.17,
+      "train_size": 141828,
+      "val_full": {
+        "mae_usd": 2512.31,
+        "rmse_usd": 4848.76,
+        "medae_usd": 1403.2,
+        "p90_usd": 5588.38,
+        "r2_usd": 0.871,
+        "r2_log": 0.8638,
+        "mape_pct": 23.51,
+        "sample_size": 28777
+      },
+      "val_app": {
+        "mae_usd": 2644.08,
+        "rmse_usd": 5068.64,
+        "medae_usd": 1460.0,
+        "p90_usd": 5960.65,
+        "r2_usd": 0.859,
+        "r2_log": 0.8583,
+        "mape_pct": 24.06,
+        "sample_size": 28777
+      },
+      "interval": {
+        "coverage": 0.8,
+        "bins": [
+          {
+            "upper_pred_usd": 5637.68,
+            "low_ratio": 0.6198,
+            "high_ratio": 1.4968,
+            "n": 5756
+          },
+          {
+            "upper_pred_usd": 9220.47,
+            "low_ratio": 0.7282,
+            "high_ratio": 1.3477,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": 14688.16,
+            "low_ratio": 0.749,
+            "high_ratio": 1.2938,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": 24159.19,
+            "low_ratio": 0.8095,
+            "high_ratio": 1.2541,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": null,
+            "low_ratio": 0.8099,
+            "high_ratio": 1.2334,
+            "n": 5756
+          }
+        ]
+      },
+      "val_interval_coverage_pct": 80.0,
+      "val_interval_median_width_usd": 6379.33,
+      "test_full": {
+        "mae_usd": 2498.46,
+        "rmse_usd": 4958.24,
+        "medae_usd": 1378.92,
+        "p90_usd": 5536.1,
+        "r2_usd": 0.8647,
+        "r2_log": 0.865,
+        "mape_pct": 23.47,
+        "sample_size": 28777
+      },
+      "test_app": {
+        "mae_usd": 2638.88,
+        "rmse_usd": 5147.52,
+        "medae_usd": 1440.46,
+        "p90_usd": 5883.83,
+        "r2_usd": 0.8542,
+        "r2_log": 0.8585,
+        "mape_pct": 24.04,
+        "sample_size": 28777
+      },
+      "version": "20261111_114832_hgb",
+      "file": "registry/20261111_114832_hgb.joblib",
+      "note": "Mô hình báo cáo (scripts/19)",
+      "created_by": "script",
+      "created_at": "2026-11-11 11:48:33"
+    },
+    {
+      "algorithm": "hgb",
+      "label": "HistGradientBoosting",
+      "params": {
+        "learning_rate": 0.08,
+        "max_iter": 600,
+        "max_leaf_nodes": 80,
+        "min_samples_leaf": 25,
+        "l2_regularization": 0.5
+      },
+      "log_target": true,
+      "augment_frac": 0.5,
+      "fit_seconds": 6.57,
+      "train_size": 141828,
+      "val_full": {
+        "mae_usd": 2514.0,
+        "rmse_usd": 4849.57,
+        "medae_usd": 1403.25,
+        "p90_usd": 5552.88,
+        "r2_usd": 0.871,
+        "r2_log": 0.8638,
+        "mape_pct": 23.54,
+        "sample_size": 28777
+      },
+      "val_app": {
+        "mae_usd": 2647.08,
+        "rmse_usd": 5075.63,
+        "medae_usd": 1454.08,
+        "p90_usd": 5960.83,
+        "r2_usd": 0.8586,
+        "r2_log": 0.8579,
+        "mape_pct": 24.12,
+        "sample_size": 28777
+      },
+      "interval": {
+        "coverage": 0.8,
+        "bins": [
+          {
+            "upper_pred_usd": 5639.05,
+            "low_ratio": 0.6206,
+            "high_ratio": 1.4981,
+            "n": 5756
+          },
+          {
+            "upper_pred_usd": 9237.84,
+            "low_ratio": 0.7177,
+            "high_ratio": 1.3572,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": 14717.43,
+            "low_ratio": 0.7556,
+            "high_ratio": 1.2911,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": 24096.29,
+            "low_ratio": 0.8073,
+            "high_ratio": 1.2538,
+            "n": 5755
+          },
+          {
+            "upper_pred_usd": null,
+            "low_ratio": 0.8098,
+            "high_ratio": 1.2317,
+            "n": 5756
+          }
+        ]
+      },
+      "val_interval_coverage_pct": 79.98,
+      "val_interval_median_width_usd": 6265.78,
+      "version": "20261111_120545_hgb",
+      "file": "registry/20261111_120545_hgb.joblib",
+      "note": "",
+      "created_by": "admin",
+      "created_at": "2026-11-11 12:05:45"
+    }
+  ]
+}

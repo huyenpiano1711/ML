@@ -33,6 +33,31 @@ PRICE_MODEL_CATEGORICAL = [
 PRICE_MODEL_HIGH_CARD = ["make_model"]
 ALL_PRICE_MODEL_FEATURES = PRICE_MODEL_NUMERIC + PRICE_MODEL_CATEGORICAL + PRICE_MODEL_HIGH_CARD
 
+# Cột không bao giờ là đặc trưng: khóa, biến mục tiêu và các cột tính từ giá (gây rò rỉ)
+NON_FEATURE_COLS = {"id", "price", "log_price", "price_robust_z", "year", "lat", "long", "manufacturer_inferred"}
+EXTRA_CATEGORICAL = ["seller_type"]
+
+
+def get_feature_lists(df):
+    """Bộ đặc trưng ỨNG VIÊN đầy đủ (trước khi chọn theo giao diện), dùng cho các script thí nghiệm
+    05_validate, 09_fill_experiment, 14_feature_check.
+
+    Trả về (numeric, categorical, high_card) gồm các cột có trong df:
+      - numeric: 6 biến số của mô hình + các biến số khác (đặc trưng mô tả desc_*/kw_*, has_vin,
+        n_unknown_specs, posting_dow, vin_*), bỏ khóa, biến mục tiêu và cột tính từ giá;
+      - categorical: 10 biến phân loại của mô hình + seller_type;
+      - high_card: make_model.
+    """
+    numeric = [c for c in PRICE_MODEL_NUMERIC if c in df.columns]
+    for c in df.columns:
+        if c in numeric or c in NON_FEATURE_COLS or c.endswith("_source"):
+            continue
+        if pd.api.types.is_numeric_dtype(df[c]) and not pd.api.types.is_bool_dtype(df[c]) or c.startswith("kw_"):
+            numeric.append(c)
+    categorical = [c for c in PRICE_MODEL_CATEGORICAL + EXTRA_CATEGORICAL if c in df.columns]
+    high_card = [c for c in PRICE_MODEL_HIGH_CARD if c in df.columns]
+    return numeric, categorical, high_card
+
 
 def add_features(df):
     """Tính các đặc trưng dẫn xuất từ thuộc tính cơ sở."""

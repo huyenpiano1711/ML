@@ -246,8 +246,8 @@ def test_full_result_is_shown_on_screen_3():
     assert ui.labelResultsTitle.content == "Results for Duy"
     assert ui.labelSelectedVehicle.content == "Ford F150 2015 · 60,000 mi · Pickup · Good · Gasoline · Automatic"
     assert ui.labelPredictedPrice.content == "$20,000"
-    assert ui.labelPriceRange.content == "Likely price: $18,000 – $22,000"
-    assert "2021" in ui.labelPriceNote.content and "off by about $2,000" in ui.labelPriceNote.content
+    assert ui.labelPriceRange.content == "8 in 10 similar listings: $18,000 – $22,000"
+    assert "2021" in ui.labelPriceNote.content and "Average error on unseen test cars" in ui.labelPriceNote.content
     assert ui.scrollAreaResults.bar.position == 0
     assert len(images) == TOP_K + MAX_ALTERNATIVES
 

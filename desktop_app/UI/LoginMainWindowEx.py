@@ -8,26 +8,27 @@ LoginMainWindowEx.py - Sign in / Create account window.
 Regenerate after editing the .ui:
     pyuic6 desktop_app/UI/LoginMainWindow.ui -o desktop_app/UI/LoginMainWindow.py
 """
-import math
-import time
+import json
+import sys
+from pathlib import Path
 
 from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import QMainWindow, QLineEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QMessageBox
 
 from desktop_app.UI.LoginMainWindow import Ui_MainWindow
-from desktop_app.dal.user_dao import (UserDao, MAX_EMAIL_LENGTH, MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH,
-                                      MAX_USERNAME_LENGTH)
+from desktop_app.dal.user_dao import (UserDao, AUTH_EMPTY, AUTH_OK, MAX_EMAIL_LENGTH, MAX_FAILED_LOGINS,
+                                      MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH)
 from desktop_app.utils.UIUtil import UIUtil, ImageBackground
 
 PAGE_LOGIN, PAGE_REGISTER = 0, 1
-MAX_FAILED_LOGINS = 5          # wrong passwords in a row before the username is locked
-LOCK_SECONDS = 5 * 60
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 
 
 class LoginMainWindowEx(Ui_MainWindow):
     def __init__(self):
         self.settings = QSettings("AutoWise", "AutoWiseAI")
         self.mainUi = None
+        self.failedThisRun = 0         # wrong sign-ins in a row in this run: 3 -> the app closes (course exam rule)
 
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
@@ -37,6 +38,8 @@ class LoginMainWindowEx(Ui_MainWindow):
         self.loginBackground = ImageBackground(self.frameLoginVisual, image, shade=(120, 60, 30))
         self.labelLoginMessage.hide()
         self.labelRegisterMessage.hide()
+        UserDao.ensureDefaultAdmin()
+        self.showLiveStats()
         self.setupInputLimits()
         self.loadSavedUser()
         self.setupSignalAndSlot()
@@ -68,27 +71,25 @@ class LoginMainWindowEx(Ui_MainWindow):
         for label in (self.labelLoginMessage, self.labelRegisterMessage):
             label.setTextFormat(Qt.TextFormat.PlainText)
 
-    def lockKey(self, uid):
-        return f"loginLock/{uid.strip().lower()}"
-
-    def lockedMinutes(self, uid):
-        """Minutes left while this username is locked after too many wrong passwords, else 0."""
-        until = float(self.settings.value(self.lockKey(uid) + "/until", 0) or 0)
-        return math.ceil((until - time.time()) / 60) if until > time.time() else 0
-
-    def recordFailedLogin(self, uid):
-        """Count one wrong password; return True when the username has just been locked."""
-        key = self.lockKey(uid)
-        count = int(self.settings.value(key + "/count", 0) or 0) + 1
-        if count >= MAX_FAILED_LOGINS:
-            self.settings.setValue(key + "/until", time.time() + LOCK_SECONDS)
-            self.settings.setValue(key + "/count", 0)
-            return True
-        self.settings.setValue(key + "/count", count)
-        return False
-
-    def clearFailedLogins(self, uid):
-        self.settings.remove(self.lockKey(uid))
+    def showLiveStats(self):
+        """The 3 numbers on the picture panel come from the trained model files, not typed in the .ui."""
+        model_dir = PROJECT_DIR / "models" / "price_prediction"
+        try:
+            metrics = json.loads((model_dir / "metrics.json").read_text(encoding="utf-8"))
+            app = metrics.get("test_metrics_app_path") or metrics.get("test_metrics", {})
+            self.labelStatAccuracyValue.setText(f"R² {app['r2_usd']:.2f}")
+            self.labelStatAccuracy.setText("PRICE MODEL FIT (TEST)")
+        except Exception:                                   # noqa: BLE001 - keep the designed text
+            pass
+        try:
+            meta = json.loads((model_dir / "model_metadata.json").read_text(encoding="utf-8"))
+            rows = meta["train_size"] + meta["val_size"] + meta["test_size"]
+            self.labelStatListingsValue.setText(f"{rows / 1000:.0f}K")
+            schema = json.loads((PROJECT_DIR / "src" / "features" / "feature_schema.json").read_text(encoding="utf-8"))
+            makes = next(f for f in schema["features"] if f["name"] == "manufacturer")
+            self.labelStatBrandsValue.setText(str(len(makes["ui_options"])))
+        except Exception:                                   # noqa: BLE001
+            pass
 
     def showPage(self, page):
         self.stackedWidgetAuth.setCurrentIndex(page)
@@ -117,29 +118,28 @@ class LoginMainWindowEx(Ui_MainWindow):
 
     # ------------------------------------------------------------------ sign in
     def processLogin(self):
+        """Sign in. Wrong password: message with the attempts left; 3 wrong in a row on an account locks it for
+        5 minutes (database). 3 failed sign-ins in a row in this run close the application."""
         uid = self.lineEditUserName.text().strip()
         pwd = self.lineEditPassword.text()
-        if not uid or not pwd:
-            self.showMessage(self.labelLoginMessage, "Please enter your username and password.")
+        result = UserDao.authenticate(uid, pwd)
+        if result.status == AUTH_EMPTY:
+            self.showMessage(self.labelLoginMessage, result.message)
             return
-        if minutes := self.lockedMinutes(uid):
-            self.showMessage(self.labelLoginMessage,
-                             f"Too many wrong passwords. Please try again in {minutes} minute{'s' if minutes > 1 else ''}.")
-            return
-        us = UserDao.login(uid, pwd)
-        if us is None:
-            if self.recordFailedLogin(uid):
-                self.showMessage(self.labelLoginMessage, f"Too many wrong passwords. This username is locked for "
-                                                         f"{LOCK_SECONDS // 60} minutes.")
-            else:
-                self.showMessage(self.labelLoginMessage, "Incorrect username or password.")
+        if result.status != AUTH_OK:
+            self.failedThisRun += 1
+            if self.failedThisRun >= MAX_FAILED_LOGINS:
+                QMessageBox.critical(self.MainWindow, "Sign-in failed",
+                                     f"{result.message}\n\nYou failed to sign in {MAX_FAILED_LOGINS} times in a row. "
+                                     "AutoWise will close now.")
+                QApplication.quit()
+                sys.exit(0)
+            self.showMessage(self.labelLoginMessage, result.message)
             self.lineEditPassword.selectAll()
             self.lineEditPassword.setFocus()
             return
-        self.clearFailedLogins(uid)
-        if us.is_banned:
-            self.showMessage(self.labelLoginMessage, "This account has been locked.")
-            return
+        self.failedThisRun = 0
+        us = result.user
         self.settings.setValue("savedUserName", us.username if self.checkBoxSave.isChecked() else "")
         self.openMainWindow(us)
 
@@ -172,10 +172,22 @@ class LoginMainWindowEx(Ui_MainWindow):
 
     # ------------------------------------------------------------------ navigation
     def openMainWindow(self, us):
-        from desktop_app.UI.AutoWiseMainWindowEx import AutoWiseMainWindowEx
-        self.mainUi = AutoWiseMainWindowEx(us, self)
-        self.mainUi.setupUi(QMainWindow())
-        self.mainUi.showWindow()
+        """Admin -> admin panel, user -> the car advisor. Any error is shown instead of closing the app."""
+        try:
+            if us.is_admin:
+                from desktop_app.UI.AdminMainWindowEx import AdminMainWindowEx
+                self.mainUi = AdminMainWindowEx(us, self)
+            else:
+                from desktop_app.UI.AutoWiseMainWindowEx import AutoWiseMainWindowEx
+                self.mainUi = AutoWiseMainWindowEx(us, self)
+            self.mainUi.setupUi(QMainWindow())
+            self.mainUi.showWindow()
+        except Exception as exc:                            # noqa: BLE001
+            import traceback
+            traceback.print_exc()
+            QMessageBox.critical(self.MainWindow, "Could not open AutoWise", f"{type(exc).__name__}: {exc}")
+            self.mainUi = None
+            return
         self.lineEditPassword.clear()
         self.labelLoginMessage.hide()
         self.MainWindow.hide()

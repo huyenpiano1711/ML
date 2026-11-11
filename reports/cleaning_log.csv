@@ -14,4 +14,3 @@ E6_odo_vo_ly,354676,352510,2166,0.51,Xe >= 2 tuổi nhưng odometer < 100 dặm
 E7_gia_tra_gop,352510,352269,241,0.06,"Xe <= 3 tuổi nhưng giá < 3,000 (giá trả góp/đặt cọc)"
 F1_trung_VIN,352269,224209,128060,30.0,Cùng VIN đăng lại nhiều lần/nhiều khu vực -> giữ tin mới nhất
 F2_trung_noi_dung,224209,201434,22775,5.34,Tin không VIN trùng toàn bộ thông số + giá + bang với tin khác -> tin đăng lặp
-G1_ngoai_lai_nhom,201434,198514,2920,0.68,|robust z| > 3.5 so với xe cùng hãng+dòng+năm (nhóm >= 10)

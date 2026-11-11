@@ -13,6 +13,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
 
+from src.config import SCRAPE_YEAR
+
 # ---------------------------------------------------------------------------
 # 1. Đọc feature_schema.json một lần khi import
 # ---------------------------------------------------------------------------
@@ -26,6 +28,11 @@ MODELS_BY_MAKE = SCHEMA["options"]["model_base_by_manufacturer"]
 REQUIRED_FIELDS = [n for n, f in FEATURES.items() if f["required"]]
 OPTIONAL_FIELDS = [n for n, f in FEATURES.items() if not f["required"]]
 NUMERIC_FIELDS = ["year", "odometer", "budget_max_usd"]
+
+# Quy tắc hợp lý giữa số dặm, năm và tình trạng (một nguồn duy nhất, giao diện dùng lại).
+# Tuổi xe = SCRAPE_YEAR (2021, src/config.py) - năm sản xuất, tối thiểu 1.
+MAX_MILES_PER_YEAR = 50_000   # quá mức này gần như chắc chắn nhập sai
+MAX_MILES_NEW = 10_000        # xe "new" không thể đi quá 10.000 dặm
 
 
 def _fmt(x, name):
@@ -123,6 +130,14 @@ class VehicleInput:
         if self.manufacturer and self.model_base:
             if self.model_base not in MODELS_BY_MAKE.get(self.manufacturer, []):
                 errors.append(f"Dòng xe {self.model_base!r} không thuộc hãng {self.manufacturer!r}.")
+        # (e) Số dặm phải hợp lý với tuổi xe và tình trạng (trước đây chỉ kiểm tra ở giao diện)
+        if not errors and isinstance(self.year, (int, float)) and isinstance(self.odometer, (int, float)):
+            age = max(SCRAPE_YEAR - int(self.year), 1)
+            if self.odometer > MAX_MILES_PER_YEAR * age:
+                errors.append(f"Số dặm {_fmt(self.odometer, 'odometer')} quá lớn so với xe đời {int(self.year)}: "
+                              f"tối đa {_fmt(MAX_MILES_PER_YEAR * age, 'odometer')} dặm.")
+            if self.condition == "new" and self.odometer > MAX_MILES_NEW:
+                errors.append(f"Xe tình trạng 'new' chỉ được tối đa {_fmt(MAX_MILES_NEW, 'odometer')} dặm.")
         return errors
 
     def check(self) -> "VehicleInput":
