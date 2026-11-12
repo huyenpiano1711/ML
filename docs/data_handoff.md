@@ -10,8 +10,8 @@ Bản dữ liệu dùng chung cho các phần dự đoán giá, gợi ý xe và 
 | `data/interim/desc_features.csv` | 426.880 × 16 | `id` + 15 đặc trưng từ cột mô tả (`desc_*`, 12 cờ `kw_*`) |
 | `data/interim/vins_to_decode.csv` | 96.267 dòng | VIN hợp lệ đã gửi tra cứu |
 | `data/interim/vin_decoded.csv` | 96.267 dòng | Kết quả giải mã VIN từ API NHTSA vPIC |
-| `data/processed/vehicles_clean.pkl` / `.csv` | 198.514 × 48 | Dữ liệu sau 16 bước làm sạch, kèm 29 đặc trưng mới |
-| `data/processed/vehicles_filled.pkl` / `.csv` | 198.514 × 65 | **Dữ liệu dùng cho mô hình**: dữ liệu sạch + 5 cột thông số đã điền + đặc trưng từ VIN |
+| `data/processed/vehicles_clean.pkl` / `.csv` | 201.434 × 48 | Dữ liệu sau 15 bước làm sạch, kèm 29 đặc trưng mới |
+| `data/processed/vehicles_filled.pkl` / `.csv` | 201.434 × 65 | **Dữ liệu dùng cho mô hình**: dữ liệu sạch + 5 cột thông số đã điền + đặc trưng từ VIN |
 | `assets/car_images_unique/` | 6.842 ảnh | Ảnh minh họa theo khóa `hang_dong_nam.jpg` (ví dụ `ford_f150_2015.jpg`) |
 
 Khóa chính của mọi bảng là `id` (mã tin đăng, `int64`). Nên đọc file `.pkl` vì giữ đúng kiểu dữ liệu và nhanh hơn `.csv`.
@@ -28,7 +28,7 @@ Mô tả đầy đủ từng cột: `reports/data_dictionary.csv`.
 ## Lưu ý khi dùng
 
 - **Rò rỉ dữ liệu:** cột `*_filled` có nguồn `group` được tính trên toàn bộ dữ liệu. Khi huấn luyện, dùng `GroupModeImputer` (`src/features`) fit trên tập train, như trong `scripts/09_fill_experiment.py`.
-- **Bước G1** (loại 2.920 tin ngoại lai theo nhóm hãng + dòng + năm) đã chạy trên toàn bộ dữ liệu trước khi chia tập; cần kiểm tra lại trước khi huấn luyện chính thức.
+- **Ngoại lai theo nhóm** (hãng + dòng + năm) không còn bị loại trong bước làm sạch: `scripts/12_split_data.py` học ngưỡng trên train và chỉ loại 2.052 tin khỏi train; val/test giữ nguyên.
 - `condition` và `paint_color` còn khoảng 38% và 28% `unknown`; nhóm chủ đích không điền hai cột này.
 - Giá là giá niêm yết tại Mỹ năm 2021, không phải giá giao dịch.
 - Ảnh là ảnh minh họa dòng xe từ Wikimedia Commons, không phải ảnh thật của từng tin; nhiều ảnh không đúng đời xe. Khi hiển thị, ghi "ảnh minh họa" kèm tác giả và giấy phép.

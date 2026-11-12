@@ -64,18 +64,6 @@ class FakeSpinBox:
         self.current = value
 
 
-class FakeLineEdit:
-    def __init__(self, text=""):
-        self.content = text
-        self.focused = False
-
-    def text(self):
-        return self.content
-
-    def setFocus(self):
-        self.focused = True
-
-
 class FakeLabel:
     def __init__(self):
         self.content = ""

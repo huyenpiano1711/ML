@@ -31,7 +31,6 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import pandas as pd
-from PIL import Image
 from tqdm import tqdm
 
 
@@ -40,18 +39,6 @@ IMAGE_DIR_SRC = PROJECT_ROOT / "assets" / "car_images"
 IMAGE_DIR_DST = PROJECT_ROOT / "assets" / "car_images_unique"
 DATA_DIR = PROJECT_ROOT / "data"
 REPORT_DIR = PROJECT_ROOT / "reports" / "image_deduplication"
-
-
-def verify_image_readable(file_path: Path) -> bool:
-    """Verifies that an image file exists and can be decoded by PIL."""
-    if not file_path.is_file():
-        return False
-    try:
-        with Image.open(file_path) as im:
-            im.verify()
-        return True
-    except Exception:
-        return False
 
 
 def copy_single_file(task: tuple) -> tuple:

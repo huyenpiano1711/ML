@@ -399,12 +399,3 @@ def get_image_service() -> ImageService:
             if _DEFAULT is None:
                 _DEFAULT = ImageService()
     return _DEFAULT
-
-
-def get_image_path(image_path: object, manufacturer: object = None, model_base: object = None,
-                   year: object = None) -> str:
-    """Hàm ngắn cho Frontend/Backend: luôn trả một đường dẫn ảnh mở được."""
-    service = get_image_service()
-    if manufacturer is None:
-        return service.resolve(image_path).path
-    return service.resolve_vehicle(manufacturer, model_base, year, image_path).path
