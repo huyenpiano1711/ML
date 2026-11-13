@@ -132,7 +132,6 @@ Chạy từ thư mục `scripts/` theo thứ tự số (PyCharm: chuột phải 
 | `12_split_data.py` | Chia train/val/test 70/15/15 theo nhóm xe (StratifiedGroupKFold, không để cùng một xe nằm ở hai tập); học ngưỡng ngoại lai trên train và chỉ loại khỏi train | `data/splits/*_ids.csv`, `reports/split_summary.csv`, `reports/removed_group_outliers.csv` |
 | `13_build_feature_schema.py` | A04: thuộc tính đầu vào, khớp với form PyQt6 | `src/features/feature_schema.json` |
 | `14_feature_check.py` | A04: kiểm chứng bộ thuộc tính trên tập validation | `reports/feature_selection.csv` |
-
 | `19_train_final_model.py` | So sánh thuật toán, tinh chỉnh, huấn luyện mô hình cuối, đánh giá test một lần, khoảng giá 80% | `models/price_prediction/`, `reports/prediction/` |
 | `20_cross_validation.py` | Kiểm định chéo 5 lần theo nhóm | `reports/prediction/cross_validation.csv` |
 | `16_backend_performance.py` | Đo thời gian phản hồi của backend | `reports/integration/` |
@@ -143,7 +142,7 @@ Chạy từ thư mục `scripts/` theo thứ tự số (PyCharm: chuột phải 
 ## Quy ước cho giai đoạn huấn luyện
 
 - Biến mục tiêu: `log_price`; dự đoán xong đổi ngược bằng `np.expm1`.
-- Dùng chung cách chia trong `data/splits/` (đọc `id` rồi lọc `vehicles_filled.pkl`), không tự chia lại. Fit `build_preprocessor()` và `GroupModeImputer` **chỉ trên train**; chọn mô hình trên **val**; **test** chỉ dùng một lần ở B04.
+- Dùng chung cách chia trong `data/splits/` (đọc `id` rồi lọc `vehicles_filled.pkl`), không tự chia lại. Fit `build_preprocessor()` và `GroupModeImputer` **chỉ trên train**; chọn mô hình trên **val**; **test** chỉ dùng một lần ở `19_train_final_model.py`.
 - Cột đầu vào của mô hình giá: `price_model_columns` trong `src/features/feature_schema.json` (17 cột, chỉ gồm thông tin người dùng nhập trên form hoặc tính được). Chi tiết: [docs/A03_A04_split_and_features.md](docs/A03_A04_split_and_features.md).
-- Mốc cần vượt với bộ cột trên form (HistGradientBoosting, tập val): MAE 2.330 USD (`reports/feature_selection.csv`). Mốc cũ 2.094 USD trong `fill_experiment.csv` dùng cả cột mô tả, VIN, tọa độ và chia 80/20, nên không so trực tiếp được.
+- Kết quả mô hình cuối (HistGradientBoosting, `models/price_prediction/metrics.json`): trên tập test, MAE 2.498 USD khi đủ thông tin và 2.639 USD theo đúng cách ứng dụng gửi dữ liệu (để trống hệ dẫn động, số xi-lanh, màu xe); khoảng giá 80% phủ 79,9% số xe test. Con số 2.094 USD trong `fill_experiment.csv` dùng cả cột mô tả, VIN, tọa độ và chia 80/20 nên không so trực tiếp được.
 - Không commit dữ liệu, ảnh hay file lớn hơn 100 MB; cập nhật dữ liệu bằng Release mới.

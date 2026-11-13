@@ -1,6 +1,6 @@
 # A03 – Chia tập dữ liệu · A04 – Chọn thuộc tính đầu vào
 
-Người thực hiện: Duy · Dữ liệu: `data/processed/vehicles_filled.pkl` (198.514 × 65, Release `data_v1_on_publish`)
+Người thực hiện: Duy · Dữ liệu: `data/processed/vehicles_filled.pkl` (201.434 × 65)
 
 ## Cách chạy lại
 
@@ -19,21 +19,21 @@ Kết quả cố định: `random_state = 42`, chạy lại cho ra đúng các f
 
 | Tập | Số dòng | Tỷ lệ | Dùng cho |
 |---|---|---|---|
-| train | 138.959 | 70% | Huấn luyện (B02); fit `GroupModeImputer`, encoder, scaler |
-| val | 29.777 | 15% | So sánh mô hình, chỉnh tham số (B03) |
-| test | 29.778 | 15% | Báo cáo kết quả cuối, **chỉ dùng một lần** (B04) |
+| train | 141.828 | 70,4% | Huấn luyện; fit `GroupModeImputer`, encoder, scaler; học ngưỡng ngoại lai |
+| val | 28.777 | 14,3% | So sánh mô hình, chỉnh tham số, tính khoảng giá 80% |
+| test | 28.777 | 14,3% | Báo cáo kết quả cuối, **chỉ dùng một lần** |
 
-**Cách chia.** Chia hai lần bằng `train_test_split`, phân tầng (stratify) theo 10 khoảng phân vị của `log_price`. Lần đầu tách 15% làm test. Lần thứ hai tách 0,15 / 0,85 ≈ 17,6% phần còn lại làm val. Mỗi file chỉ lưu cột `id`, tổng khoảng 2 MB nên đưa được lên git.
+**Cách chia.** `StratifiedGroupKFold` theo nhóm hãng + dòng + năm + số dặm, phân tầng theo khoảng giá: các tin đăng lại của cùng một xe luôn nằm chung một tập. Mỗi file chỉ lưu cột `id` nên đưa được lên git.
+
+**Ngoại lai theo nhóm.** Trung vị và MAD của log giá theo nhóm hãng + dòng + năm chỉ học trên train (`cleaning.fit_group_outliers`). Tin có |robust z| > 3,5 chỉ bị loại khỏi train: 2.052 tin (`reports/removed_group_outliers.csv`). Val và test giữ nguyên; tin vượt ngưỡng ở hai tập này chỉ được đánh dấu trong `reports/eval_outlier_flags.csv`.
 
 **Kiểm tra (`reports/split_summary.csv`).**
 
-- Ba tập không trùng `id` và không thiếu dòng nào.
-- Giá trung vị của cả ba tập đều là 11.997 USD.
-- Giá trung bình lệch nhau dưới 0,5% (16.017 – 16.090 USD).
-- Năm trung vị đều là 2012.
-- Số dặm trung vị lệch dưới 1% (104.000 – 104.764 dặm).
-- Tỷ lệ tin đại lý nằm trong khoảng 68,4 – 68,7%.
-- Chỉ 0,58% xe ở val và 0,63% ở test thuộc dòng xe không có trong train. Mô hình xử lý trường hợp này bằng nhóm "infrequent" của encoder.
+- Ba tập không trùng `id`.
+- Giá trung vị: 11.997 USD (train), 11.995 USD (val, test).
+- Giá trung bình: 15.946 – 16.075 USD.
+- Năm trung vị đều là 2012; số dặm trung vị 104.308 – 104.625 dặm.
+- Tỷ lệ tin đại lý: 68,4 – 68,5%.
 
 **Cách dùng:**
 
@@ -44,7 +44,7 @@ ids = {k: pd.read_csv(f"data/splits/{k}_ids.csv")["id"] for k in ("train", "val"
 train, val, test = (df[df["id"].isin(ids[k])] for k in ("train", "val", "test"))
 ```
 
-**Hạn chế cần ghi trong báo cáo.** Bước G1 (loại 2.920 tin, chiếm 0,68%, có giá lệch |robust z| > 3,5 so với xe cùng hãng + dòng + năm) đã chạy trên toàn bộ dữ liệu trước khi chia tập. Vì vậy tập val và test cũng đã được làm sạch nhờ thông tin của toàn bộ dữ liệu. Phần lớn tin bị loại là lỗi nhãn, chẳng hạn giá trả góp hằng tháng ghi thành giá bán. Do đó kết quả trên test có thể lạc quan hơn một chút so với dữ liệu thực tế chưa làm sạch, nhưng mức ảnh hưởng nhỏ.
+**Ghi chú.** Bản đầu của dự án lọc ngoại lai theo nhóm trên toàn bộ dữ liệu trước khi chia tập (2.920 tin). Cách đó để thông tin của val/test lọt vào bước làm sạch nên đã được thay bằng cách ở trên.
 
 ---
 

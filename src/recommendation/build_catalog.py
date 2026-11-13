@@ -1,7 +1,7 @@
 """
 build_catalog.py - C01: Tạo danh sách xe để gợi ý (recommendation_catalog.pkl).
 
-Đầu vào : data/processed/vehicles_filled.pkl   (198.514 x 65, bản data-v1)
+Đầu vào : data/processed/vehicles_filled.pkl   (201.434 x 65)
 Đầu ra  : data/processed/recommendation_catalog.pkl
           reports/recommendation/catalog_report.json   (số liệu kiểm tra, dùng cho báo cáo)
 

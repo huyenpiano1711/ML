@@ -341,28 +341,8 @@ def drop_duplicates(df, log):
 
 
 # ---------------------------------------------------------------------------
-# F. NGOẠI LAI THEO NHÓM (robust z-score trên log giá)
+# F. NGOẠI LAI THEO NHÓM (robust z-score trên log giá, học trên train)
 # ---------------------------------------------------------------------------
-def drop_group_outliers(df, log):
-    """So sánh giá mỗi xe với các xe CÙNG hãng + dòng + năm. Giá lệch quá xa
-    (|z| > 3.5) gần như chắc là giá trả góp/đặt cọc, gõ thiếu/thừa số 0."""
-    df = df.copy()
-    lp = np.log(df["price"])
-    g = df.groupby(config.OUTLIER_GROUP_COLS, observed=True)
-    n = g["price"].transform("size")
-    med = lp.groupby([df[c] for c in config.OUTLIER_GROUP_COLS], observed=True).transform("median")
-    mad = (lp - med).abs().groupby([df[c] for c in config.OUTLIER_GROUP_COLS], observed=True).transform("median")
-    z = 0.6745 * (lp - med) / mad.clip(lower=config.OUTLIER_MAD_FLOOR)
-    df["price_robust_z"] = z.where(n >= config.OUTLIER_MIN_GROUP_SIZE)
-    is_out = df["price_robust_z"].abs() > config.OUTLIER_Z_THRESHOLD
-    out = df.loc[is_out]
-    print(f"   ngoại lai: {int((out['price_robust_z'] < 0).sum()):,} giá quá THẤP, "
-          f"{int((out['price_robust_z'] > 0).sum()):,} giá quá CAO so với xe cùng nhóm")
-    df = _filter(df, ~is_out, log, "G1_ngoai_lai_nhom",
-                 f"|robust z| > {config.OUTLIER_Z_THRESHOLD} so với xe cùng hãng+dòng+năm (nhóm >= {config.OUTLIER_MIN_GROUP_SIZE})")
-    return df.drop(columns="price_robust_z"), out
-
-
 def fit_group_outliers(train_df):
     """Học trung vị và MAD của log giá theo nhóm hãng + dòng + năm, CHỈ từ tập train.
     Trả về bảng thống kê dùng cho flag_group_outliers() (không nhìn giá của val/test)."""

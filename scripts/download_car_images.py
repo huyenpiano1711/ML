@@ -102,16 +102,6 @@ def normalize_year(value):
     return ""
 
 
-def make_car_key(row):
-    year = row["_year"]
-    brand = row["_brand"]
-    model = row["_model"]
-
-    return safe_filename(
-        f"{brand}_{model}_{year}"
-    )
-
-
 def build_queries(row):
     year = row["_year"]
     brand = row["_brand"]
